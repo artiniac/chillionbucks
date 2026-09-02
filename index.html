@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chillion Bucks</title>
+<meta name="description" content="Chillion Bucks is Leo's money site for kids: games, videos, and chill words that teach saving, spending, earning, and growing money. Free, no ads, no accounts.">
+<meta name="theme-color" content="#052e16">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<meta property="og:title" content="Chillion Bucks">
+<meta property="og:description" content="A chillion bucks is when you can chill all day and still have a lot of money. Games and videos that teach kids about money.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#play">Skip to games</a>
+
+<header class="nav">
+  <a class="brand" href="#top" aria-label="Chillion Bucks home">
+    <svg class="brand-coin" viewBox="0 0 64 64" aria-hidden="true">
+      <circle cx="32" cy="32" r="29" fill="#4ade80" stroke="#052e16" stroke-width="5"/>
+      <circle cx="32" cy="32" r="21" fill="none" stroke="#052e16" stroke-width="2.5" stroke-dasharray="4 4"/>
+      <rect x="15" y="24" width="15" height="10" rx="4" fill="#052e16"/>
+      <rect x="34" y="24" width="15" height="10" rx="4" fill="#052e16"/>
+      <rect x="29" y="27" width="6" height="3" fill="#052e16"/>
+      <path d="M22 41q10 8 20 0" fill="none" stroke="#052e16" stroke-width="3.5" stroke-linecap="round"/>
+    </svg>
+    <span>Chillion<b>Bucks</b></span>
+  </a>
+  <nav class="links" aria-label="Sections">
+    <a href="#play">🎮 Play</a>
+    <a href="#watch">▶ Watch</a>
+    <a href="#learn">💡 Learn</a>
+    <a href="#parents">👨‍👩‍👦 Parents</a>
+  </nav>
+  <button id="soundBtn" class="sound" aria-pressed="true" title="Sound on or off" aria-label="Toggle sound">🔊</button>
+</header>
+
+<main id="top">
+
+<section class="hero">
+  <canvas id="coinRain" aria-hidden="true"></canvas>
+  <div class="sun" aria-hidden="true"></div>
+  <div class="hills" aria-hidden="true">
+    <svg viewBox="0 0 1440 240" preserveAspectRatio="none">
+      <path d="M0 140 C 240 60, 420 200, 720 120 S 1200 40, 1440 130 L1440 240 L0 240Z" fill="#22c55e"/>
+      <path d="M0 180 C 300 110, 520 230, 860 160 S 1240 100, 1440 180 L1440 240 L0 240Z" fill="#16a34a"/>
+      <path d="M0 210 C 360 170, 700 250, 1040 200 S 1300 180, 1440 215 L1440 240 L0 240Z" fill="#14532d"/>
+    </svg>
+  </div>
+
+  <div class="hero-inner">
+    <div class="hero-text">
+      <p class="kicker">Leo’s money site for kids</p>
+      <h1 class="title" id="heroTitle" aria-label="Chillion Bucks">CHILLION BUCKS</h1>
+      <p class="tag">A <b>chillion bucks</b> is when you can <b>chill all day</b>… and <b>still</b> have a lot of money. 😎</p>
+      <div class="cta">
+        <a class="btn btn-big" href="#play">🎮 Play a game</a>
+        <a class="btn btn-big btn-alt" href="#watch">▶ Watch videos</a>
+      </div>
+    </div>
+
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 520 380">
+        <!-- palm trunks -->
+        <path d="M70 360 C 80 260, 60 200, 95 120" fill="none" stroke="#7c4a1e" stroke-width="18" stroke-linecap="round"/>
+        <path d="M450 360 C 440 260, 470 200, 430 120" fill="none" stroke="#7c4a1e" stroke-width="18" stroke-linecap="round"/>
+        <!-- fronds -->
+        <g fill="#16a34a" class="frond">
+          <ellipse cx="60" cy="100" rx="70" ry="18" transform="rotate(-30 60 100)"/>
+          <ellipse cx="120" cy="95" rx="70" ry="18" transform="rotate(20 120 95)"/>
+          <ellipse cx="95" cy="80" rx="60" ry="16" transform="rotate(-80 95 80)"/>
+          <ellipse cx="140" cy="120" rx="60" ry="15" transform="rotate(50 140 120)"/>
+        </g>
+        <g fill="#16a34a" class="frond frond2">
+          <ellipse cx="460" cy="100" rx="70" ry="18" transform="rotate(30 460 100)"/>
+          <ellipse cx="400" cy="95" rx="70" ry="18" transform="rotate(-20 400 95)"/>
+          <ellipse cx="425" cy="80" rx="60" ry="16" transform="rotate(80 425 80)"/>
+          <ellipse cx="380" cy="120" rx="60" ry="15" transform="rotate(-50 380 120)"/>
+        </g>
+        <!-- coconuts -->
+        <circle cx="100" cy="128" r="9" fill="#5b3a1a"/><circle cx="116" cy="136" r="9" fill="#5b3a1a"/>
+        <circle cx="420" cy="128" r="9" fill="#5b3a1a"/><circle cx="404" cy="136" r="9" fill="#5b3a1a"/>
+
+        <g class="sway">
+          <!-- hammock ropes -->
+          <path d="M95 150 L 150 250" stroke="#f5deb3" stroke-width="5" stroke-linecap="round"/>
+          <path d="M430 150 L 370 250" stroke="#f5deb3" stroke-width="5" stroke-linecap="round"/>
+          <!-- hammock cloth -->
+          <path d="M150 250 Q 260 330 370 250 L 380 262 Q 260 350 140 262 Z" fill="#fbbf24" stroke="#b45309" stroke-width="5" stroke-linejoin="round"/>
+          <path d="M175 262 Q 260 322 345 262" fill="none" stroke="#b45309" stroke-width="3" opacity=".6"/>
+          <path d="M200 272 Q 260 312 320 272" fill="none" stroke="#b45309" stroke-width="3" opacity=".6"/>
+
+          <!-- Chilly the buck -->
+          <g class="chilly">
+            <ellipse cx="262" cy="292" rx="66" ry="12" fill="rgba(5,46,22,.18)"/>
+            <circle cx="262" cy="232" r="56" fill="#86efac" stroke="#052e16" stroke-width="6"/>
+            <circle cx="262" cy="232" r="42" fill="none" stroke="#052e16" stroke-width="3" stroke-dasharray="6 6" opacity=".35"/>
+            <!-- sunglasses -->
+            <rect x="222" y="214" width="34" height="22" rx="8" fill="#052e16"/>
+            <rect x="268" y="214" width="34" height="22" rx="8" fill="#052e16"/>
+            <rect x="254" y="220" width="16" height="6" fill="#052e16"/>
+            <path d="M228 220 l14 0" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7" class="glint"/>
+            <!-- smile + cheeks -->
+            <path d="M238 254 q24 18 48 0" fill="none" stroke="#052e16" stroke-width="5" stroke-linecap="round"/>
+            <circle cx="228" cy="250" r="6" fill="#fca5a5" opacity=".8"/>
+            <circle cx="296" cy="250" r="6" fill="#fca5a5" opacity=".8"/>
+            <!-- drink -->
+            <rect x="318" y="234" width="26" height="36" rx="5" fill="#f472b6" stroke="#052e16" stroke-width="4"/>
+            <rect x="318" y="234" width="26" height="10" rx="5" fill="#fff" opacity=".6"/>
+            <path d="M332 234 L 344 200" stroke="#052e16" stroke-width="4" stroke-linecap="round"/>
+            <path d="M330 202 l 24 -8 l -6 14 z" fill="#a3e635" stroke="#052e16" stroke-width="3" stroke-linejoin="round"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="define" data-reveal>
+  <div class="define-inner">
+    <div class="dict">
+      <div class="dict-word">chil·lion <span class="pos">(noun)</span>
+        <span class="say">say it: “CHILL-yun”</span></div>
+      <ol>
+        <li>A really, REALLY big pile of bucks. Like a trillion, but chiller.</li>
+        <li>Having enough money that you can chill all day and still have a lot left. 🏖️</li>
+      </ol>
+      <p class="credit">Word invented by <b>Leo</b>, age 4¾. Definition #2 by Dad.</p>
+    </div>
+    <div class="four-jars">
+      <div class="jar"><span class="e">💪</span><b>Earn</b><span>Do work, get bucks.</span></div>
+      <div class="jar"><span class="e">🐷</span><b>Save</b><span>Keep some for later.</span></div>
+      <div class="jar"><span class="e">🛒</span><b>Spend</b><span>Trade bucks for stuff.</span></div>
+      <div class="jar"><span class="e">💝</span><b>Share</b><span>Help someone out.</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="play" class="games" data-reveal>
+  <h2>🎮 Play</h2>
+  <p class="lead">Little games, big money brain.</p>
+  <div class="game-grid">
+
+    <article class="game" id="gPiggy">
+      <header class="game-head"><span class="game-emoji">🐷</span><h3>Piggy Bank Power</h3></header>
+      <p class="game-how">Pick a goal. Tap the piggy to drop in a buck. Save up! Watch out for the candy…</p>
+      <div class="goal-row" id="goalRow"></div>
+      <div class="piggy-stage">
+        <button class="piggy-btn" id="piggyBtn" aria-label="Tap to add a buck">
+          <svg viewBox="0 0 220 170" class="piggy-svg" aria-hidden="true">
+            <ellipse cx="110" cy="150" rx="80" ry="10" fill="rgba(5,46,22,.15)"/>
+            <rect x="50" y="118" width="20" height="30" rx="8" fill="#4ade80" stroke="#052e16" stroke-width="5"/>
+            <rect x="140" y="118" width="20" height="30" rx="8" fill="#4ade80" stroke="#052e16" stroke-width="5"/>
+            <ellipse cx="100" cy="92" rx="76" ry="54" fill="#86efac" stroke="#052e16" stroke-width="6"/>
+            <path d="M28 88 q-16 -6 -8 -22 q10 4 14 12" fill="none" stroke="#052e16" stroke-width="5" stroke-linecap="round"/>
+            <circle cx="158" cy="80" r="34" fill="#86efac" stroke="#052e16" stroke-width="6"/>
+            <path d="M140 52 l-10 -26 l24 12 z" fill="#4ade80" stroke="#052e16" stroke-width="5" stroke-linejoin="round"/>
+            <ellipse cx="186" cy="90" rx="16" ry="12" fill="#4ade80" stroke="#052e16" stroke-width="5"/>
+            <circle cx="181" cy="90" r="3" fill="#052e16"/><circle cx="192" cy="90" r="3" fill="#052e16"/>
+            <circle cx="160" cy="72" r="5" fill="#052e16"/>
+            <rect x="78" y="38" width="44" height="10" rx="4" fill="#052e16"/>
+            <g class="slot-coin">
+              <ellipse cx="100" cy="36" rx="16" ry="14" fill="#fbbf24" stroke="#b45309" stroke-width="4"/>
+              <text x="100" y="42" text-anchor="middle" font-size="16" font-weight="900" fill="#b45309" font-family="Nunito, sans-serif">$</text>
+            </g>
+            <text x="92" y="105" text-anchor="middle" font-size="34" font-weight="900" fill="#052e16" opacity=".25" font-family="Fredoka, sans-serif">$</text>
+          </svg>
+        </button>
+        <div class="piggy-total"><span id="piggyAmt">$0</span><small>saved</small></div>
+      </div>
+      <div class="bar"><div class="bar-fill" id="piggyBar"></div><span class="bar-label" id="piggyGoalLabel"></span></div>
+      <p class="game-msg" id="piggyMsg">Tap tap tap!</p>
+      <div class="tempt hidden" id="tempt">
+        <p><span id="temptEmoji">🍭</span> <b id="temptText">Candy for $3!</b> Spend it, or keep saving?</p>
+        <div class="row">
+          <button class="btn btn-sm btn-alt" id="temptSpend">Spend $3</button>
+          <button class="btn btn-sm" id="temptKeep">Keep saving 💪</button>
+        </div>
+      </div>
+      <button class="link-btn" id="piggyReset">start over</button>
+    </article>
+
+    <article class="game" id="gNW">
+      <header class="game-head"><span class="game-emoji">🤔</span><h3>Need or Want?</h3></header>
+      <p class="game-how">A <b>NEED</b> is something you must have to live and stay safe. A <b>WANT</b> is something fun you’d like. Which one is it?</p>
+      <div class="nw-card" id="nwCard">
+        <div class="nw-emoji" id="nwEmoji">🍎</div>
+        <div class="nw-name" id="nwName">An apple</div>
+      </div>
+      <div class="row big">
+        <button class="btn btn-need" id="nwNeed">NEED</button>
+        <button class="btn btn-want" id="nwWant">WANT</button>
+      </div>
+      <p class="game-msg" id="nwMsg"></p>
+      <div class="score">Score <b id="nwScore">0</b> / <span id="nwTotal">10</span> · Streak 🔥 <b id="nwStreak">0</b></div>
+      <button class="link-btn" id="nwReset">play again</button>
+    </article>
+
+    <article class="game" id="gCoins">
+      <header class="game-head"><span class="game-emoji">🪙</span><h3>Coin Counter</h3></header>
+      <p class="game-how">How much money is this? Penny = 1¢ · Nickel = 5¢ · Dime = 10¢ · Quarter = 25¢</p>
+      <div class="coin-tray" id="coinTray"></div>
+      <div class="row" id="coinAnswers"></div>
+      <p class="game-msg" id="coinMsg"></p>
+      <div class="score">Right in a row: <b id="coinScore">0</b></div>
+    </article>
+
+    <article class="game wide meter" id="gMeter">
+      <header class="game-head"><span class="game-emoji">😎</span><h3>The Chill-o-Meter</h3></header>
+      <p class="game-how">Save a little every week. Money you don’t spend can <b>grow</b> and make “baby money.” (In this game it grows 7% a year, like a long-term investment.) Slide and see!</p>
+      <div class="sliders">
+        <label>Save <b id="wkOut">$5</b> every week <input type="range" id="wk" min="1" max="50" value="5"></label>
+        <label>For <b id="yrOut">10</b> years <input type="range" id="yr" min="1" max="50" value="10"></label>
+      </div>
+      <div class="meter-out">
+        <div class="stat"><small>You put in</small><b id="putIn">$0</b></div>
+        <div class="stat grow"><small>Baby money it made</small><b id="grew">$0</b></div>
+        <div class="stat total"><small>You’d have</small><b id="total">$0</b></div>
+      </div>
+      <div class="chill-bar"><div id="chillFill"></div></div>
+      <p class="chill-label" id="chillLabel">Kinda chill 🙂</p>
+      <p class="chill-years" id="chillYears"></p>
+      <div class="tower" id="tower" aria-hidden="true"></div>
+    </article>
+
+  </div>
+</section>
+
+<section id="watch" class="watch" data-reveal>
+  <h2>▶ Watch</h2>
+  <p class="lead">Good money videos from YouTube, picked by hand. Tap a topic, then tap a video.</p>
+  <div class="tabs" id="videoTabs" role="tablist"></div>
+  <div class="video-grid" id="videoGrid"></div>
+  <p class="watch-note">Videos play right here from YouTube and belong to the creators who made them. Grown-ups: add or swap videos in <code>videos.js</code>.</p>
+</section>
+
+<section id="learn" class="learn" data-reveal>
+  <h2>💡 Chill Words</h2>
+  <p class="lead">Tap a card to flip it.</p>
+  <div class="cards" id="glossary"></div>
+</section>
+
+<section id="parents" class="parents" data-reveal>
+  <h2>👨‍👩‍👦 For grown-ups</h2>
+  <p class="lead">What this site is, and what it is not.</p>
+  <div class="parents-inner">
+    <div class="pcard">
+      <h3>Free. No ads. No accounts.</h3>
+      <p>Nothing to sign up for, nothing to buy, nothing collected. The only thing saved on your device is the sound on/off setting.</p>
+    </div>
+    <div class="pcard">
+      <h3>Where the videos come from</h3>
+      <p>Every video is a real YouTube video from a teacher or a kids’ channel, hand-picked and embedded with YouTube’s privacy-enhanced player. If one goes stale, it gets swapped.</p>
+    </div>
+    <div class="pcard">
+      <h3>How to use it with your kid</h3>
+      <ul>
+        <li>Play Need or Want together and argue about pizza.</li>
+        <li>Pick a real goal, then use Piggy Bank Power to show how taps add up.</li>
+        <li>Slide the Chill-o-Meter and let them see the “baby money” number jump.</li>
+      </ul>
+    </div>
+    <div class="pcard">
+      <h3>Why “Chillion”?</h3>
+      <p>Leo (almost 5) invented the word. Dad explained that a chillion bucks is when you can chill all day and still have a lot of money. Turns out that is a pretty good definition of financial freedom.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  Made with 💚 by Leo (almost 5) and his dad · <a href="https://chillionbucks.com">chillionbucks.com</a>
+</footer>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+<script src="videos.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
