@@ -18,6 +18,8 @@ h2{font-size:clamp(2rem,5vw,3.2rem);color:var(--g800)}
 .skip:focus{left:8px;top:8px}
 img,svg{max-width:100%}
 button{font:inherit;cursor:pointer}
+button,.btn,.tab,.card,.goal,.tabbar a,.links a{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.piggy-btn,.piggy-svg,.nw-card,.coin,.title{user-select:none;-webkit-user-select:none}
 code{background:rgba(255,255,255,.12);padding:.1rem .4rem;border-radius:6px}
 
 /* ---------- nav ---------- */
@@ -34,6 +36,7 @@ code{background:rgba(255,255,255,.12);padding:.1rem .4rem;border-radius:6px}
 
 /* ---------- hero ---------- */
 .hero{position:relative;min-height:88vh;display:grid;align-items:center;overflow:hidden;background:linear-gradient(180deg,#ecfccb 0%,#bef264 38%,#4ade80 100%)}
+@supports (height:1svh){.hero{min-height:88svh}}
 #coinRain{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .sun{position:absolute;top:7%;right:9%;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,#fef9c3 0%,#fde047 58%,rgba(253,224,71,0) 60%);animation:pulse 5s ease-in-out infinite}
 .sun::after{content:'';position:absolute;inset:-44px;border-radius:50%;background:repeating-conic-gradient(from 0deg,rgba(253,224,71,.4) 0 10deg,transparent 10deg 20deg);-webkit-mask:radial-gradient(circle,transparent 44%,#000 45%);mask:radial-gradient(circle,transparent 44%,#000 45%);animation:rot 40s linear infinite}
@@ -67,7 +70,7 @@ code{background:rgba(255,255,255,.12);padding:.1rem .4rem;border-radius:6px}
 }
 
 /* ---------- sections ---------- */
-section{padding:clamp(3rem,7vw,5.5rem) clamp(1rem,4vw,2.5rem)}
+section{padding:clamp(3rem,7vw,5.5rem) clamp(1rem,4vw,2.5rem);scroll-margin-top:64px}
 section > h2, section > .lead, .game-grid, .tabs, .video-grid, .cards, .parents-inner, .define-inner, .watch-note{width:min(1150px,100%);margin-left:auto;margin-right:auto}
 [data-reveal]{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
 [data-reveal].in{opacity:1;transform:none}
@@ -206,6 +209,71 @@ section > h2, section > .lead, .game-grid, .tabs, .video-grid, .cards, .parents-
 footer{background:var(--ink);color:var(--g200);text-align:center;padding:2.5rem 1rem;font-weight:700}
 footer a{color:var(--lime2)}
 #confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:90}
+
+/* ---------- phone layout ---------- */
+.tabbar{display:none}
+@media (max-width:760px){
+  body{padding-bottom:calc(66px + env(safe-area-inset-bottom))}
+  .nav{padding:.5rem .9rem}
+  .brand{font-size:1.2rem}.brand-coin{width:32px;height:32px}
+  .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:55;display:grid;grid-template-columns:repeat(5,1fr);gap:2px;background:var(--ink);border-top:3px solid var(--g600);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+  .tabbar a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:52px;color:var(--g200);text-decoration:none;font-weight:800;font-size:.68rem;letter-spacing:.02em;border-radius:14px;transition:background .15s,color .15s}
+  .tabbar a span{font-size:1.4rem;line-height:1}
+  .tabbar a.active{color:var(--lime2);background:var(--g800)}
+  .hero{min-height:auto}
+  .hero-inner{padding:1.25rem 0 7.5rem;gap:.75rem}
+  .hero-art{max-width:240px}
+  .hero-art svg{filter:drop-shadow(0 8px 8px rgba(5,46,22,.25))}
+  .kicker{font-size:.72rem}
+  .title{font-size:clamp(2.5rem,13.5vw,3.8rem);text-shadow:0 3px 0 var(--g800),0 7px 0 rgba(5,46,22,.25)}
+  .tag{font-size:1.08rem;margin:.7rem auto 1.1rem}
+  .cta{flex-direction:column;align-items:stretch;gap:.7rem;padding:0 .5rem}
+  .btn-big{width:100%;font-size:1.2rem;padding:.95rem 1rem}
+  .hills svg{height:110px}
+  section{padding:2.4rem 1rem}
+  h2{font-size:2rem}
+  .lead{font-size:1.05rem;margin-bottom:1.1rem}
+  .dict{padding:1.1rem 1.2rem;transform:none}
+  .dict-word{font-size:1.9rem}
+  .dict ol{font-size:1.05rem}
+  .four-jars{gap:.7rem}.jar{padding:.8rem .5rem}.jar .e{font-size:2.2rem}.jar b{font-size:1.2rem}
+  .game-grid{gap:1.1rem}
+  .game{padding:1.1rem;gap:.7rem;box-shadow:4px 4px 0 var(--ink)}
+  .game h3{font-size:1.35rem}.game-emoji{font-size:1.7rem}
+  .game-how{font-size:.95rem}
+  .goal{padding:.5rem .85rem;font-size:.95rem}
+  .piggy-stage{grid-template-columns:1fr auto;align-items:center}
+  .piggy-svg{max-width:200px}
+  .piggy-total span{font-size:2.1rem}
+  .row.big .btn{font-size:1.3rem;padding:1rem .4rem}
+  .nw-emoji{font-size:4.2rem}
+  .nw-name{font-size:1.3rem}
+  .coin-tray{min-height:90px}
+  #coinAnswers .btn{font-size:1.15rem;padding:.8rem .4rem}
+  .link-btn{padding:.6rem 0;font-size:1rem}
+  .meter-out .stat b{font-size:1.45rem}
+  .chill-label{font-size:1.4rem}
+  .tower{height:80px}
+  .tabs{gap:.4rem}.tab{padding:.55rem .85rem;font-size:.9rem}
+  .video-grid{grid-template-columns:1fr;gap:1rem}
+  .vid .play span{width:60px;height:60px;font-size:1.5rem}
+  .cards{grid-template-columns:repeat(2,1fr);gap:.8rem}
+  .card{height:160px}
+  .face{padding:.7rem;box-shadow:4px 4px 0 var(--ink)}
+  .face.front{font-size:1.3rem}.face.front .e{font-size:2rem}
+  .face.back{font-size:.88rem;line-height:1.35}
+  .parents-inner{gap:.9rem}.pcard{padding:1rem}
+  footer{padding:2rem 1rem;font-size:.95rem}
+}
+@media (max-width:400px){
+  .piggy-stage{grid-template-columns:1fr}
+  .piggy-total{display:flex;align-items:baseline;justify-content:center;gap:.4rem}
+  .tabbar a{font-size:.62rem}
+}
+@media (hover:none){
+  .btn:hover{transform:none;box-shadow:var(--comic)}
+  .jar:hover,.vid:hover,.links a:hover,.goal:hover{transform:none}
+}
 
 /* ---------- motion ---------- */
 @keyframes drop{from{transform:translateY(-120px) rotate(-12deg);opacity:0}to{transform:none;opacity:1}}

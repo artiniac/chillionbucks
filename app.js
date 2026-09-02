@@ -103,8 +103,11 @@
 
   /* ---------------- scroll reveal ---------------- */
   {
-    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .08 });
-    $$('[data-reveal]').forEach(el => io.observe(el));
+    if (!('IntersectionObserver' in window)) { $$('[data-reveal]').forEach(el => el.classList.add('in')); }
+    else {
+      const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .05 });
+      $$('[data-reveal]').forEach(el => io.observe(el));
+    }
   }
 
   /* ---------------- confetti ---------------- */
@@ -353,6 +356,16 @@
       });
     }
     renderTabs(); renderGrid();
+  })();
+
+  /* ---------------- phone tab bar: highlight the section on screen ---------------- */
+  (function tabbar() {
+    const links = $$('.tabbar a'); if (!links.length) return;
+    const byId = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+    const io = new IntersectionObserver(es => {
+      es.forEach(e => { if (e.isIntersecting) { links.forEach(a => a.classList.remove('active')); const a = byId.get(e.target.id); if (a) a.classList.add('active'); } });
+    }, { rootMargin: '-45% 0px -45% 0px' });
+    byId.forEach((_, id) => { const el = document.getElementById(id); if (el) io.observe(el); });
   })();
 
   /* ---------------- glossary flip cards ---------------- */

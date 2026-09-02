@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Chillion Bucks</title>
 <meta name="description" content="Chillion Bucks is Leo's money site for kids: games, videos, and chill words that teach saving, spending, earning, and growing money. Free, no ads, no accounts.">
 <meta name="theme-color" content="#052e16">
@@ -41,7 +41,7 @@
 
 <main id="top">
 
-<section class="hero">
+<section class="hero" id="home">
   <canvas id="coinRain" aria-hidden="true"></canvas>
   <div class="sun" aria-hidden="true"></div>
   <div class="hills" aria-hidden="true">
@@ -276,6 +276,14 @@
 <footer>
   Made with 💚 by Leo (almost 5) and his dad · <a href="https://chillionbucks.com">chillionbucks.com</a>
 </footer>
+
+<nav class="tabbar" aria-label="Sections">
+  <a href="#home" data-tab="home"><span aria-hidden="true">😎</span>Home</a>
+  <a href="#play" data-tab="play"><span aria-hidden="true">🎮</span>Play</a>
+  <a href="#watch" data-tab="watch"><span aria-hidden="true">▶</span>Watch</a>
+  <a href="#learn" data-tab="learn"><span aria-hidden="true">💡</span>Learn</a>
+  <a href="#parents" data-tab="parents"><span aria-hidden="true">👨‍👩‍👦</span>Grown-ups</a>
+</nav>
 
 <canvas id="confetti" aria-hidden="true"></canvas>
 <script src="videos.js"></script>
