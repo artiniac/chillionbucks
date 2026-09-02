@@ -1,6 +1,7 @@
 # Publishes this static site to GitHub Pages on every push to main.
-# First run: turns Pages ON for the repo (enablement) and points it at the
-# custom domain, so the only manual step left is DNS at the registrar.
+# First run turns Pages ON for the repo (enablement) and deploys. The custom
+# domain and Enforce HTTPS are set once by hand under Settings > Pages; GitHub
+# does not let a workflow token change those.
 name: Deploy to GitHub Pages
 on:
   push:
@@ -32,13 +33,3 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
-      - name: Set the custom domain (chillionbucks.com) and enforce HTTPS once the certificate exists
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh api -X PUT "repos/${{ github.repository }}/pages" -f cname="chillionbucks.com" \
-            && echo "custom domain set to chillionbucks.com" \
-            || echo "could not set the custom domain automatically; set it under Settings > Pages"
-          gh api -X PUT "repos/${{ github.repository }}/pages" -F https_enforced=true \
-            && echo "HTTPS enforced" \
-            || echo "HTTPS enforcement waits for the certificate; it retries on the next deploy"

@@ -41,8 +41,9 @@ It prints `ok` for each live video and `BAD` for any that were removed or made p
 ## Deploying to chillionbucks.com (GitHub Pages)
 
 1. Push this folder to its own GitHub repo (`artiniac/chillionbucks`).
-2. Nothing to click: `.github/workflows/pages.yml` runs on the first push, enables GitHub Pages, deploys the site, and sets the custom domain to `chillionbucks.com`. Watch it under the repo's **Actions** tab (about a minute). Fallback if it cannot flip the switch: **Settings → Pages → Source: GitHub Actions**, then type `chillionbucks.com` under Custom domain.
-3. At the registrar where you bought chillionbucks.com, add these DNS records (remove any existing A or parking record on `@` first):
+2. `.github/workflows/pages.yml` runs on the first push, enables GitHub Pages, and deploys the site (about a minute; watch the repo's **Actions** tab). It is live at `https://artiniac.github.io/chillionbucks/` right away.
+3. Once, by hand: **Settings → Pages → Custom domain**, type `chillionbucks.com`, Save. When the certificate appears (5 to 30 minutes), tick **Enforce HTTPS** on the same page. GitHub does not allow a workflow to set either of these.
+4. At the registrar where you bought chillionbucks.com, add these DNS records (remove any existing A or parking record on `@` first):
 
    | Type | Host | Value |
    |---|---|---|
