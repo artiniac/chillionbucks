@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>Chillion Builder</title>
+<meta name="description" content="Build your world: take a picture of your room or pick a scene, then spend the bucks you saved on pools, aquariums, boats, roller coasters, and anything else you can imagine.">
+<meta name="theme-color" content="#052e16">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="builder.css">
+</head>
+<body class="builder-page">
+
+<header class="bbar">
+  <a class="back" href="index.html#play" aria-label="Back to the games">← Games</a>
+  <div class="bbrand">🏗️ <span>Chillion Builder</span></div>
+  <div class="wallet" id="wallet" title="Your saved bucks">💰 <b id="walletAmt">$0</b></div>
+  <button id="soundBtn" class="sound" aria-pressed="true" aria-label="Toggle sound">🔊</button>
+</header>
+
+<main class="build">
+  <div class="stage-wrap">
+    <div class="stage" id="stage">
+      <div class="bg" id="bg" aria-hidden="true"></div>
+      <canvas class="draw" id="draw" aria-label="Drawing layer"></canvas>
+      <div class="items" id="items"></div>
+      <div class="hint" id="hint">👇 Tap a sticker below to buy it, then drag it anywhere!</div>
+    </div>
+    <div class="tools" id="tools" hidden>
+      <button type="button" data-act="bigger">🔍➕<small>Bigger</small></button>
+      <button type="button" data-act="smaller">🔍➖<small>Smaller</small></button>
+      <button type="button" data-act="flip">↔️<small>Flip</small></button>
+      <button type="button" data-act="front">⬆️<small>Front</small></button>
+      <button type="button" data-act="back">⬇️<small>Back</small></button>
+      <button type="button" data-act="sell" class="danger">💸<small>Sell $<span id="sellPrice">0</span></small></button>
+    </div>
+  </div>
+
+  <div class="actions" id="actions">
+    <button type="button" id="sceneBtn">🖼️<small>Scene</small></button>
+    <button type="button" id="photoBtn">📷<small>My room</small></button>
+    <button type="button" id="drawBtn">✏️<small>Draw</small></button>
+    <button type="button" id="undoBtn">↩️<small>Undo</small></button>
+    <button type="button" id="surpriseBtn">🎲<small>Surprise</small></button>
+    <button type="button" id="snapBtn">📸<small>Save pic</small></button>
+    <button type="button" id="newBtn">🧹<small>Start over</small></button>
+    <input type="file" id="photoInput" accept="image/*" hidden>
+  </div>
+
+  <div class="drawbar" id="drawbar" hidden>
+    <div class="colors" id="colors"></div>
+    <div class="sizes"><button type="button" data-size=".006" aria-label="Thin brush"><i style="width:6px;height:6px"></i></button><button type="button" data-size=".014" class="on" aria-label="Medium brush"><i style="width:12px;height:12px"></i></button><button type="button" data-size=".03" aria-label="Thick brush"><i style="width:20px;height:20px"></i></button></div>
+    <button type="button" class="eraser" id="eraserBtn">🧽 Eraser</button>
+    <button type="button" class="done" id="drawDone">✓ Done drawing</button>
+  </div>
+
+  <section class="shop" aria-label="Sticker shop">
+    <div class="cats" id="cats" role="tablist"></div>
+    <div class="shelf" id="shelf"></div>
+    <p class="need-bucks" id="needBucks" hidden>Need more bucks? <a href="index.html#play">Drag coins into the piggy 🐷</a></p>
+  </section>
+</main>
+
+<div class="sheet" id="sceneSheet" hidden>
+  <div class="sheet-card">
+    <h2>Pick a place</h2>
+    <div class="scenes" id="scenes"></div>
+    <div class="row">
+      <button type="button" class="btn btn-alt" id="sheetPhoto">📷 Use a photo of my room</button>
+      <button type="button" class="btn" id="sceneClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet" id="snapSheet" hidden>
+  <div class="sheet-card">
+    <h2>Your world 📸</h2>
+    <img id="snapImg" alt="A picture of the world you built">
+    <p class="tiny">Press and hold the picture to save or share it. On a computer, right-click it.</p>
+    <div class="row"><button type="button" class="btn" id="snapClose">Close</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script src="sfx.js"></script>
+<script src="wallet.js"></script>
+<script src="builder.js"></script>
+</body>
+</html>

@@ -210,13 +210,66 @@ footer{background:var(--ink);color:var(--g200);text-align:center;padding:2.5rem 
 footer a{color:var(--lime2)}
 #confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:90}
 
+/* ---------- piggy: drag the coins ---------- */
+.piggy-stage.drag{grid-template-columns:auto 1fr auto;gap:.6rem;align-items:center}
+.dtray{display:flex;flex-direction:column;gap:.35rem;background:var(--mint);border:3px solid var(--ink);border-radius:16px;padding:.5rem;min-height:0;justify-content:center}
+.dtray::before{content:'Drag me →';font-size:.7rem;font-weight:800;color:var(--g700);text-align:center;letter-spacing:.04em}
+.dcoin{width:52px;height:52px;border-radius:50%;border:3px solid var(--gold3);background:radial-gradient(circle at 35% 35%,#fde68a,var(--gold) 55%,var(--gold3));color:var(--gold3);font-weight:900;font-family:var(--font-display);font-size:1.05rem;display:grid;place-items:center;cursor:grab;box-shadow:inset 0 -4px 0 rgba(0,0,0,.15),0 3px 0 var(--gold3);touch-action:none;user-select:none;-webkit-user-select:none;padding:0;animation:coinbob 2.4s ease-in-out infinite;animation-delay:calc(var(--i,0) * -.4s);transition:transform .15s,opacity .2s}
+.dcoin:hover{transform:scale(1.08)}
+.dcoin.lifted{opacity:.25;transform:scale(.9)}
+.dcoin.spent{opacity:.15;transform:scale(.6);animation:none;cursor:default}
+.dcoin.refill{animation:coinrefill .5s cubic-bezier(.2,1.6,.4,1) both}
+.dcoin.nudge{animation:coinnudge .5s ease}
+.dcoin.ghost{position:fixed;z-index:70;transform:translate(-50%,-50%) scale(1.15);pointer-events:none;cursor:grabbing;animation:none;box-shadow:0 12px 24px rgba(5,46,22,.35),inset 0 -4px 0 rgba(0,0,0,.15)}
+.piggy-wrap{position:relative;display:grid;place-items:center}
+.drop-glow{position:absolute;inset:-6%;border-radius:50%;background:radial-gradient(circle,rgba(253,224,71,.55),rgba(253,224,71,0) 70%);opacity:0;transition:opacity .2s;pointer-events:none}
+.piggy-wrap.hot .drop-glow{opacity:1;animation:pulse 1s ease-in-out infinite}
+.piggy-wrap.hot .piggy-svg{transform:scale(calc(var(--fat,1) * 1.06))}
+.piggy-svg{transform:scale(var(--fat,1));transform-origin:50% 90%;transition:transform .25s}
+.piggy-svg.gulp{animation:gulp .45s cubic-bezier(.3,1.5,.5,1)}
+.piggy-svg.dance{animation:dance .6s ease-in-out 4}
+.piggy-slot{transition:fill .15s}
+.piggy-wrap.hot .piggy-slot{fill:#fbbf24}
+.piggy-tail{transform-origin:28px 78px;animation:tailwag 1.6s ease-in-out infinite}
+.piggy-wrap.hot .piggy-tail{animation-duration:.35s}
+.spark{position:fixed;z-index:80;font-size:1.3rem;pointer-events:none;transform:translate(-50%,-50%)}
+.floaty{position:fixed;z-index:80;font-family:var(--font-display);font-weight:700;font-size:1.6rem;color:var(--g700);text-shadow:0 2px 0 #fff;pointer-events:none;transform:translate(-50%,-50%)}
+.game-msg.pop{animation:msgpop .4s cubic-bezier(.3,1.5,.5,1)}
+.row.between{justify-content:space-between;align-items:center}
+.btn-build{background:linear-gradient(180deg,#60a5fa,#2563eb)}
+.score.small{font-size:.85rem;color:#6b7280;font-weight:600}
+@keyframes coinbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes coinrefill{from{transform:scale(.3) rotate(-90deg);opacity:.2}to{transform:scale(1) rotate(0);opacity:1}}
+@keyframes coinnudge{0%,100%{transform:translateX(0)}25%{transform:translateX(8px) rotate(8deg)}75%{transform:translateX(-6px) rotate(-6deg)}}
+@keyframes gulp{0%{transform:scale(var(--fat,1))}35%{transform:scale(calc(var(--fat,1) * 1.12),calc(var(--fat,1) * .92))}70%{transform:scale(calc(var(--fat,1) * .96),calc(var(--fat,1) * 1.06))}100%{transform:scale(var(--fat,1))}}
+@keyframes dance{0%,100%{transform:scale(var(--fat,1)) rotate(0)}25%{transform:scale(calc(var(--fat,1) * 1.05)) rotate(-6deg) translateY(-8px)}75%{transform:scale(calc(var(--fat,1) * 1.05)) rotate(6deg) translateY(-8px)}}
+@keyframes tailwag{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(10deg)}}
+@keyframes msgpop{0%{transform:scale(.85)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
+@media (max-width:760px){
+  .piggy-stage.drag{grid-template-columns:auto 1fr;grid-template-areas:"tray pig" "total total"}
+  .dtray{grid-area:tray}.piggy-wrap{grid-area:pig}.piggy-total{grid-area:total}
+  .dcoin{width:46px;height:46px;font-size:.95rem}
+}
+@media (max-width:400px){.piggy-stage{grid-template-columns:auto 1fr}}
+
+/* ---------- builder teaser ---------- */
+.buildteaser{background:linear-gradient(180deg,#0c4a6e,#0369a1)}
+.buildteaser-inner{width:min(1150px,100%);margin:0 auto;display:grid;grid-template-columns:1.1fr .9fr;gap:2rem;align-items:center}
+.buildteaser h2{color:#fff}.buildteaser .lead{color:#bae6fd}
+.buildteaser .tiny{color:#bae6fd;font-size:.85rem;margin-top:.8rem;opacity:.85}
+.bt-scene{position:relative;height:260px;border-radius:var(--r);border:4px solid var(--ink);background:linear-gradient(180deg,#bae6fd 0 55%,#86efac 55%);overflow:hidden;box-shadow:var(--comic)}
+.bt-pool{position:absolute;left:12%;bottom:8%;width:52%;height:34%;border-radius:40%;background:radial-gradient(circle at 40% 40%,#7dd3fc,#0284c7);border:4px solid #e2e8f0;box-shadow:0 0 0 4px var(--ink)}
+.bt{position:absolute;font-size:2.6rem;animation:bob 3s ease-in-out infinite}
+.bt1{left:4%;bottom:38%;font-size:3.6rem}.bt2{left:28%;bottom:16%;animation-delay:-1s}.bt3{left:48%;bottom:20%;animation-delay:-.5s;font-size:2.2rem}.bt4{right:6%;bottom:30%;font-size:3.4rem;animation-delay:-2s}.bt5{right:14%;top:8%;animation-delay:-1.5s}.bt6{left:70%;bottom:6%;animation-delay:-.8s}
+@media (max-width:860px){.buildteaser-inner{grid-template-columns:1fr}.bt-scene{height:200px}}
+
 /* ---------- phone layout ---------- */
 .tabbar{display:none}
 @media (max-width:760px){
   body{padding-bottom:calc(66px + env(safe-area-inset-bottom))}
   .nav{padding:.5rem .9rem}
   .brand{font-size:1.2rem}.brand-coin{width:32px;height:32px}
-  .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:55;display:grid;grid-template-columns:repeat(5,1fr);gap:2px;background:var(--ink);border-top:3px solid var(--g600);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+  .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:55;display:grid;grid-template-columns:repeat(6,1fr);gap:2px;background:var(--ink);border-top:3px solid var(--g600);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
   .tabbar a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:52px;color:var(--g200);text-decoration:none;font-weight:800;font-size:.68rem;letter-spacing:.02em;border-radius:14px;transition:background .15s,color .15s}
   .tabbar a span{font-size:1.4rem;line-height:1}
   .tabbar a.active{color:var(--lime2);background:var(--g800)}
@@ -241,7 +294,8 @@ footer a{color:var(--lime2)}
   .game{padding:1.1rem;gap:.7rem;box-shadow:4px 4px 0 var(--ink)}
   .game h3{font-size:1.35rem}.game-emoji{font-size:1.7rem}
   .game-how{font-size:.95rem}
-  .goal{padding:.5rem .85rem;font-size:.95rem}
+  .goal-row{display:grid;grid-template-columns:1fr 1fr;gap:.45rem}
+  .goal{padding:.5rem .6rem;font-size:.9rem;text-align:center}
   .piggy-stage{grid-template-columns:1fr auto;align-items:center}
   .piggy-svg{max-width:200px}
   .piggy-total span{font-size:2.1rem}
@@ -268,7 +322,7 @@ footer a{color:var(--lime2)}
 @media (max-width:400px){
   .piggy-stage{grid-template-columns:1fr}
   .piggy-total{display:flex;align-items:baseline;justify-content:center;gap:.4rem}
-  .tabbar a{font-size:.62rem}
+  .tabbar a{font-size:.58rem}
 }
 @media (hover:none){
   .btn:hover{transform:none;box-shadow:var(--comic)}

@@ -1,4 +1,5 @@
-/* Chillion Bucks: all the fun lives here. Plain JavaScript, no build step, no libraries. */
+/* Chillion Bucks: all the fun lives here. Plain JavaScript, no build step, no libraries.
+   Shared pieces: sfx.js (sounds) and wallet.js (the bucks saved in the piggy, spent in the Builder). */
 (() => {
   'use strict';
   const $ = (s, r = document) => r.querySelector(s);
@@ -8,32 +9,9 @@
   const shuffle = a => { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const money = n => '$' + Math.round(n).toLocaleString('en-US');
+  const SFX = window.SFX, Wallet = window.Wallet;
 
-  /* ---------------- sound (synthesized, no audio files) ---------------- */
-  let soundOn = localStorage.getItem('cb:sound') !== 'off';
-  let actx = null;
-  function tone(freq, dur = .12, type = 'sine', gain = .07, when = 0) {
-    if (!soundOn) return;
-    try {
-      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
-      if (actx.state === 'suspended') actx.resume();
-      const o = actx.createOscillator(), g = actx.createGain();
-      o.type = type; o.frequency.value = freq;
-      o.connect(g).connect(actx.destination);
-      const t = actx.currentTime + when;
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(gain, t + .01);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      o.start(t); o.stop(t + dur + .02);
-    } catch (e) { /* no audio, no problem */ }
-  }
-  const ding = () => { tone(880, .08); tone(1320, .14, 'sine', .07, .08); };
-  const buzz = () => tone(150, .2, 'square', .04);
-  const fanfare = () => [523, 659, 784, 1046].forEach((f, i) => tone(f, .2, 'triangle', .07, i * .09));
-  const soundBtn = $('#soundBtn');
-  function paintSound() { soundBtn.textContent = soundOn ? '🔊' : '🔇'; soundBtn.setAttribute('aria-pressed', soundOn); }
-  soundBtn.addEventListener('click', () => { soundOn = !soundOn; localStorage.setItem('cb:sound', soundOn ? 'on' : 'off'); paintSound(); if (soundOn) ding(); });
-  paintSound();
+  SFX.bind($('#soundBtn'));
 
   /* ---------------- coin rain in the hero ---------------- */
   (function coinRain() {
@@ -56,11 +34,8 @@
     function draw() {
       ctx.clearRect(0, 0, W, H);
       for (const c of coins) {
-        ctx.save();
-        ctx.translate(c.x, c.y);
-        ctx.globalAlpha = c.alpha;
-        const sx = Math.max(.15, Math.abs(Math.cos(c.a)));
-        ctx.scale(sx, 1);
+        ctx.save(); ctx.translate(c.x, c.y); ctx.globalAlpha = c.alpha;
+        const sx = Math.max(.15, Math.abs(Math.cos(c.a))); ctx.scale(sx, 1);
         const g = ctx.createRadialGradient(-c.r * .3, -c.r * .3, c.r * .1, 0, 0, c.r);
         g.addColorStop(0, '#fef3c7'); g.addColorStop(.6, '#fbbf24'); g.addColorStop(1, '#b45309');
         ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, c.r, 0, Math.PI * 2); ctx.fill();
@@ -70,35 +45,18 @@
       }
     }
     function step() {
-      for (const c of coins) {
-        c.y += c.vy; c.a += c.va; c.sw += .02; c.x += Math.sin(c.sw) * .4;
-        if (c.y > H + 40) Object.assign(c, mk(true));
-      }
-      draw();
-      raf = requestAnimationFrame(step);
+      for (const c of coins) { c.y += c.vy; c.a += c.va; c.sw += .02; c.x += Math.sin(c.sw) * .4; if (c.y > H + 40) Object.assign(c, mk(true)); }
+      draw(); raf = requestAnimationFrame(step);
     }
-    addEventListener('resize', resize, { passive: true });
-    resize();
-    if (!reduced) {
-      // pause when the hero is off screen
-      new IntersectionObserver(([e]) => {
-        if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(step); }
-        else if (raf) { cancelAnimationFrame(raf); raf = null; }
-      }).observe(cv);
-    }
+    addEventListener('resize', resize, { passive: true }); resize();
+    if (!reduced) new IntersectionObserver(([e]) => { if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(step); } else if (raf) { cancelAnimationFrame(raf); raf = null; } }).observe(cv);
   })();
 
   /* ---------------- bouncy title ---------------- */
   (function title() {
     const t = $('#heroTitle'); if (!t) return;
-    const words = t.textContent.trim().split(/\s+/);
-    t.textContent = '';
-    let i = 0;
-    words.forEach(w => {
-      const ws = document.createElement('span'); ws.className = 'w';
-      [...w].forEach(ch => { const s = document.createElement('span'); s.className = 'l'; s.textContent = ch; s.style.setProperty('--d', (i++ * .06) + 's'); ws.appendChild(s); });
-      t.appendChild(ws);
-    });
+    const words = t.textContent.trim().split(/\s+/); t.textContent = ''; let i = 0;
+    words.forEach(w => { const ws = document.createElement('span'); ws.className = 'w'; [...w].forEach(ch => { const s = document.createElement('span'); s.className = 'l'; s.textContent = ch; s.style.setProperty('--d', (i++ * .06) + 's'); ws.appendChild(s); }); t.appendChild(ws); });
   })();
 
   /* ---------------- scroll reveal ---------------- */
@@ -116,8 +74,7 @@
     let parts = [], raf = null;
     const cols = ['#22c55e', '#a3e635', '#fbbf24', '#4ade80', '#ffffff', '#f472b6'];
     function tick() {
-      ctx.clearRect(0, 0, cv.width, cv.height);
-      parts = parts.filter(p => p.life > 0);
+      ctx.clearRect(0, 0, cv.width, cv.height); parts = parts.filter(p => p.life > 0);
       for (const p of parts) {
         p.vy += .35; p.x += p.vx; p.y += p.vy; p.vx *= .99; p.rot += p.vr; p.life--;
         ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.globalAlpha = Math.min(1, p.life / 30);
@@ -125,15 +82,16 @@
       }
       if (parts.length) raf = requestAnimationFrame(tick); else { raf = null; ctx.clearRect(0, 0, cv.width, cv.height); }
     }
-    return function burst(n = 140) {
+    return function burst(n = 140, at) {
       if (reduced) return;
       cv.width = innerWidth; cv.height = innerHeight;
-      for (let i = 0; i < n; i++) parts.push({ x: innerWidth / 2 + (Math.random() - .5) * 240, y: innerHeight * .45, vx: (Math.random() - .5) * 14, vy: -(6 + Math.random() * 10), r: 5 + Math.random() * 6, c: cols[i % cols.length], rot: Math.random() * 6, vr: (Math.random() - .5) * .3, life: 110 + Math.random() * 40 });
+      const ox = at ? at.x : innerWidth / 2, oy = at ? at.y : innerHeight * .45;
+      for (let i = 0; i < n; i++) parts.push({ x: ox + (Math.random() - .5) * 120, y: oy, vx: (Math.random() - .5) * 14, vy: -(6 + Math.random() * 10), r: 5 + Math.random() * 6, c: cols[i % cols.length], rot: Math.random() * 6, vr: (Math.random() - .5) * .3, life: 110 + Math.random() * 40 });
       if (!raf) tick();
     };
   })();
 
-  /* ---------------- game 1: Piggy Bank Power ---------------- */
+  /* ---------------- game 1: Piggy Bank Power (drag the coins in!) ---------------- */
   (function piggy() {
     const GOALS = [
       { e: '🧸', n: 'Big Teddy', c: 25 }, { e: '🛴', n: 'Scooter', c: 50 },
@@ -143,17 +101,22 @@
       { e: '🍭', n: 'Candy', c: 3 }, { e: '🍦', n: 'Ice cream', c: 4 }, { e: '🎈', n: 'Balloon', c: 2 },
       { e: '🧃', n: 'Juice box', c: 2 }, { e: '🍩', n: 'Donut', c: 3 }, { e: '🎁', n: 'Mystery toy', c: 5 },
     ];
-    const CHEERS = ['Nice stack!', 'Keep going!', 'Saving is a superpower.', 'Chill level rising…', 'Ka-ching!', 'Future you says thanks.'];
-    let goal = GOALS[1], saved = 0, done = false, cur = null;
-    const goalRow = $('#goalRow'), amtEl = $('#piggyAmt'), barEl = $('#piggyBar'), labelEl = $('#piggyGoalLabel'),
-      msgEl = $('#piggyMsg'), tempt = $('#tempt'), btn = $('#piggyBtn'), svg = $('.piggy-svg');
-    const say = (t, bad) => { msgEl.textContent = t; msgEl.classList.toggle('bad', !!bad); };
+    const COMBO = ['Nice!', 'Sweet!', 'Great job!', 'Awesome!', 'Amazing!', 'On fire! 🔥', 'Unstoppable!', 'CHILLION MODE! 😎'];
+    const CHEERS = ['Saving is a superpower.', 'Future you says thanks.', 'Every buck counts!', 'Keep stacking!', 'Chill level rising…', 'You are a saver!'];
+    const stage = $('#piggyStage'); if (!stage) return;
+    const tray = $('#coinTray'), piggyEl = $('#piggyWrap'), svg = $('.piggy-svg'), pupil = $('#pupil'),
+      amtEl = $('#piggyAmt'), barEl = $('#piggyBar'), labelEl = $('#piggyGoalLabel'), msgEl = $('#piggyMsg'),
+      tempt = $('#tempt'), goalRow = $('#goalRow'), builderLink = $('#piggyBuild');
+    let goal = GOALS.find(g => g.n === Wallet.goal()) || GOALS[1];
+    let saved = Wallet.get(), done = saved >= goal.c, cur = null, combo = 0, lastDrop = 0, dragging = false;
+
+    const say = (t, bad) => { msgEl.textContent = t; msgEl.classList.toggle('bad', !!bad); msgEl.classList.remove('pop'); void msgEl.offsetWidth; msgEl.classList.add('pop'); };
     function renderGoals() {
       goalRow.innerHTML = '';
       GOALS.forEach(g => {
         const b = document.createElement('button'); b.className = 'goal'; b.type = 'button';
         b.textContent = `${g.e} ${g.n} $${g.c}`; b.setAttribute('aria-pressed', g === goal);
-        b.onclick = () => { goal = g; done = false; renderGoals(); update(); say(`New goal: ${g.e} ${g.n} for $${g.c}!`); };
+        b.onclick = () => { goal = g; Wallet.setGoal(g.n); done = saved >= goal.c; renderGoals(); update(); SFX.tap(); say(`New goal: ${g.e} ${g.n} for $${g.c}!`); };
         goalRow.appendChild(b);
       });
     }
@@ -161,103 +124,248 @@
       amtEl.textContent = '$' + saved;
       barEl.style.width = Math.min(100, saved / goal.c * 100) + '%';
       labelEl.textContent = saved >= goal.c ? `${goal.e} ${goal.n}: GOT IT! 🎉` : `${goal.e} ${goal.n}: $${saved} of $${goal.c}`;
+      svg.style.setProperty('--fat', (1 + Math.min(.14, saved / Math.max(goal.c, 1) * .14)).toFixed(3));
+      if (builderLink) builderLink.textContent = saved > 0 ? `🏗️ Spend your $${saved} in the Builder` : '🏗️ Open the Builder';
       if (saved >= goal.c && !done) {
-        done = true; fanfare(); confetti();
+        done = true; SFX.cheer(); confetti(220);
+        svg.classList.add('dance'); setTimeout(() => svg.classList.remove('dance'), 2400);
         say(`YOU DID IT! You saved $${goal.c} for the ${goal.n}! ${goal.e} Pick a new goal or keep stacking.`);
       }
     }
-    function fly(e) {
-      const box = svg.getBoundingClientRect();
-      const fromX = e.clientX || (box.left + box.width / 2), fromY = e.clientY || (box.top + box.height);
-      const toX = box.left + box.width * .45, toY = box.top + box.height * .2;
-      const c = document.createElement('div'); c.className = 'fly'; c.textContent = '$';
-      c.style.left = (fromX - 17) + 'px'; c.style.top = (fromY - 17) + 'px';
-      document.body.appendChild(c);
-      const anim = c.animate(
-        [{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${toX - fromX}px,${toY - fromY}px) scale(.35)`, opacity: .3 }],
-        { duration: reduced ? 1 : 420, easing: 'cubic-bezier(.2,.8,.3,1)' });
-      anim.onfinish = () => c.remove();
+    Wallet.setGoal(goal.n);
+
+    // ---- the coin tray: five coins, each one drags; a dropped coin refills a moment later ----
+    const N_COINS = 5;
+    for (let i = 0; i < N_COINS; i++) {
+      const c = document.createElement('button'); c.className = 'dcoin'; c.type = 'button'; c.textContent = '$1';
+      c.setAttribute('aria-label', 'A one-dollar coin. Drag it into the piggy, or press Enter to drop it in.');
+      c.style.setProperty('--i', i);
+      c.addEventListener('pointerdown', e => startDrag(e, c));
+      c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (!c.classList.contains('spent')) deposit(null, c); } });
+      c.addEventListener('click', e => { if (!dragging && !c.classList.contains('spent') && e.detail) { c.classList.remove('nudge'); void c.offsetWidth; c.classList.add('nudge'); say('Drag the coin into the piggy! 🐷👉'); } });
+      tray.appendChild(c);
     }
-    btn.addEventListener('click', e => {
+
+    const slotPoint = () => { const r = svg.getBoundingClientRect(); return { x: r.left + r.width * .455, y: r.top + r.height * .24 }; };
+    const overPiggy = (x, y) => { const r = piggyEl.getBoundingClientRect(); return x > r.left - 24 && x < r.right + 24 && y > r.top - 40 && y < r.bottom + 16; };
+    function eyesAt(x, y) {
+      if (!pupil) return;
+      const r = svg.getBoundingClientRect(); const ex = r.left + r.width * (160 / 220), ey = r.top + r.height * (72 / 170);
+      const a = Math.atan2(y - ey, x - ex); pupil.setAttribute('transform', `translate(${(Math.cos(a) * 2).toFixed(2)} ${(Math.sin(a) * 2).toFixed(2)})`);
+    }
+    const eyesRest = () => pupil && pupil.setAttribute('transform', '');
+
+    function startDrag(e, coin) {
+      if (coin.classList.contains('spent') || e.button > 0) return;
       if (!tempt.classList.contains('hidden')) { say('Decide first: spend or keep saving?'); return; }
-      saved++; ding(); fly(e);
-      svg.classList.remove('wiggle'); void svg.offsetWidth; svg.classList.add('wiggle');
+      e.preventDefault(); dragging = true;
+      const ghost = document.createElement('div'); ghost.className = 'dcoin ghost'; ghost.textContent = '$1';
+      document.body.appendChild(ghost);
+      const move = (x, y) => { ghost.style.left = x + 'px'; ghost.style.top = y + 'px'; const over = overPiggy(x, y); piggyEl.classList.toggle('hot', over); eyesAt(x, y); };
+      move(e.clientX, e.clientY); coin.classList.add('lifted'); SFX.whoosh();
+      const onMove = ev => move(ev.clientX, ev.clientY);
+      const onUp = ev => {
+        coin.removeEventListener('pointermove', onMove); coin.removeEventListener('pointerup', onUp); coin.removeEventListener('pointercancel', onUp);
+        try { coin.releasePointerCapture(ev.pointerId); } catch (err) {}
+        coin.classList.remove('lifted'); piggyEl.classList.remove('hot'); eyesRest();
+        setTimeout(() => { dragging = false; }, 0);
+        if (ev.type !== 'pointercancel' && overPiggy(ev.clientX, ev.clientY)) deposit(ghost, coin);
+        else flyBack(ghost, coin);
+      };
+      try { coin.setPointerCapture(e.pointerId); } catch (err) {}
+      coin.addEventListener('pointermove', onMove); coin.addEventListener('pointerup', onUp); coin.addEventListener('pointercancel', onUp);
+    }
+    function flyBack(ghost, coin) {
+      const r = coin.getBoundingClientRect(); const gx = parseFloat(ghost.style.left), gy = parseFloat(ghost.style.top);
+      const tx = r.left + r.width / 2 - gx, ty = r.top + r.height / 2 - gy;
+      ghost.animate([{ transform: 'translate(-50%,-50%) scale(1.15)' }, { transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(1)` }], { duration: reduced ? 1 : 320, easing: 'cubic-bezier(.3,1.4,.5,1)' }).onfinish = () => ghost.remove();
+      SFX.pop(); say(pick(['Almost! Drop it ON the piggy.', 'Aim for the piggy! 🐷', 'So close! Try again.']));
+    }
+    function deposit(ghost, coin) {
+      const sp = slotPoint();
+      if (ghost) {
+        const gx = parseFloat(ghost.style.left), gy = parseFloat(ghost.style.top);
+        ghost.animate([{ transform: 'translate(-50%,-50%) scale(1.15)', opacity: 1 }, { transform: `translate(calc(-50% + ${sp.x - gx}px), calc(-50% + ${sp.y - gy}px)) scale(.35) rotate(180deg)`, opacity: .2 }], { duration: reduced ? 1 : 260, easing: 'cubic-bezier(.2,.8,.3,1)' }).onfinish = () => ghost.remove();
+      }
+      // combo: drops within 3 seconds of each other climb the ladder
+      const now = performance.now(); combo = (now - lastDrop < 3000) ? Math.min(combo + 1, COMBO.length - 1) : 0; lastDrop = now;
+      saved++; Wallet.set(saved);
+      SFX.clink(combo); setTimeout(() => SFX.slurp(), 120);
+      svg.classList.remove('gulp'); void svg.offsetWidth; svg.classList.add('gulp');
+      sparkle(sp.x, sp.y); floatText('+$1', sp.x, sp.y);
+      // refill: the tray coin goes dark for a beat, then pops back
+      coin.classList.add('spent'); coin.disabled = true;
+      setTimeout(() => { coin.classList.remove('spent'); coin.disabled = false; coin.classList.remove('refill'); void coin.offsetWidth; coin.classList.add('refill'); }, 1100);
       update();
       if (saved < goal.c) {
-        if (saved % 10 === 0) showTempt();
-        else if (saved % 5 === 0) say(pick(CHEERS));
+        if (saved % 10 === 0) { SFX.levelUp(); confetti(70, sp); setTimeout(showTempt, 700); say(`$${saved}! Level up! 🎉`); }
+        else if (saved % 5 === 0) { SFX.levelUp(); confetti(50, sp); say(`$${saved} saved! ${pick(CHEERS)}`); }
+        else say(combo > 0 ? COMBO[combo] : pick(['Ka-ching!', 'Yes!', 'Into the piggy!', 'Cha-ching!']));
       }
-    });
-    function showTempt() {
-      cur = pick(TEMPTS);
-      $('#temptEmoji').textContent = cur.e;
-      $('#temptText').textContent = `${cur.n} for $${cur.c}!`;
-      $('#temptSpend').textContent = `Spend $${cur.c}`;
-      tempt.classList.remove('hidden');
-      say('Uh oh… temptation!');
     }
-    $('#temptSpend').onclick = () => { saved = Math.max(0, saved - cur.c); buzz(); tempt.classList.add('hidden'); say(`Yum! But now you’re $${cur.c} further from the ${goal.n}. ${goal.e}`, true); update(); };
-    $('#temptKeep').onclick = () => { saved += 1; ding(); tempt.classList.add('hidden'); say('Patience pays! Waiting earned you a bonus buck. 💚'); update(); };
-    $('#piggyReset').onclick = () => { saved = 0; done = false; tempt.classList.add('hidden'); update(); say('Tap tap tap!'); };
+    function sparkle(x, y) {
+      if (reduced) return;
+      for (let i = 0; i < 10; i++) {
+        const s = document.createElement('div'); s.className = 'spark'; s.textContent = pick(['✨', '⭐', '💛', '✨']);
+        s.style.left = x + 'px'; s.style.top = y + 'px'; document.body.appendChild(s);
+        const a = Math.random() * Math.PI * 2, d = 40 + Math.random() * 60;
+        s.animate([{ transform: 'translate(-50%,-50%) scale(.4)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * d}px), calc(-50% + ${Math.sin(a) * d - 30}px)) scale(1.2)`, opacity: 0 }], { duration: 650 + Math.random() * 300, easing: 'cubic-bezier(.2,.8,.3,1)' }).onfinish = () => s.remove();
+      }
+    }
+    function floatText(t, x, y) {
+      const f = document.createElement('div'); f.className = 'floaty'; f.textContent = t; f.style.left = x + 'px'; f.style.top = y + 'px'; document.body.appendChild(f);
+      f.animate([{ transform: 'translate(-50%,-50%) scale(.8)', opacity: 1 }, { transform: 'translate(-50%,-260%) scale(1.3)', opacity: 0 }], { duration: reduced ? 1 : 900, easing: 'ease-out' }).onfinish = () => f.remove();
+    }
+    function showTempt() {
+      if (saved >= goal.c) return;
+      cur = pick(TEMPTS);
+      $('#temptEmoji').textContent = cur.e; $('#temptText').textContent = `${cur.n} for $${cur.c}!`; $('#temptSpend').textContent = `Spend $${cur.c}`;
+      tempt.classList.remove('hidden'); say('Uh oh… temptation!');
+    }
+    $('#temptSpend').onclick = () => { saved = Math.max(0, saved - cur.c); Wallet.set(saved); SFX.buzz(); tempt.classList.add('hidden'); say(`Yum! But now you’re $${cur.c} further from the ${goal.n}. ${goal.e}`, true); update(); };
+    $('#temptKeep').onclick = () => { saved += 1; Wallet.set(saved); SFX.levelUp(); tempt.classList.add('hidden'); say('Patience pays! Waiting earned you a bonus buck. 💚'); confetti(40); update(); };
+    $('#piggyReset').onclick = () => { if (saved > 0 && !confirm(`Start over? This empties the piggy ($${saved}) and your Builder wallet.`)) return; saved = 0; done = false; combo = 0; Wallet.set(0); tempt.classList.add('hidden'); update(); say('Drag a coin into the piggy!'); };
+    document.addEventListener('wallet', e => { if (e.detail !== saved) { saved = e.detail; done = saved >= goal.c; update(); } });
+
+    const gain = Wallet.interest();
     renderGoals(); update();
+    if (gain) { say(`🌱 Baby money! Your savings made $${gain} while you were away.`); setTimeout(() => { SFX.levelUp(); confetti(60); }, 600); }
+    else say('Drag a coin into the piggy!');
   })();
 
-  /* ---------------- game 2: Need or Want ---------------- */
+  /* ---------------- game 2: Need or Want (100 cards) ---------------- */
   (function needWant() {
+    const N = 'need', W = 'want';
     const ITEMS = [
-      { e: '🍎', n: 'An apple', a: 'need', w: 'Food keeps your body going.' },
-      { e: '🧸', n: 'A new teddy bear', a: 'want', w: 'Fun to have, but you can live without it.' },
-      { e: '💧', n: 'Water', a: 'need', w: 'Your body needs water every single day.' },
-      { e: '🍦', n: 'Ice cream', a: 'want', w: 'Yummy treat, not a must-have.' },
-      { e: '🏠', n: 'A home', a: 'need', w: 'Everyone needs a safe place to sleep.' },
-      { e: '🎮', n: 'A video game', a: 'want', w: 'Super fun, and totally a want.' },
-      { e: '🧥', n: 'A warm coat in winter', a: 'need', w: 'Staying warm keeps you healthy.' },
-      { e: '🍭', n: 'A lollipop', a: 'want', w: 'Sweet! And definitely a want.' },
-      { e: '🪥', n: 'A toothbrush', a: 'need', w: 'Healthy teeth are a must.' },
-      { e: '🚀', n: 'A rocket toy', a: 'want', w: 'Blast off… into the want pile.' },
-      { e: '👟', n: 'Shoes that fit', a: 'need', w: 'Your feet need protecting.' },
-      { e: '🎈', n: 'A balloon', a: 'want', w: 'Fun for a day, not a need.' },
-      { e: '💊', n: 'Medicine when you’re sick', a: 'need', w: 'Getting better matters.' },
-      { e: '🍕', n: 'Pizza every Friday', a: 'want', w: 'Food is a need, but pizza EVERY Friday is a want.' },
-      { e: '📚', n: 'School books', a: 'need', w: 'Learning helps you grow.' },
-      { e: '🐶', n: 'A puppy', a: 'want', w: 'Adorable, and a big responsibility. A want.' },
-      { e: '🥦', n: 'Vegetables', a: 'need', w: 'Healthy food is a need (yes, even broccoli).' },
-      { e: '🎂', n: 'A giant birthday cake', a: 'want', w: 'Delicious want!' },
-      { e: '🛏️', n: 'A bed to sleep in', a: 'need', w: 'Sleep is how you grow and recharge.' },
-      { e: '🎧', n: 'Fancy headphones', a: 'want', w: 'Cool, but a want.' },
-    ];
+      ['🍎', 'An apple', N, 'Food keeps your body going.'],
+      ['💧', 'Water', N, 'Your body needs water every single day.'],
+      ['🏠', 'A home', N, 'Everyone needs a safe place to sleep.'],
+      ['🧥', 'A warm coat in winter', N, 'Staying warm keeps you healthy.'],
+      ['🪥', 'A toothbrush', N, 'Healthy teeth are a must.'],
+      ['👟', 'Shoes that fit', N, 'Your feet need protecting.'],
+      ['💊', 'Medicine when you’re sick', N, 'Getting better matters.'],
+      ['📚', 'School books', N, 'Learning helps you grow.'],
+      ['🥦', 'Vegetables', N, 'Healthy food is a need (yes, even broccoli).'],
+      ['🛏️', 'A bed to sleep in', N, 'Sleep is how you grow and recharge.'],
+      ['🧼', 'Soap', N, 'Clean hands keep germs away.'],
+      ['🥛', 'Milk', N, 'Drinks that help you grow strong.'],
+      ['🍞', 'Bread', N, 'Everyday food fills your belly.'],
+      ['🧦', 'Socks', N, 'Warm, dry feet every day.'],
+      ['👕', 'A plain T-shirt', N, 'Clothes to wear are a need.'],
+      ['🩹', 'A bandage for a cut', N, 'Taking care of an ouch matters.'],
+      ['🍌', 'A banana', N, 'Healthy snacks power your day.'],
+      ['🥚', 'Eggs', N, 'Food for growing bodies.'],
+      ['🍚', 'Rice', N, 'Everyday food is a need.'],
+      ['🧴', 'Sunscreen at the beach', N, 'Protecting your skin is a need.'],
+      ['🪮', 'A hairbrush', N, 'Taking care of yourself is a need.'],
+      ['🚌', 'A ride to school', N, 'Getting to school matters.'],
+      ['👓', 'Glasses if you can’t see well', N, 'Seeing clearly is a need.'],
+      ['🧑‍⚕️', 'A doctor checkup', N, 'Staying healthy is a need.'],
+      ['🦷', 'A dentist visit', N, 'Healthy teeth need a checkup.'],
+      ['🧣', 'A blanket on a cold night', N, 'Staying warm keeps you healthy.'],
+      ['🚰', 'A sink to wash your hands', N, 'Clean hands fight germs.'],
+      ['🧻', 'Toilet paper', N, 'Definitely a need!'],
+      ['🍲', 'Soup when you’re sick', N, 'Food that helps you get better.'],
+      ['🎒', 'A backpack for school', N, 'Carrying your books is a need.'],
+      ['✏️', 'A pencil for school', N, 'You need something to write with.'],
+      ['🧢', 'A hat on a sunny day', N, 'Protecting your head from the sun.'],
+      ['🪑', 'A chair at the table', N, 'A place to sit and eat.'],
+      ['🔑', 'A key to your house', N, 'Getting home safe is a need.'],
+      ['🚿', 'A shower or bath', N, 'Staying clean keeps you healthy.'],
+      ['🧀', 'Cheese', N, 'Food that helps you grow.'],
+      ['🥕', 'Carrots', N, 'Healthy food for a growing body.'],
+      ['🩺', 'Help from a nurse when hurt', N, 'Getting care matters.'],
+      ['💡', 'A light at night', N, 'Seeing where you walk is a need.'],
+      ['🧤', 'Gloves when it’s freezing', N, 'Warm hands are a need.'],
+      ['🥤', 'Water on a hot day', N, 'Staying hydrated is a need.'],
+      ['🏫', 'A school to learn at', N, 'Learning helps you grow.'],
+      ['🚑', 'An ambulance in an emergency', N, 'Help when you’re hurt is a need.'],
+      ['🍽️', 'Dinner', N, 'Everyone needs to eat dinner.'],
+      ['🩲', 'Underwear', N, 'Yes, you need it.'],
+      ['🧸', 'A new teddy bear', W, 'Fun to have, but you can live without it.'],
+      ['🍦', 'Ice cream', W, 'Yummy treat, not a must-have.'],
+      ['🎮', 'A video game', W, 'Super fun, and totally a want.'],
+      ['🍭', 'A lollipop', W, 'Sweet! And definitely a want.'],
+      ['🚀', 'A rocket toy', W, 'Blast off… into the want pile.'],
+      ['🎈', 'A balloon', W, 'Fun for a day, not a need.'],
+      ['🍕', 'Pizza every Friday', W, 'Food is a need, but pizza EVERY Friday is a want.'],
+      ['🐶', 'A puppy', W, 'Adorable, and a big responsibility. A want.'],
+      ['🎂', 'A giant birthday cake', W, 'Delicious want!'],
+      ['🎧', 'Fancy headphones', W, 'Cool, but a want.'],
+      ['🍫', 'A chocolate bar', W, 'Sweet treat, not a need.'],
+      ['🎢', 'A trip to a theme park', W, 'Super fun day, still a want.'],
+      ['🚲', 'A brand-new bike when yours works', W, 'Your old one still rides!'],
+      ['👑', 'A sparkly crown', W, 'Fun to wear, not a need.'],
+      ['🎁', 'A present just because', W, 'Presents are wants.'],
+      ['🍩', 'A donut', W, 'Yummy want.'],
+      ['🧁', 'Cupcakes', W, 'Treats are wants.'],
+      ['🏰', 'A giant castle playset', W, 'Amazing, but a want.'],
+      ['🛹', 'A skateboard', W, 'Fun ride, still a want.'],
+      ['🎸', 'An electric guitar', W, 'Rock on… in the want pile.'],
+      ['📱', 'The newest phone', W, 'Wants can be shiny.'],
+      ['🕶️', 'Cool sunglasses', W, 'Fun, but a want.'],
+      ['🪁', 'A kite', W, 'Fun on a windy day, not a need.'],
+      ['🎪', 'Circus tickets', W, 'A fun show is a want.'],
+      ['🍿', 'Movie popcorn', W, 'A snack at the movies is a want.'],
+      ['🦖', 'A dinosaur toy', W, 'RAWR… a want.'],
+      ['🎨', 'A giant art set when you have crayons', W, 'Your crayons still work!'],
+      ['🏎️', 'A remote-control car', W, 'Fun to zoom, still a want.'],
+      ['🧃', 'Juice box instead of water', W, 'Water does the job; juice is a want.'],
+      ['🎠', 'A pony ride', W, 'Fun for a day, not a need.'],
+      ['🍬', 'A bag of candy', W, 'Sweet want.'],
+      ['🛴', 'A scooter', W, 'Fun ride, not a need.'],
+      ['🐻', 'A second teddy bear', W, 'One is already plenty!'],
+      ['✨', 'Light-up sneakers when your shoes fit', W, 'Shoes are a need; the lights are a want.'],
+      ['🎬', 'Going to the movies', W, 'Fun, but a want.'],
+      ['🍔', 'A burger from a restaurant', W, 'Eating out is a want.'],
+      ['🐠', 'A pet fish', W, 'Cute, and a want.'],
+      ['🎹', 'A piano', W, 'Music is wonderful, and a want.'],
+      ['🏄', 'A surfboard', W, 'Cowabunga… a want.'],
+      ['🧩', 'Another puzzle', W, 'Fun, but a want.'],
+      ['🍨', 'A sundae with sprinkles', W, 'A treat is a want.'],
+      ['🪀', 'A yo-yo', W, 'Fun little want.'],
+      ['🎯', 'A dartboard', W, 'Game time is a want.'],
+      ['🚁', 'A toy helicopter', W, 'Fun flyer, still a want.'],
+      ['🌮', 'Tacos from a food truck', W, 'Food is a need, but takeout is a want.'],
+      ['🍪', 'Cookies', W, 'Yummy want.'],
+      ['🎤', 'A karaoke machine', W, 'Fun, but a want.'],
+      ['🛶', 'A canoe', W, 'Cool adventure, still a want.'],
+      ['🧑‍🚀', 'An astronaut costume', W, 'Fun to wear, not a need.'],
+      ['🏀', 'A new basketball when yours bounces fine', W, 'Your old one works!'],
+      ['🪆', 'A collectible toy', W, 'Fun to collect, still a want.'],
+      ['🎿', 'A ski trip', W, 'Fun trip, not a need.'],
+      ['🥤', 'A giant soda', W, 'A sugary drink is a want.'],
+      ['🎲', 'A new board game', W, 'Fun with friends, still a want.'],
+      ['🐈', 'A kitten', W, 'Cute, and a big responsibility. A want.'],
+    ].map(([e, n, a, w], i) => ({ id: i, e, n, a, w }));
     let deck = [], idx = 0, score = 0, streak = 0, locked = false;
+    let used = new Set();
     const card = $('#nwCard'), msg = $('#nwMsg'), bNeed = $('#nwNeed'), bWant = $('#nwWant');
+    if (!card) return;
     const say = (t, bad) => { msg.textContent = t; msg.classList.toggle('bad', !!bad); };
-    function show() {
-      const it = deck[idx];
-      card.style.animation = 'none'; void card.offsetWidth; card.style.animation = '';
-      $('#nwEmoji').textContent = it.e; $('#nwName').textContent = it.n;
+    $('#nwPool').textContent = ITEMS.length;
+    function draw10() {
+      let pool = ITEMS.filter(it => !used.has(it.id));
+      if (pool.length < 10) { used = new Set(); pool = ITEMS; }
+      const d = shuffle(pool).slice(0, 10); d.forEach(it => used.add(it.id)); return d;
     }
-    function start() {
-      deck = shuffle(ITEMS).slice(0, 10); idx = 0; score = 0; streak = 0; locked = false;
-      $('#nwScore').textContent = 0; $('#nwStreak').textContent = 0; $('#nwTotal').textContent = deck.length;
-      bNeed.disabled = false; bWant.disabled = false; say(''); show();
-    }
+    function show() { const it = deck[idx]; card.style.animation = 'none'; void card.offsetWidth; card.style.animation = ''; $('#nwEmoji').textContent = it.e; $('#nwName').textContent = it.n; $('#nwCount').textContent = `${idx + 1} / ${deck.length}`; }
+    function start() { deck = draw10(); idx = 0; score = 0; streak = 0; locked = false; $('#nwScore').textContent = 0; $('#nwStreak').textContent = 0; $('#nwTotal').textContent = deck.length; bNeed.disabled = false; bWant.disabled = false; say(''); show(); }
     function answer(a) {
-      if (locked) return; locked = true;
-      const it = deck[idx];
-      if (a === it.a) { score++; streak++; ding(); say(`✅ ${it.a.toUpperCase()}! ${it.w}`); }
-      else { streak = 0; buzz(); say(`❌ It’s a ${it.a.toUpperCase()}. ${it.w}`, true); }
+      if (locked) return; locked = true; const it = deck[idx];
+      if (a === it.a) { score++; streak++; SFX.ding(); say(`✅ ${it.a.toUpperCase()}! ${it.w}`); if (streak && streak % 5 === 0) { SFX.levelUp(); confetti(60); } }
+      else { streak = 0; SFX.buzz(); say(`❌ It’s a ${it.a.toUpperCase()}. ${it.w}`, true); }
       $('#nwScore').textContent = score; $('#nwStreak').textContent = streak;
       setTimeout(() => { locked = false; idx++; if (idx >= deck.length) end(); else show(); }, 1500);
     }
     function end() {
       const perfect = score === deck.length;
-      $('#nwEmoji').textContent = perfect ? '🏆' : (score >= 7 ? '🌟' : '💪');
-      $('#nwName').textContent = `You got ${score} of ${deck.length}!`;
-      say(perfect ? 'PERFECT! You know your needs from your wants. 😎' : (score >= 7 ? 'Great job! Play again and go for perfect.' : 'Good try! Needs keep you safe and healthy. Wants are the fun extras.'));
-      if (perfect) { fanfare(); confetti(); }
+      $('#nwEmoji').textContent = perfect ? '🏆' : (score >= 7 ? '🌟' : '💪'); $('#nwName').textContent = `You got ${score} of ${deck.length}!`;
+      say(perfect ? 'PERFECT! You know your needs from your wants. 😎' : (score >= 7 ? 'Great job! Play again for a fresh set of cards.' : 'Good try! Needs keep you safe and healthy. Wants are the fun extras.'));
+      if (perfect) { SFX.cheer(); confetti(); }
       bNeed.disabled = true; bWant.disabled = true;
     }
-    bNeed.onclick = () => answer('need'); bWant.onclick = () => answer('want');
-    $('#nwReset').onclick = start;
-    start();
+    bNeed.onclick = () => answer(N); bWant.onclick = () => answer(W); $('#nwReset').onclick = start; start();
   })();
 
   /* ---------------- game 3: Coin Counter ---------------- */
@@ -265,13 +373,11 @@
     const COINS = [{ n: 'penny', v: 1 }, { n: 'nickel', v: 5 }, { n: 'dime', v: 10 }, { n: 'quarter', v: 25 }];
     const DELTAS = [1, 4, 5, 9, 10, 15, 20, 25];
     let score = 0, locked = false;
-    const tray = $('#coinTray'), row = $('#coinAnswers'), msg = $('#coinMsg');
+    const tray = $('#coinTray2'), row = $('#coinAnswers'), msg = $('#coinMsg'); if (!tray) return;
     const say = (t, bad) => { msg.textContent = t; msg.classList.toggle('bad', !!bad); };
     function round() {
       locked = false; say('');
-      const n = 1 + Math.floor(Math.random() * 4);
-      const set = Array.from({ length: n }, () => pick(COINS));
-      const total = set.reduce((s, c) => s + c.v, 0);
+      const n = 1 + Math.floor(Math.random() * 4); const set = Array.from({ length: n }, () => pick(COINS)); const total = set.reduce((s, c) => s + c.v, 0);
       tray.innerHTML = '';
       set.forEach((c, i) => { const d = document.createElement('div'); d.className = 'coin ' + c.n; d.textContent = c.v + '¢'; d.title = c.n; d.style.animationDelay = (i * .08) + 's'; tray.appendChild(d); });
       const opts = new Set([total]); let guard = 0;
@@ -281,10 +387,9 @@
         const b = document.createElement('button'); b.className = 'btn'; b.type = 'button'; b.textContent = v + '¢';
         b.onclick = () => {
           if (locked) return; locked = true;
-          if (v === total) { score++; ding(); say(`✅ Yes! ${total}¢${total >= 100 ? ', that’s a whole dollar or more!' : ''}`); if (score % 5 === 0) { fanfare(); confetti(90); } }
-          else { score = 0; buzz(); say(`❌ Not quite. Count again: it’s ${total}¢.`, true); }
-          $('#coinScore').textContent = score;
-          setTimeout(round, 1800);
+          if (v === total) { score++; SFX.ding(); say(`✅ Yes! ${total}¢${total >= 100 ? ', that’s a whole dollar or more!' : ''}`); if (score % 5 === 0) { SFX.fanfare(); confetti(90); } }
+          else { score = 0; SFX.buzz(); say(`❌ Not quite. Count again: it’s ${total}¢.`, true); }
+          $('#coinScore').textContent = score; setTimeout(round, 1800);
         };
         row.appendChild(b);
       });
@@ -295,8 +400,7 @@
   /* ---------------- game 4: The Chill-o-Meter ---------------- */
   (function meter() {
     const wk = $('#wk'), yr = $('#yr'); if (!wk || !yr) return;
-    const RATE = 1.07, CHILLION = 1e6;
-    const tower = $('#tower');
+    const RATE = 1.07, CHILLION = 1e6; const tower = $('#tower');
     for (let i = 0; i < 24; i++) tower.appendChild(document.createElement('i'));
     function count(el, to) {
       const from = +el.dataset.v || 0; el.dataset.v = to;
@@ -305,22 +409,16 @@
       (function f(now) { const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3); el.textContent = money(from + (to - from) * e); if (p < 1) requestAnimationFrame(f); })(t0);
     }
     function calc() {
-      const w = +wk.value, y = +yr.value;
-      $('#wkOut').textContent = '$' + w; $('#yrOut').textContent = y;
-      const put = w * 52 * y;
-      let bal = 0; for (let i = 0; i < y; i++) bal = (bal + w * 52) * RATE;
+      const w = +wk.value, y = +yr.value; $('#wkOut').textContent = '$' + w; $('#yrOut').textContent = y;
+      const put = w * 52 * y; let bal = 0; for (let i = 0; i < y; i++) bal = (bal + w * 52) * RATE;
       count($('#putIn'), put); count($('#grew'), bal - put); count($('#total'), bal);
-      const pct = Math.max(4, Math.min(100, Math.log10(Math.max(10, bal)) / 6 * 100));
-      $('#chillFill').style.width = pct + '%';
+      const pct = Math.max(4, Math.min(100, Math.log10(Math.max(10, bal)) / 6 * 100)); $('#chillFill').style.width = pct + '%';
       $('#chillLabel').textContent = bal < 1e3 ? 'Kinda chill 🙂' : bal < 1e4 ? 'Pretty chill 😌' : bal < 1e5 ? 'Very chill 🏖️' : bal < CHILLION ? 'Super chill 🌴' : 'CHILLION MODE 😎💚';
       let b2 = 0, n = 0; while (b2 < CHILLION && n < 200) { b2 = (b2 + w * 52) * RATE; n++; }
-      $('#chillYears').textContent = n >= 200
-        ? `At $${w} a week it would take more than 200 years to reach a game Chillion ($1,000,000). Try saving a little more!`
-        : `Keep saving $${w} a week and you would reach a game Chillion ($1,000,000) in about ${n} years.${n <= y ? ' You’re already there in this game! 🎉' : ''}`;
+      $('#chillYears').textContent = n >= 200 ? `At $${w} a week it would take more than 200 years to reach a game Chillion ($1,000,000). Try saving a little more!` : `Keep saving $${w} a week and you would reach a game Chillion ($1,000,000) in about ${n} years.${n <= y ? ' You’re already there in this game! 🎉' : ''}`;
       [...tower.children].forEach((bar, i) => { bar.style.height = Math.max(6, pct * (0.35 + 0.65 * (i + 1) / 24)) + '%'; });
     }
-    wk.addEventListener('input', calc); yr.addEventListener('input', calc);
-    calc();
+    wk.addEventListener('input', calc); yr.addEventListener('input', calc); calc();
   })();
 
   /* ---------------- videos (from videos.js) ---------------- */
@@ -328,20 +426,9 @@
     const vids = Array.isArray(window.CHILLION_VIDEOS) ? window.CHILLION_VIDEOS.filter(v => v && v.id && v.topic) : [];
     const tabs = $('#videoTabs'), grid = $('#videoGrid'); if (!tabs || !grid) return;
     if (!vids.length) { grid.innerHTML = '<p class="watch-note">No videos yet. Add some in videos.js.</p>'; return; }
-    const topics = [...new Set(vids.map(v => v.topic))];
-    let cur = topics[0], playing = null;
-    function renderTabs() {
-      tabs.innerHTML = '';
-      topics.forEach(tp => {
-        const b = document.createElement('button'); b.className = 'tab'; b.type = 'button'; b.setAttribute('role', 'tab');
-        b.textContent = tp; b.setAttribute('aria-selected', tp === cur);
-        b.onclick = () => { cur = tp; playing = null; renderTabs(); renderGrid(); };
-        tabs.appendChild(b);
-      });
-    }
-    function thumb(v) {
-      return `<img loading="lazy" src="https://i.ytimg.com/vi/${esc(v.id)}/hqdefault.jpg" alt=""><button class="play" type="button" aria-label="Play ${esc(v.title)}"><span>▶</span></button>`;
-    }
+    const topics = [...new Set(vids.map(v => v.topic))]; let cur = topics[0], playing = null;
+    function renderTabs() { tabs.innerHTML = ''; topics.forEach(tp => { const b = document.createElement('button'); b.className = 'tab'; b.type = 'button'; b.setAttribute('role', 'tab'); b.textContent = tp; b.setAttribute('aria-selected', tp === cur); b.onclick = () => { cur = tp; playing = null; renderTabs(); renderGrid(); }; tabs.appendChild(b); }); }
+    const thumb = v => `<img loading="lazy" src="https://i.ytimg.com/vi/${esc(v.id)}/hqdefault.jpg" alt=""><button class="play" type="button" aria-label="Play ${esc(v.title)}"><span>▶</span></button>`;
     function renderGrid() {
       grid.innerHTML = '';
       vids.filter(v => v.topic === cur).forEach((v, i) => {
@@ -360,11 +447,9 @@
 
   /* ---------------- phone tab bar: highlight the section on screen ---------------- */
   (function tabbar() {
-    const links = $$('.tabbar a'); if (!links.length) return;
+    const links = $$('.tabbar a[href^="#"]'); if (!links.length) return;
     const byId = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
-    const io = new IntersectionObserver(es => {
-      es.forEach(e => { if (e.isIntersecting) { links.forEach(a => a.classList.remove('active')); const a = byId.get(e.target.id); if (a) a.classList.add('active'); } });
-    }, { rootMargin: '-45% 0px -45% 0px' });
+    const io = new IntersectionObserver(es => { es.forEach(e => { if (e.isIntersecting) { links.forEach(a => a.classList.remove('active')); const a = byId.get(e.target.id); if (a) a.classList.add('active'); } }); }, { rootMargin: '-45% 0px -45% 0px' });
     byId.forEach((_, id) => { const el = document.getElementById(id); if (el) io.observe(el); });
   })();
 
@@ -384,8 +469,7 @@
     WORDS.forEach(x => {
       const b = document.createElement('button'); b.className = 'card'; b.type = 'button'; b.setAttribute('aria-label', `${x.w}: tap to flip`);
       b.innerHTML = `<div class="in"><div class="face front"><div><span class="e">${x.e}</span>${esc(x.w)}</div></div><div class="face back">${esc(x.d)}</div></div>`;
-      b.onclick = () => { b.classList.toggle('flipped'); tone(660, .06, 'sine', .04); };
-      g.appendChild(b);
+      b.onclick = () => { b.classList.toggle('flipped'); SFX.tap(); }; g.appendChild(b);
     });
   })();
 })();

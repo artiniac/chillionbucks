@@ -32,6 +32,7 @@
   </a>
   <nav class="links" aria-label="Sections">
     <a href="#play">🎮 Play</a>
+    <a href="build.html">🏗️ Build</a>
     <a href="#watch">▶ Watch</a>
     <a href="#learn">💡 Learn</a>
     <a href="#parents">👨‍👩‍👦 Parents</a>
@@ -147,33 +148,35 @@
 
     <article class="game" id="gPiggy">
       <header class="game-head"><span class="game-emoji">🐷</span><h3>Piggy Bank Power</h3></header>
-      <p class="game-how">Pick a goal. Tap the piggy to drop in a buck. Save up! Watch out for the candy…</p>
+      <p class="game-how">Pick a goal. <b>Drag a coin</b> into the piggy to save it. Every buck you save is yours to spend in the <a href="build.html">Builder</a>. Watch out for the candy…</p>
       <div class="goal-row" id="goalRow"></div>
-      <div class="piggy-stage">
-        <button class="piggy-btn" id="piggyBtn" aria-label="Tap to add a buck">
+      <div class="piggy-stage drag" id="piggyStage">
+        <div class="dtray" id="coinTray" aria-label="Coins to drag into the piggy"></div>
+        <div class="piggy-wrap" id="piggyWrap">
+          <div class="drop-glow" aria-hidden="true"></div>
           <svg viewBox="0 0 220 170" class="piggy-svg" aria-hidden="true">
             <ellipse cx="110" cy="150" rx="80" ry="10" fill="rgba(5,46,22,.15)"/>
-            <rect x="50" y="118" width="20" height="30" rx="8" fill="#4ade80" stroke="#052e16" stroke-width="5"/>
-            <rect x="140" y="118" width="20" height="30" rx="8" fill="#4ade80" stroke="#052e16" stroke-width="5"/>
-            <ellipse cx="100" cy="92" rx="76" ry="54" fill="#86efac" stroke="#052e16" stroke-width="6"/>
-            <path d="M28 88 q-16 -6 -8 -22 q10 4 14 12" fill="none" stroke="#052e16" stroke-width="5" stroke-linecap="round"/>
-            <circle cx="158" cy="80" r="34" fill="#86efac" stroke="#052e16" stroke-width="6"/>
-            <path d="M140 52 l-10 -26 l24 12 z" fill="#4ade80" stroke="#052e16" stroke-width="5" stroke-linejoin="round"/>
-            <ellipse cx="186" cy="90" rx="16" ry="12" fill="#4ade80" stroke="#052e16" stroke-width="5"/>
-            <circle cx="181" cy="90" r="3" fill="#052e16"/><circle cx="192" cy="90" r="3" fill="#052e16"/>
-            <circle cx="160" cy="72" r="5" fill="#052e16"/>
-            <rect x="78" y="38" width="44" height="10" rx="4" fill="#052e16"/>
-            <g class="slot-coin">
-              <ellipse cx="100" cy="36" rx="16" ry="14" fill="#fbbf24" stroke="#b45309" stroke-width="4"/>
-              <text x="100" y="42" text-anchor="middle" font-size="16" font-weight="900" fill="#b45309" font-family="Nunito, sans-serif">$</text>
+            <g class="piggy-body">
+              <rect x="50" y="118" width="20" height="30" rx="8" fill="#4ade80" stroke="#052e16" stroke-width="5"/>
+              <rect x="140" y="118" width="20" height="30" rx="8" fill="#4ade80" stroke="#052e16" stroke-width="5"/>
+              <ellipse cx="100" cy="92" rx="76" ry="54" fill="#86efac" stroke="#052e16" stroke-width="6"/>
+              <path d="M28 88 q-16 -6 -8 -22 q10 4 14 12" fill="none" stroke="#052e16" stroke-width="5" stroke-linecap="round" class="piggy-tail"/>
+              <circle cx="158" cy="80" r="34" fill="#86efac" stroke="#052e16" stroke-width="6"/>
+              <path d="M140 52 l-10 -26 l24 12 z" fill="#4ade80" stroke="#052e16" stroke-width="5" stroke-linejoin="round"/>
+              <ellipse cx="186" cy="90" rx="16" ry="12" fill="#4ade80" stroke="#052e16" stroke-width="5"/>
+              <circle cx="181" cy="90" r="3" fill="#052e16"/><circle cx="192" cy="90" r="3" fill="#052e16"/>
+              <circle cx="160" cy="72" r="7" fill="#fff" stroke="#052e16" stroke-width="3"/>
+              <circle id="pupil" cx="160" cy="72" r="3.5" fill="#052e16"/>
+              <path class="piggy-smile" d="M168 100 q10 8 20 -2" fill="none" stroke="#052e16" stroke-width="3" stroke-linecap="round"/>
+              <rect x="78" y="38" width="44" height="10" rx="4" fill="#052e16" class="piggy-slot"/>
+              <text x="92" y="105" text-anchor="middle" font-size="34" font-weight="900" fill="#052e16" opacity=".25" font-family="Fredoka, sans-serif">$</text>
             </g>
-            <text x="92" y="105" text-anchor="middle" font-size="34" font-weight="900" fill="#052e16" opacity=".25" font-family="Fredoka, sans-serif">$</text>
           </svg>
-        </button>
+        </div>
         <div class="piggy-total"><span id="piggyAmt">$0</span><small>saved</small></div>
       </div>
       <div class="bar"><div class="bar-fill" id="piggyBar"></div><span class="bar-label" id="piggyGoalLabel"></span></div>
-      <p class="game-msg" id="piggyMsg">Tap tap tap!</p>
+      <p class="game-msg" id="piggyMsg">Drag a coin into the piggy!</p>
       <div class="tempt hidden" id="tempt">
         <p><span id="temptEmoji">🍭</span> <b id="temptText">Candy for $3!</b> Spend it, or keep saving?</p>
         <div class="row">
@@ -181,7 +184,10 @@
           <button class="btn btn-sm" id="temptKeep">Keep saving 💪</button>
         </div>
       </div>
-      <button class="link-btn" id="piggyReset">start over</button>
+      <div class="row between">
+        <a class="btn btn-sm btn-build" id="piggyBuild" href="build.html">🏗️ Open the Builder</a>
+        <button class="link-btn" id="piggyReset">start over</button>
+      </div>
     </article>
 
     <article class="game" id="gNW">
@@ -196,14 +202,15 @@
         <button class="btn btn-want" id="nwWant">WANT</button>
       </div>
       <p class="game-msg" id="nwMsg"></p>
-      <div class="score">Score <b id="nwScore">0</b> / <span id="nwTotal">10</span> · Streak 🔥 <b id="nwStreak">0</b></div>
+      <div class="score">Card <b id="nwCount">1 / 10</b> · Score <b id="nwScore">0</b> / <span id="nwTotal">10</span> · Streak 🔥 <b id="nwStreak">0</b></div>
+      <div class="score small"><span id="nwPool">100</span> different cards. Play again for a fresh set!</div>
       <button class="link-btn" id="nwReset">play again</button>
     </article>
 
     <article class="game" id="gCoins">
       <header class="game-head"><span class="game-emoji">🪙</span><h3>Coin Counter</h3></header>
       <p class="game-how">How much money is this? Penny = 1¢ · Nickel = 5¢ · Dime = 10¢ · Quarter = 25¢</p>
-      <div class="coin-tray" id="coinTray"></div>
+      <div class="coin-tray" id="coinTray2"></div>
       <div class="row" id="coinAnswers"></div>
       <p class="game-msg" id="coinMsg"></p>
       <div class="score">Right in a row: <b id="coinScore">0</b></div>
@@ -227,6 +234,23 @@
       <div class="tower" id="tower" aria-hidden="true"></div>
     </article>
 
+  </div>
+</section>
+
+<section id="build" class="buildteaser" data-reveal>
+  <div class="buildteaser-inner">
+    <div class="buildteaser-text">
+      <h2>🏗️ Build your world</h2>
+      <p class="lead">Take a picture of your room, or pick a beach, a forest, the ocean, a town, even outer space. Then spend the bucks you saved on pools, aquariums, boats, roller coasters, dinosaurs, rockets, and anything else you can imagine. Draw on it too!</p>
+      <a class="btn btn-big btn-build" href="build.html">🏗️ Open the Builder</a>
+      <p class="tiny">Your photo stays on your device. Nothing is uploaded, ever.</p>
+    </div>
+    <div class="buildteaser-art" aria-hidden="true">
+      <div class="bt-scene">
+        <span class="bt bt1">🌴</span><span class="bt bt2">🐬</span><span class="bt bt3">⛵</span><span class="bt bt4">🎢</span><span class="bt bt5">🚀</span><span class="bt bt6">🦖</span>
+        <div class="bt-pool"></div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -265,6 +289,10 @@
       </ul>
     </div>
     <div class="pcard">
+      <h3>The Builder and photos</h3>
+      <p>The Builder can use a photo of your child’s room as the background. The photo is resized and kept only in this browser on this device (it never leaves the phone or computer, and there is no server to send it to). “Start over” or clearing the browser’s site data removes it.</p>
+    </div>
+    <div class="pcard">
       <h3>Why “Chillion”?</h3>
       <p>Leo (almost 5) invented the word. Dad explained that a chillion bucks is when you can chill all day and still have a lot of money. Turns out that is a pretty good definition of financial freedom.</p>
     </div>
@@ -280,12 +308,15 @@
 <nav class="tabbar" aria-label="Sections">
   <a href="#home" data-tab="home"><span aria-hidden="true">😎</span>Home</a>
   <a href="#play" data-tab="play"><span aria-hidden="true">🎮</span>Play</a>
+  <a href="build.html" data-tab="build"><span aria-hidden="true">🏗️</span>Build</a>
   <a href="#watch" data-tab="watch"><span aria-hidden="true">▶</span>Watch</a>
   <a href="#learn" data-tab="learn"><span aria-hidden="true">💡</span>Learn</a>
   <a href="#parents" data-tab="parents"><span aria-hidden="true">👨‍👩‍👦</span>Grown-ups</a>
 </nav>
 
 <canvas id="confetti" aria-hidden="true"></canvas>
+<script src="sfx.js"></script>
+<script src="wallet.js"></script>
 <script src="videos.js"></script>
 <script src="app.js"></script>
 </body>

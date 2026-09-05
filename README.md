@@ -8,9 +8,12 @@ The site teaches money basics through four little games, hand-picked YouTube vid
 
 | File | What it does |
 |---|---|
-| `index.html` | The whole site (one page). |
+| `index.html` | The main page: hero, dictionary, four games, videos, chill words, parents. |
+| `build.html` + `builder.js` + `builder.css` | **Chillion Builder**: pick a scene or a photo of your room, spend saved bucks on 150+ stickers (animated pools, aquariums, waterfalls, boats, dinosaurs, rockets…), drag them anywhere, draw on top, save a picture. |
 | `styles.css` | Green theme, comic-book borders, animations. |
-| `app.js` | Games, coin rain, confetti, sound effects, video player, flip cards. |
+| `app.js` | Games (drag-the-coin piggy, 100-card Need or Want, Coin Counter, Chill-o-Meter), coin rain, confetti, video player, flip cards. |
+| `sfx.js` | Synthesized sound effects shared by both pages (no audio files). |
+| `wallet.js` | The Chillion wallet: bucks saved in the piggy, spent in the Builder, plus a little daily "baby money" (interest). Stored only in the browser. |
 | `videos.js` | The video list. **Edit this to add or swap videos.** |
 | `verify-videos.mjs` | `node verify-videos.mjs` checks every video is still live on YouTube. |
 | `assets/favicon.svg` | The tab icon. |
@@ -18,9 +21,13 @@ The site teaches money basics through four little games, hand-picked YouTube vid
 
 No build step. No framework. No dependencies. Open `index.html` in a browser and it runs.
 
+## How the money works
+
+Dragging a coin into the piggy adds $1 to the wallet (the tray refills after a beat). The wallet is shared with the Builder, where every sticker has a price; selling a sticker gives the full price back, so the budget teaches without frustrating. Once a day, savings of $5 or more earn a little "baby money" (5%, capped at $5). All of it lives in this browser's localStorage; nothing is sent anywhere.
+
 ## Cost
 
-$0. Hosting is GitHub Pages (free for public repos). Videos are embedded from YouTube with the privacy-enhanced player, so YouTube pays for the bandwidth. Fonts are Google Fonts (free). Nothing else loads from anywhere.
+$0. Hosting is GitHub Pages (free for public repos). Videos are embedded from YouTube with the privacy-enhanced player, so YouTube pays for the bandwidth. Fonts are Google Fonts (free). Nothing else loads from anywhere. A room photo used in the Builder is resized in the browser and kept in localStorage on that device only; there is no server to upload it to.
 
 ## Editing videos
 
