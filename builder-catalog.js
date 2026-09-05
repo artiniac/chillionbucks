@@ -141,7 +141,21 @@
     V('pomeranian', 'characters', 'Pomeranian', 2, .07, Z.pomeranian), V('retriever', 'characters', 'Golden retriever', 3, .12, Z.retriever), V('kitty', 'characters', 'Kitty', 2, .08, Z.kitty, CL('orange')), V('lionKing', 'characters', 'Lion', 4, .14, Z.lionKing),
   ];
   /* Picture sprites (PNG with a transparent background) from sprites.js join the catalog as image items. */
-  (window.CHILLION_SPRITES || []).forEach(sp => { if (sp && sp.id && sp.src && !ITEMS.some(d => d.id === sp.id)) ITEMS.push({ id: sp.id, kit: KITS.some(k => k.id === sp.kit) ? sp.kit : 'home', name: sp.name || sp.id, price: Math.max(0, Math.round(+sp.price || 0)), w: Math.min(.6, Math.max(.05, +sp.w || .2)), img: sp.src, label: false, go: ['drive', 'fly', 'float', 'walk', 'swim', 'spin'].includes(sp.go) ? sp.go : undefined }); });
+  /* Picture sprites (sprites.js). A sprite whose id matches a drawn thing REPLACES that thing's art, so the picture takes over
+     everywhere the drawing was (shelf, saved worlds, build orders). Snap pieces keep their drawing: their geometry is the art.
+     A new id becomes a new thing on its kit's shelf. */
+  const GO_MODES = ['drive', 'fly', 'float', 'walk', 'swim', 'spin'];
+  (window.CHILLION_SPRITES || []).forEach(sp => {
+    if (!sp || !sp.id || !sp.src) return;
+    const pic = { img: sp.src, label: false, ar: (+sp.ar > 0) ? +sp.ar : undefined, go: GO_MODES.includes(sp.go) ? sp.go : undefined };
+    const width = sp.w ? Math.min(.6, Math.max(.05, +sp.w)) : undefined, price = sp.price !== undefined ? Math.max(0, Math.round(+sp.price || 0)) : undefined;
+    const old = ITEMS.find(d => d.id === sp.id);
+    if (old) {
+      if (old.snap) return;
+      delete old.svg; delete old.e; delete old.colorable; delete old.color; delete old.def;
+      Object.assign(old, pic, { name: sp.name || old.name, price: price === undefined ? old.price : price, w: width === undefined ? old.w : width });
+    } else ITEMS.push({ id: sp.id, kit: KITS.some(k => k.id === sp.kit) ? sp.kit : 'home', name: sp.name || sp.id, price: price === undefined ? 0 : price, w: width === undefined ? .2 : width, ...pic });
+  });
   const GO_BY_KIND = { plane: 'fly', heli: 'fly', passengerJet: 'fly', fighterJet: 'fly', stealthJet: 'fly', militaryHeli: 'fly', rocket: 'fly', ufo: 'fly', satellite: 'fly', shooting: 'fly', balloon: 'fly', kite: 'fly', hoverboard: 'fly', butterfly: 'fly', bee: 'fly', parrot: 'fly', owl: 'fly',
     sailboat: 'float', speedboat: 'float', ship: 'float', canoe: 'float', yacht: 'float', pirateship: 'float', jetski: 'float', submarine: 'swim', tubeRider: 'float', raft: 'float', floatRing: 'float', buoy: 'float', surf: 'float', swimmer: 'swim',
     dolphin: 'swim', shark: 'swim', octopus: 'swim', whale: 'swim', turtle: 'swim', tropfish: 'swim', fish: 'swim', crab: 'walk', seal: 'swim', mermaid: 'swim', squid: 'swim', lobster: 'walk', shrimp: 'swim', puffer: 'swim',

@@ -8,6 +8,10 @@
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const SFX = window.SFX, Wallet = window.Wallet, ART = window.CB_ART, CAT = window.CB_CATALOG;
   const { SCENES, PAL, COLOR_KEYS, esc } = ART;
+  /* Picture backdrops (sprites.js). A backdrop with a drawn scene's id REPLACES that scene; a new id becomes a new place to pick.
+     Backdrops sit bottom-anchored and cover the stage, like the drawn scenes; the phone's square stage shows their middle. */
+  (window.CHILLION_BACKDROPS || []).forEach(bd => { if (!bd || !bd.id || !bd.src) return; const old = SCENES[bd.id]; SCENES[bd.id] = { name: bd.name || (old && old.name) || bd.id, e: bd.e || (old && old.e) || '🖼️', src: bd.src }; });
+  const sceneArt = sc => sc.src ? `<img class="scene-pic" alt="" src="${sc.src}" draggable="false">` : sc.svg;
   const { KITS, ITEMS, DEF, JOBS } = CAT;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -41,7 +45,7 @@
   const vbCache = {}, imgAspect = {};
   function aspect(def, it) { // height / width of the art
     if (def.e) return 1;
-    if (def.img) { if (imgAspect[def.id] === undefined) { imgAspect[def.id] = 1; const im = new Image(); im.onload = () => { imgAspect[def.id] = im.naturalHeight / im.naturalWidth || 1; replaceAll(); }; im.src = def.img; } return imgAspect[def.id]; }
+    if (def.img) { if (def.ar) return def.ar; if (imgAspect[def.id] === undefined) { imgAspect[def.id] = 1; const im = new Image(); im.onload = () => { imgAspect[def.id] = im.naturalHeight / im.naturalWidth || 1; replaceAll(); }; im.src = def.img; } return imgAspect[def.id]; }
     if (vbCache[def.id] !== undefined) return vbCache[def.id];
     const m = def.svg('vb', it || { color: def.color, label: def.def }).match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/);
     return (vbCache[def.id] = m ? +m[2] / +m[1] : 1);
@@ -64,7 +68,7 @@
   /* ============================== RENDER ============================== */
   function renderBg() {
     if (world.bg.type === 'photo') { BG.innerHTML = `<img alt="" src="${world.bg.data}">`; }
-    else { const sc = SCENES[world.bg.id] || SCENES.bedroom; BG.innerHTML = sc.svg; }
+    else { const sc = SCENES[world.bg.id] || SCENES.bedroom; BG.innerHTML = sceneArt(sc); }
   }
   function placeEl(d, it) {
     const def = DEF[it.kind]; const W = stageRect().width; const w = def.w * W; const m = MOTION.get(it.uid);
@@ -523,7 +527,7 @@
     const box = $('#scenes'); box.innerHTML = '';
     Object.entries(SCENES).forEach(([id, sc]) => {
       const b = document.createElement('button'); b.type = 'button'; b.className = 'scene'; b.setAttribute('aria-pressed', world.bg.type === 'scene' && world.bg.id === id);
-      b.innerHTML = `<span class="prev">${sc.svg}</span><b>${sc.e} ${esc(sc.name)}</b>`;
+      b.innerHTML = `<span class="prev">${sceneArt(sc)}</span><b>${sc.e} ${esc(sc.name)}</b>`;
       b.onclick = () => { world.bg = { type: 'scene', id }; renderBg(); save(); SFX.ding(); $('#sceneSheet').hidden = true; toast(`Welcome to the ${sc.name}! 🎉`); };
       box.appendChild(b);
     });
@@ -589,7 +593,7 @@
     const r = stageRect(); const W = Math.round(targetW || r.width * 2), H = Math.round(W * r.height / r.width);
     const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
     x.fillStyle = '#bae6fd'; x.fillRect(0, 0, W, H);
-    try { const im = await loadImg(world.bg.type === 'photo' ? world.bg.data : svgUrl((SCENES[world.bg.id] || SCENES.bedroom).svg.replace('preserveAspectRatio="xMidYMax slice"', '').replace('<svg ', '<svg width="1200" height="800" '))); drawCover(x, im, W, H, world.bg.type !== 'photo'); } catch (e) {}
+    try { const sc = SCENES[world.bg.id] || SCENES.bedroom; const im = await loadImg(world.bg.type === 'photo' ? world.bg.data : sc.src ? sc.src : svgUrl(sc.svg.replace('preserveAspectRatio="xMidYMax slice"', '').replace('<svg ', '<svg width="1200" height="800" '))); drawCover(x, im, W, H, world.bg.type !== 'photo'); } catch (e) {}
     x.drawImage(DRAW, 0, 0, W, H);
     for (const it of [...world.items].sort((a, b) => a.z - b.z)) {
       const def = DEF[it.kind]; const w = def.w * W * it.s; const mm = MOTION.get(it.uid) || { dx: 0, dy: 0, dir: 1, spin: 0 }; const cx = (it.x + mm.dx) * W, cy = (it.y + mm.dy) * H;

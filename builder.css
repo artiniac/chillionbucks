@@ -16,6 +16,8 @@
 .stage{position:relative;width:100%;aspect-ratio:3/2;max-height:66vh;overflow:hidden;border:4px solid var(--ink);border-radius:22px;background:#bae6fd;box-shadow:var(--comic);touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .stage .bg,.stage .bg svg,.stage .bg img{position:absolute;inset:0;width:100%;height:100%;display:block}
 .stage .bg img{object-fit:cover}
+.stage .bg img.scene-pic{object-position:center bottom}
+.scene .prev img{width:100%;height:100%;object-fit:cover;object-position:center bottom;display:block}
 .stage .draw{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
 .stage.drawing .draw{pointer-events:auto;cursor:crosshair;z-index:4}
 .stage .items{position:absolute;inset:0;z-index:3}
