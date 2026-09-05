@@ -133,7 +133,20 @@ section > h2, section > .lead, .game-grid, .tabs, .video-grid, .cards, .parents-
 .fly{position:fixed;z-index:60;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fde68a,var(--gold) 55%,var(--gold3));border:2px solid var(--gold3);display:grid;place-items:center;font-weight:900;color:var(--gold3);pointer-events:none}
 
 /* need / want */
-.nw-card{background:linear-gradient(180deg,#fff,var(--mint));border:4px solid var(--ink);border-radius:var(--r);padding:1.2rem;text-align:center;box-shadow:var(--comic);animation:pop .3s ease}
+.nw-card{position:relative;overflow:hidden;background:linear-gradient(180deg,#fff,var(--mint));border:4px solid var(--ink);border-radius:var(--r);padding:1.2rem;text-align:center;box-shadow:var(--comic);transition:transform .18s ease,opacity .18s ease,background .2s,border-color .2s}
+.nw-card.in{animation:nwin .38s cubic-bezier(.3,1.4,.5,1)}
+.nw-card.out{transform:translateX(-120%) rotate(-8deg);opacity:0}
+.nw-card.ok{background:linear-gradient(180deg,#dcfce7,#86efac);border-color:#15803d}
+.nw-card.bad{background:linear-gradient(180deg,#fee2e2,#fca5a5);border-color:#b91c1c}
+.nw-card.ok .nw-name{color:#15803d}.nw-card.bad .nw-name{color:#b91c1c}
+.nw-stamp{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;opacity:0;font-size:5.5rem;line-height:1}
+.nw-stamp b{display:grid;place-items:center;width:1.35em;height:1.35em;border-radius:50%;border:.09em solid currentColor;background:rgba(255,255,255,.88);transform:rotate(-12deg);font-weight:900}
+.nw-card.ok .nw-stamp,.nw-card.bad .nw-stamp{animation:stampin .32s cubic-bezier(.2,1.6,.4,1) forwards}
+.nw-card.ok .nw-stamp{color:#15803d}.nw-card.bad .nw-stamp{color:#b91c1c}
+.row.big .btn:disabled{opacity:.45;filter:grayscale(.6);transform:scale(.96);box-shadow:none;cursor:wait}
+@keyframes nwin{from{transform:translateX(120%) rotate(8deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes stampin{0%{transform:scale(2.4);opacity:0}60%{transform:scale(.94);opacity:1}100%{transform:scale(1);opacity:1}}
+
 .nw-emoji{font-size:5rem;line-height:1}
 .nw-name{font-family:var(--font-display);font-size:1.5rem;font-weight:700;margin-top:.3rem}
 .btn-need{background:linear-gradient(180deg,#60a5fa,#2563eb)}

@@ -9,7 +9,9 @@ The site teaches money basics through four little games, hand-picked YouTube vid
 | File | What it does |
 |---|---|
 | `index.html` | The main page: hero, dictionary, four games, videos, chill words, parents. |
-| `build.html` + `builder.js` + `builder.css` | **Chillion Builder**: pick a scene or a photo of your room, spend saved bucks on 150+ stickers (animated pools, aquariums, waterfalls, boats, dinosaurs, rockets…), drag them anywhere, draw on top, save a picture. |
+| `build.html` + `builder.js` + `builder.css` | **Chillion Builder**: pick a scene or a photo of your room, then BUILD. Snap Blocks (studded blocks in ten colors that click onto a grid), building parts (walls, roofs, floors, water tiles, fences, roads, coaster track, castle walls, lazy-river channels), 300+ things across 13 kits (water park, theme park, zoo, city and school, castle, space, beach, nature, home, vehicles, people), a Make-a-Pal character maker, drawing on top, and the Job Board that PAYS kids for finishing builds. |
+| `builder-art.js` | Every scene, sticker, building piece, Snap Block, and the pal renderer, as SVG factory functions. |
+| `builder-catalog.js` | The kits, every buyable thing with its price, and the Job Board orders. |
 | `styles.css` | Green theme, comic-book borders, animations. |
 | `app.js` | Games (drag-the-coin piggy, 100-card Need or Want, Coin Counter, Chill-o-Meter), coin rain, confetti, video player, flip cards. |
 | `sfx.js` | Synthesized sound effects shared by both pages (no audio files). |
@@ -23,7 +25,11 @@ No build step. No framework. No dependencies. Open `index.html` in a browser and
 
 ## How the money works
 
-Dragging a coin into the piggy adds $1 to the wallet (the tray refills after a beat). The wallet is shared with the Builder, where every sticker has a price; selling a sticker gives the full price back, so the budget teaches without frustrating. Once a day, savings of $5 or more earn a little "baby money" (5%, capped at $5). All of it lives in this browser's localStorage; nothing is sent anywhere.
+Dragging a coin into the piggy adds $1 to the wallet (the tray refills after a beat). The wallet is shared with the Builder, where every block, piece, and sticker has a price; selling gives the full price back, so the budget teaches without frustrating. Once a day, savings of $5 or more earn a little "baby money" (5%, capped at $5).
+
+**Building pays.** The Job Board (💼 in the Builder) lists build orders: Water Park, Theme Park, Zoo, Jungle, School, City, Beach Day, Kingdom, Space Station, Dream Room, Block Master, Architect, Artist, Neighborhood, Lazy River, Pal Party. Progress counts the things in the world by kit; when an order is complete the kid taps Collect and the paycheck ($5 to $18) lands in the wallet with a celebration. Each job pays once per world. 🏆 Finish pays a bigger paycheck for the whole world (based on how many different kits were used and how many things were placed, $3 to $30, once per world) and saves a picture of it to 📚 My worlds, where it can be reopened later. Things that come back from the gallery were already refunded once, so they sell for $0. The lesson is the one Artin asked for: if you want money, you build something.
+
+All of it lives in this browser's localStorage (`cb:wallet`, `cb:world`, `cb:worlds`); nothing is sent anywhere.
 
 ## Cost
 
@@ -61,6 +67,10 @@ It prints `ok` for each live video and `BAD` for any that were removed or made p
    | CNAME | `www` | `artiniac.github.io` |
 
 Every push to `main` redeploys in about a minute.
+
+## Snap Blocks and the grid
+
+The stage is a 24-cell grid. A Snap Block or a building part snaps its edges to that grid when it lands, so blocks stack and coaster or river pieces line up end to end. Blocks have studs on top (the stud row pokes above the grid line so a block placed on top covers it). Turn rotates 90 degrees, Copy buys another of the same thing next to it, and 🎨 Color cycles the ten colors. The blocks have their own look and their own name; nothing is borrowed from any toy brand.
 
 ## Ideas for later (all still free)
 

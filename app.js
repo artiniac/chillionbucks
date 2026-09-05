@@ -349,21 +349,38 @@
       if (pool.length < 10) { used = new Set(); pool = ITEMS; }
       const d = shuffle(pool).slice(0, 10); d.forEach(it => used.add(it.id)); return d;
     }
-    function show() { const it = deck[idx]; card.style.animation = 'none'; void card.offsetWidth; card.style.animation = ''; $('#nwEmoji').textContent = it.e; $('#nwName').textContent = it.n; $('#nwCount').textContent = `${idx + 1} / ${deck.length}`; }
-    function start() { deck = draw10(); idx = 0; score = 0; streak = 0; locked = false; $('#nwScore').textContent = 0; $('#nwStreak').textContent = 0; $('#nwTotal').textContent = deck.length; bNeed.disabled = false; bWant.disabled = false; say(''); show(); }
+    const stamp = $('#nwStamp'), nextLbl = $('#nwNext');
+    const HOLD = 600, SLIDE = 180; // the stamp lands, then the next card pops right in
+    function unlock() { locked = false; bNeed.disabled = false; bWant.disabled = false; card.classList.remove('ok', 'bad', 'locked'); nextLbl.hidden = true; }
+    function show() {
+      const it = deck[idx]; unlock();
+      card.classList.remove('in', 'out'); void card.offsetWidth; card.classList.add('in');
+      $('#nwEmoji').textContent = it.e; $('#nwName').textContent = it.n; $('#nwCount').textContent = `${idx + 1} / ${deck.length}`;
+    }
+    function start() { deck = draw10(); idx = 0; score = 0; streak = 0; $('#nwScore').textContent = 0; $('#nwStreak').textContent = 0; $('#nwTotal').textContent = deck.length; say(''); show(); }
     function answer(a) {
       if (locked) return; locked = true; const it = deck[idx];
-      if (a === it.a) { score++; streak++; SFX.ding(); say(`✅ ${it.a.toUpperCase()}! ${it.w}`); if (streak && streak % 5 === 0) { SFX.levelUp(); confetti(60); } }
+      // Lock the buttons right away so a second tap does nothing, then stamp the card so the kid sees the answer landed.
+      bNeed.disabled = true; bWant.disabled = true; card.classList.add('locked'); nextLbl.hidden = false;
+      const ok = a === it.a;
+      stamp.innerHTML = ok ? '<b>✓</b>' : '<b>✗</b>'; card.classList.add(ok ? 'ok' : 'bad');
+      if (ok) { score++; streak++; SFX.ding(); say(`✅ ${it.a.toUpperCase()}! ${it.w}`); if (streak && streak % 5 === 0) { SFX.levelUp(); confetti(60); } }
       else { streak = 0; SFX.buzz(); say(`❌ It’s a ${it.a.toUpperCase()}. ${it.w}`, true); }
       $('#nwScore').textContent = score; $('#nwStreak').textContent = streak;
-      setTimeout(() => { locked = false; idx++; if (idx >= deck.length) end(); else show(); }, 1500);
+      setTimeout(() => {
+        idx++;
+        if (idx >= deck.length) { end(); return; }
+        card.classList.remove('in'); card.classList.add('out'); SFX.whoosh && SFX.whoosh();
+        setTimeout(show, SLIDE);
+      }, HOLD);
     }
     function end() {
       const perfect = score === deck.length;
       $('#nwEmoji').textContent = perfect ? '🏆' : (score >= 7 ? '🌟' : '💪'); $('#nwName').textContent = `You got ${score} of ${deck.length}!`;
       say(perfect ? 'PERFECT! You know your needs from your wants. 😎' : (score >= 7 ? 'Great job! Play again for a fresh set of cards.' : 'Good try! Needs keep you safe and healthy. Wants are the fun extras.'));
       if (perfect) { SFX.cheer(); confetti(); }
-      bNeed.disabled = true; bWant.disabled = true;
+      card.classList.remove('ok', 'bad', 'out'); card.classList.add('in'); nextLbl.hidden = true;
+      locked = true; bNeed.disabled = true; bWant.disabled = true;
     }
     bNeed.onclick = () => answer(N); bWant.onclick = () => answer(W); $('#nwReset').onclick = start; start();
   })();

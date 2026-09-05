@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <title>Chillion Builder</title>
-<meta name="description" content="Build your world: take a picture of your room or pick a scene, then spend the bucks you saved on pools, aquariums, boats, roller coasters, and anything else you can imagine.">
+<meta name="description" content="Build your world: snap blocks and building parts together, make a water park, a zoo, a city, a castle, or a space station, and get PAID for finishing it. Take a picture of your room or pick a scene.">
 <meta name="theme-color" content="#052e16">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,13 +27,18 @@
     <div class="stage" id="stage">
       <div class="bg" id="bg" aria-hidden="true"></div>
       <canvas class="draw" id="draw" aria-label="Drawing layer"></canvas>
+      <div class="grid" id="grid" aria-hidden="true"></div>
       <div class="items" id="items"></div>
-      <div class="hint" id="hint">👇 Tap a sticker below to buy it, then drag it anywhere!</div>
+      <div class="hint" id="hint">👇 Tap a block or a piece below to buy it, then drag it anywhere. Build things to earn bucks!</div>
     </div>
     <div class="tools" id="tools" hidden>
       <button type="button" data-act="bigger">🔍➕<small>Bigger</small></button>
       <button type="button" data-act="smaller">🔍➖<small>Smaller</small></button>
+      <button type="button" data-act="rotate">🔄<small>Turn</small></button>
       <button type="button" data-act="flip">↔️<small>Flip</small></button>
+      <button type="button" data-act="copy">📋<small>Copy</small></button>
+      <button type="button" data-act="color" hidden>🎨<i class="dot"></i><small>Color</small></button>
+      <button type="button" data-act="words" hidden>✏️<small>Words</small></button>
       <button type="button" data-act="front">⬆️<small>Front</small></button>
       <button type="button" data-act="back">⬇️<small>Back</small></button>
       <button type="button" data-act="sell" class="danger">💸<small>Sell $<span id="sellPrice">0</span></small></button>
@@ -41,13 +46,16 @@
   </div>
 
   <div class="actions" id="actions">
+    <button type="button" id="jobsBtn" class="jobs">💼<small>Jobs</small><b class="badge" id="jobsBadge" hidden>0</b></button>
+    <button type="button" id="finishBtn" class="finish">🏆<small>Finish</small></button>
+    <button type="button" id="worldsBtn">📚<small>My worlds</small></button>
     <button type="button" id="sceneBtn">🖼️<small>Scene</small></button>
     <button type="button" id="photoBtn">📷<small>My room</small></button>
     <button type="button" id="drawBtn">✏️<small>Draw</small></button>
     <button type="button" id="undoBtn">↩️<small>Undo</small></button>
     <button type="button" id="surpriseBtn">🎲<small>Surprise</small></button>
     <button type="button" id="snapBtn">📸<small>Save pic</small></button>
-    <button type="button" id="newBtn">🧹<small>Start over</small></button>
+    <button type="button" id="newBtn">🧹<small>New world</small></button>
     <input type="file" id="photoInput" accept="image/*" hidden>
   </div>
 
@@ -58,8 +66,10 @@
     <button type="button" class="done" id="drawDone">✓ Done drawing</button>
   </div>
 
-  <section class="shop" aria-label="Sticker shop">
+  <section class="shop" aria-label="Build shop">
     <div class="cats" id="cats" role="tablist"></div>
+    <div class="swatch-row" id="swatchRow" hidden><span>Color:</span><div class="swatches" id="swatches"></div></div>
+    <p class="kit-tip" id="kitTip"></p>
     <div class="shelf" id="shelf"></div>
     <p class="need-bucks" id="needBucks" hidden>Need more bucks? <a href="index.html#play">Drag coins into the piggy 🐷</a></p>
   </section>
@@ -76,6 +86,37 @@
   </div>
 </div>
 
+<div class="sheet" id="jobsSheet" hidden>
+  <div class="sheet-card">
+    <h2 id="jobsTitle">Job Board 💼</h2>
+    <p class="tiny">Build what a job asks for and you get PAID. Each job pays once per world. Finish the whole world with 🏆 for a big paycheck.</p>
+    <div class="jobs" id="jobs"></div>
+    <div class="row"><button type="button" class="btn" id="jobsClose">Back to building</button></div>
+  </div>
+</div>
+
+<div class="sheet" id="worldsSheet" hidden>
+  <div class="sheet-card">
+    <h2>My worlds 📚</h2>
+    <p class="tiny">Every world you finish gets saved here (on this device only). Open one to keep building it.</p>
+    <div class="worlds" id="worlds"></div>
+    <div class="row"><button type="button" class="btn" id="worldsClose">Close</button></div>
+  </div>
+</div>
+
+<div class="sheet" id="palSheet" hidden>
+  <div class="sheet-card pal-card">
+    <h2 id="palTitle">Make a pal! 🦸</h2>
+    <div class="pal-body">
+      <div class="pal-left"><div class="pal-preview" id="palPreview"></div><button type="button" class="btn btn-alt btn-sm" id="palRandom">🎲 Surprise me</button></div>
+      <div class="pal-opts" id="palOpts"></div>
+    </div>
+    <div class="row"><button type="button" class="btn btn-alt" id="palClose">Cancel</button><button type="button" class="btn" id="palMake">Make it! $3</button></div>
+  </div>
+</div>
+
+<div class="payday" id="payday" hidden></div>
+
 <div class="sheet" id="snapSheet" hidden>
   <div class="sheet-card">
     <h2>Your world 📸</h2>
@@ -90,6 +131,8 @@
 
 <script src="sfx.js"></script>
 <script src="wallet.js"></script>
+<script src="builder-art.js"></script>
+<script src="builder-catalog.js"></script>
 <script src="builder.js"></script>
 </body>
 </html>
