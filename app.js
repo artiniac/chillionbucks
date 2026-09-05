@@ -1,3 +1,4 @@
+if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.serviceWorker.register('sw.js').catch(() => {}); }
 /* Chillion Bucks: all the fun lives here. Plain JavaScript, no build step, no libraries.
    Shared pieces: sfx.js (sounds) and wallet.js (the bucks saved in the piggy, spent in the Builder). */
 (() => {
@@ -152,6 +153,22 @@
       try { localStorage.setItem('cb:goals', JSON.stringify(readParentGoals().filter(p => p.id !== g.id).map(p => ({ id: p.id, name: p.n, price: p.c, url: p.url, img: p.img, e: p.e })))); } catch (err) {}
       loadGoals(); if (goal.id === g.id) { goal = GOALS[0]; Wallet.setGoal(goal.id); } renderGoals(); update(); SFX.pop();
     });
+    // ---- one-tap adds: a store app's Share sheet (or an iPhone Shortcut) opens this page with the link in the address,
+    //      the grown-up form opens prefilled, and the grown-up only checks the price and taps Add ----
+    function sharedIn() {
+      const q = new URLSearchParams(location.search); if (![...q.keys()].some(k => ['add', 'text', 'name', 'title', 'url'].includes(k))) return;
+      const blob = [q.get('add'), q.get('url'), q.get('text'), q.get('title')].filter(Boolean).join(' ');
+      const link = (blob.match(/https?:\/\/[^\s"']+/) || [])[0] || '';
+      let title = (q.get('name') || q.get('title') || (q.get('text') || '').replace(/https?:\/\/[^\s"']+/g, '')).replace(/\s+/g, ' ').trim();
+      title = title.replace(/^(check out|look at|i found)\s*(this)?\s*(on amazon)?[:!,]?\s*/i, '').replace(/\s*(on amazon|amazon\.com).*$/i, '').slice(0, 40).trim();
+      const price = (blob.match(/\$\s?(\d{1,4})(?:\.\d\d)?/) || [])[1] || '';
+      if (!form || !(link || title)) return;
+      const box = $('#grownGoals'); box.open = true;
+      form.url.value = link; form.gname.value = title; if (price) form.price.value = price;
+      history.replaceState(null, '', location.pathname + '#play');
+      setTimeout(() => { box.scrollIntoView({ block: 'center' }); (title ? form.price : form.gname).focus(); }, 300);
+      say('Grown-up: check the name and price, then tap ➕ Add goal. 👨‍👩‍👧');
+    }
     // ---- the certificate: proof for the grown-up that the money was really saved ----
     const loadPic = src => new Promise((res, rej) => { const im = new Image(); im.crossOrigin = 'anonymous'; im.onload = () => res(im); im.onerror = rej; im.src = src; });
     async function makeCertificate(g) {
@@ -312,6 +329,7 @@
     if (gain) { say(`🌱 Baby money! Your savings made $${gain} while you were away.`); setTimeout(() => { SFX.levelUp(); confetti(60); }, 600); }
     else if (Wallet.billCount()) say(`You have ${Wallet.billCount()} paycheck${Wallet.billCount() > 1 ? 's' : ''} from your jobs! Drag them into the piggy. 💵`);
     else say(picked ? 'Drag a coin into the piggy!' : '👉 Tap the thing you want to save for!');
+    sharedIn();
   })();
 
   /* ---------------- game 2: Need or Want (100 cards) ---------------- */

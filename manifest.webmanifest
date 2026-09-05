@@ -1,0 +1,12 @@
+{
+  "name": "Chillion Bucks",
+  "short_name": "Chillion",
+  "description": "Leo's money site for kids: save, work, build.",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#052e16",
+  "theme_color": "#052e16",
+  "icons": [{ "src": "assets/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }],
+  "share_target": { "action": "/index.html", "method": "GET", "params": { "title": "title", "text": "text", "url": "add" } }
+}

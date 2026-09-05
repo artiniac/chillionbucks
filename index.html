@@ -7,6 +7,7 @@
 <meta name="description" content="Chillion Bucks is Leo's money site for kids: games, videos, and chill words that teach saving, spending, earning, and growing money. Free, no ads, no accounts.">
 <meta name="theme-color" content="#052e16">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
 <meta property="og:title" content="Chillion Bucks">
 <meta property="og:description" content="A chillion bucks is when you can chill all day and still have a lot of money. Games and videos that teach kids about money.">
 <meta property="og:type" content="website">
@@ -154,9 +155,10 @@
       <div class="goal-done" id="goalDone" hidden></div>
       <details class="grown" id="grownGoals">
         <summary>👨‍👩‍👧 Grown-ups: add a real goal</summary>
+        <p class="tiny">Fastest way: in the store app, tap Share on the toy, then “Add to Chillion Bucks” (set up once, see Grown-ups below). The link and name land here by themselves.</p>
         <form id="goalForm" class="goal-form" autocomplete="off">
           <label>Store link <input name="url" type="url" placeholder="https://www.amazon.com/dp/…" inputmode="url"></label>
-          <label>Name <input name="gname" type="text" maxlength="28" placeholder="Big building block set" required></label>
+          <label>Name <input name="gname" type="text" maxlength="40" placeholder="Big building block set" required></label>
           <label>Price <input name="price" type="number" min="1" max="5000" step="1" placeholder="50" inputmode="numeric" required></label>
           <label>Photo link <input name="img" type="url" placeholder="long-press the product photo, copy image address" inputmode="url"></label>
           <button class="btn btn-sm" type="submit">➕ Add goal</button>
@@ -311,6 +313,7 @@
       <h3>Chilltopia (the Builder) and photos</h3>
       <p>Chilltopia can use a photo of your child’s room as the background. The photo is resized and kept only in this browser on this device (it never leaves the phone or computer, and there is no server to send it to). “New world” or clearing the browser’s site data removes it. Finished worlds are saved as small pictures on the same device only.</p>
       <p>How the money works: every snap-together structure piece in Chilltopia is free (blocks, magnet tiles, walls, roofs, roads, coaster track, river channels, castle walls, garage decks). Pools, rides, cars, and characters cost bucks. Bucks come from work: the Job Board has quick jobs (vacuum the room, clean the pool, wash a car, paint a fence, deliver packages, feed the animals, run the lemonade stand) that pay a bill, and build orders that pay a bill when a build is complete. Every bill has to be dragged into the piggy before it can be spent. Bigger bills only come from more work: a $5 bill for most jobs, a $20 every fifth job, a $100 every twentieth, and the fat stack and pot of gold are for the truly dedicated (100 and 250 jobs).</p>
+      <p><b>One-tap goals from a store app.</b> iPhone: open the Shortcuts app, tap +, name it “Add to Chillion Bucks”, tap the ⓘ and turn on “Show in Share Sheet” (accept URLs and Text). Add three actions: “URL Encode” (Shortcut Input), then “Text” containing <code>https://chillionbucks.com/?text=</code> followed by the URL Encoded Text, then “Open URLs”. Now in the Amazon app (or any store), tap Share on a toy, tap “Add to Chillion Bucks”, and this page opens with the link and name filled in; you check the price and tap Add. Android: open chillionbucks.com in Chrome, tap “Install app” once, and “Chillion Bucks” appears directly in the Share sheet.</p>
       <p>The savings goals are real things. Under the goal cards, “Grown-ups: add a real goal” takes a store link, a name, a price, and (optionally) the product photo’s address, and the goal appears as a picture card on this device only. When the piggy reaches the price, the kid makes a certificate to show you, and the store button (labeled for grown-ups, opens in a new tab) takes you to the listing. Nothing on this site takes money, tracks anyone, or reads anything from other sites.</p>
     </div>
     <div class="pcard">
