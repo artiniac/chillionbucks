@@ -93,10 +93,9 @@
 
   /* ---------------- game 1: Piggy Bank Power (drag the coins in!) ---------------- */
   (function piggy() {
-    const GOALS = [
-      { e: '🧸', n: 'Big Teddy', c: 25 }, { e: '🛴', n: 'Scooter', c: 50 },
-      { e: '🎮', n: 'Video Game', c: 60 }, { e: '🚲', n: 'Bike', c: 100 },
-    ];
+    // Real things to save for come from goals.js (a grown-up edits it: picture, price, store link)
+    const GOALS = (window.CHILLION_GOALS || []).filter(g => g && g.id && g.price > 0).map(g => ({ id: g.id, e: g.e || '🎁', n: g.name || g.id, c: Math.round(g.price), img: g.img || '', url: g.url || '' }));
+    if (!GOALS.length) GOALS.push({ id: 'scooter', e: '🛴', n: 'Scooter', c: 50 }, { id: 'bike', e: '🚲', n: 'Bike', c: 120 });
     const TEMPTS = [
       { e: '🍭', n: 'Candy', c: 3 }, { e: '🍦', n: 'Ice cream', c: 4 }, { e: '🎈', n: 'Balloon', c: 2 },
       { e: '🧃', n: 'Juice box', c: 2 }, { e: '🍩', n: 'Donut', c: 3 }, { e: '🎁', n: 'Mystery toy', c: 5 },
@@ -107,18 +106,26 @@
     const tray = $('#coinTray'), piggyEl = $('#piggyWrap'), svg = $('.piggy-svg'), pupil = $('#pupil'),
       amtEl = $('#piggyAmt'), barEl = $('#piggyBar'), labelEl = $('#piggyGoalLabel'), msgEl = $('#piggyMsg'),
       tempt = $('#tempt'), goalRow = $('#goalRow'), builderLink = $('#piggyBuild');
-    let goal = GOALS.find(g => g.n === Wallet.goal()) || GOALS[1];
+    let goal = GOALS.find(g => g.id === Wallet.goal()) || GOALS.find(g => g.n === Wallet.goal()) || GOALS[0];
+    let picked = !!localStorage.getItem('cb:goalPicked');
     let saved = Wallet.get(), done = saved >= goal.c, cur = null, combo = 0, lastDrop = 0, dragging = false;
 
     const say = (t, bad) => { msgEl.textContent = t; msgEl.classList.toggle('bad', !!bad); msgEl.classList.remove('pop'); void msgEl.offsetWidth; msgEl.classList.add('pop'); };
     function renderGoals() {
       goalRow.innerHTML = '';
       GOALS.forEach(g => {
-        const b = document.createElement('button'); b.className = 'goal'; b.type = 'button';
-        b.textContent = `${g.e} ${g.n} $${g.c}`; b.setAttribute('aria-pressed', g === goal);
-        b.onclick = () => { goal = g; Wallet.setGoal(g.n); done = saved >= goal.c; renderGoals(); update(); SFX.tap(); say(`New goal: ${g.e} ${g.n} for $${g.c}!`); };
+        const b = document.createElement('button'); b.className = 'goal-card' + (saved >= g.c ? ' reached' : ''); b.type = 'button';
+        b.innerHTML = `<span class="gimg">${g.img ? `<img src="${esc(g.img)}" alt="" loading="lazy">` : g.e}</span><b>${esc(g.n)}</b><i>$${g.c}</i>`;
+        b.setAttribute('aria-pressed', g === goal); b.setAttribute('aria-label', `${g.n}, $${g.c}`);
+        b.onclick = () => { goal = g; Wallet.setGoal(g.id); done = saved >= goal.c; picked = true; try { localStorage.setItem('cb:goalPicked', '1'); } catch (e) {} renderGoals(); update(); SFX.tap(); say(`You are saving for the ${g.n}! ${g.e} $${g.c}. Let’s go!`); };
         goalRow.appendChild(b);
       });
+      $('#goalHint').hidden = picked;
+    }
+    function renderGoalDone() {
+      const box = $('#goalDone'); if (!box) return;
+      if (saved < goal.c) { box.hidden = true; return; }
+      box.hidden = false; box.innerHTML = `<span class="gbig">${goal.img ? `<img src="${esc(goal.img)}" alt="">` : goal.e}</span><div><b>You saved $${goal.c} for the ${esc(goal.n)}! 🎉</b><small>That took real work. ${goal.url ? 'A grown-up can open the store, or you can pick a bigger goal.' : 'Show a grown-up, or pick a bigger goal.'}</small></div>${goal.url ? `<a class="btn btn-sm" href="${esc(goal.url)}" target="_blank" rel="noopener noreferrer">🛒 Grown-up: open the store</a>` : ''}`;
     }
     function update() {
       amtEl.textContent = '$' + saved;
@@ -126,13 +133,14 @@
       labelEl.textContent = saved >= goal.c ? `${goal.e} ${goal.n}: GOT IT! 🎉` : `${goal.e} ${goal.n}: $${saved} of $${goal.c}`;
       svg.style.setProperty('--fat', (1 + Math.min(.14, saved / Math.max(goal.c, 1) * .14)).toFixed(3));
       if (builderLink) builderLink.textContent = saved > 0 ? `🏗️ Spend your $${saved} in the Builder` : '🏗️ Open the Builder';
+      renderGoalDone(); $$('.goal-card', goalRow).forEach((b, i) => b.classList.toggle('reached', saved >= GOALS[i].c));
       if (saved >= goal.c && !done) {
         done = true; SFX.cheer(); confetti(220);
         svg.classList.add('dance'); setTimeout(() => svg.classList.remove('dance'), 2400);
         say(`YOU DID IT! You saved $${goal.c} for the ${goal.n}! ${goal.e} Pick a new goal or keep stacking.`);
       }
     }
-    Wallet.setGoal(goal.n);
+    Wallet.setGoal(goal.id);
 
     // ---- the coin tray: five coins, each one drags; a dropped coin refills a moment later ----
     const N_COINS = 5;
@@ -146,6 +154,14 @@
       tray.appendChild(c);
     }
 
+    // ---- the bill tray: paychecks from Jobs in the Builder wait here until the kid drags them in ----
+    const BILL_TEXT = { b5: '$5', b20: '$20', b50: '$50', b100: '$100', stack: '$5,000', pot: '$10,000' };
+    const billTray = $('#billTray');
+    function renderBills() {
+      if (!billTray) return; billTray.innerHTML = ''; const bills = Wallet.bills(); let n = 0;
+      ['pot', 'stack', 'b100', 'b50', 'b20', 'b5'].forEach(k => { for (let i = 0; i < (bills[k] || 0); i++) { const b = document.createElement('div'); b.className = 'dbill ' + k; b.dataset.kind = k; b.innerHTML = `<span>${BILL_TEXT[k]}</span>`; b.setAttribute('role', 'button'); b.setAttribute('aria-label', `${Wallet.BILLS[k].name}. Drag it into the piggy.`); b.addEventListener('pointerdown', e => startDrag(e, b, k)); billTray.appendChild(b); n++; } });
+      billTray.hidden = !n; $('#billLabel').hidden = !n;
+    }
     const slotPoint = () => { const r = svg.getBoundingClientRect(); return { x: r.left + r.width * .455, y: r.top + r.height * .24 }; };
     const overPiggy = (x, y) => { const r = piggyEl.getBoundingClientRect(); return x > r.left - 24 && x < r.right + 24 && y > r.top - 40 && y < r.bottom + 16; };
     function eyesAt(x, y) {
@@ -155,47 +171,57 @@
     }
     const eyesRest = () => pupil && pupil.setAttribute('transform', '');
 
-    function startDrag(e, coin) {
+    // A ghost coin follows the finger. Every way a drag can end (up, cancel, lost capture, page hide) cleans it up,
+    // and the fly animations remove it on a timer too, so a missed animation event can never leave a stray coin behind.
+    const sweepGhosts = (force) => document.querySelectorAll('.dcoin.ghost').forEach(g => { if (force || performance.now() - (+g.dataset.t || 0) > 1600) g.remove(); });
+    function glide(ghost, x, y, scale, opacity, dur, rot) {
+      const d = reduced ? 1 : dur;
+      try { ghost.style.transition = `left ${d}ms cubic-bezier(.3,1.3,.5,1), top ${d}ms cubic-bezier(.3,1.3,.5,1), transform ${d}ms ease, opacity ${d}ms ease`; ghost.style.left = x + 'px'; ghost.style.top = y + 'px'; ghost.style.transform = `translate(-50%,-50%) scale(${scale})${rot ? ` rotate(${rot}deg)` : ''}`; ghost.style.opacity = opacity; } catch (err) {}
+      setTimeout(() => ghost.remove(), d + 60);
+    }
+    document.addEventListener('visibilitychange', () => { if (document.hidden) sweepGhosts(true); });
+    function startDrag(e, coin, kind) {
       if (coin.classList.contains('spent') || e.button > 0) return;
       if (!tempt.classList.contains('hidden')) { say('Decide first: spend or keep saving?'); return; }
-      e.preventDefault(); dragging = true;
-      const ghost = document.createElement('div'); ghost.className = 'dcoin ghost'; ghost.textContent = '$1';
+      e.preventDefault(); dragging = true; sweepGhosts(false);
+      const ghost = kind ? coin.cloneNode(true) : document.createElement('div'); if (!kind) { ghost.className = 'dcoin'; ghost.textContent = '$1'; } ghost.classList.add('ghost'); ghost.dataset.t = performance.now();
       document.body.appendChild(ghost);
       const move = (x, y) => { ghost.style.left = x + 'px'; ghost.style.top = y + 'px'; const over = overPiggy(x, y); piggyEl.classList.toggle('hot', over); eyesAt(x, y); };
       move(e.clientX, e.clientY); coin.classList.add('lifted'); SFX.whoosh();
-      const onMove = ev => move(ev.clientX, ev.clientY);
+      let lastX = e.clientX, lastY = e.clientY, ended = false;
+      const onMove = ev => { lastX = ev.clientX; lastY = ev.clientY; move(lastX, lastY); };
       const onUp = ev => {
-        coin.removeEventListener('pointermove', onMove); coin.removeEventListener('pointerup', onUp); coin.removeEventListener('pointercancel', onUp);
+        if (ended) return; ended = true;
+        coin.removeEventListener('pointermove', onMove); coin.removeEventListener('pointerup', onUp); coin.removeEventListener('pointercancel', onUp); coin.removeEventListener('lostpointercapture', onLost);
         try { coin.releasePointerCapture(ev.pointerId); } catch (err) {}
         coin.classList.remove('lifted'); piggyEl.classList.remove('hot'); eyesRest();
         setTimeout(() => { dragging = false; }, 0);
-        if (ev.type !== 'pointercancel' && overPiggy(ev.clientX, ev.clientY)) deposit(ghost, coin);
+        const x = ev.clientX || lastX, y = ev.clientY || lastY;
+        if (ev.type === 'pointerup' && overPiggy(x, y)) deposit(ghost, coin, kind);
         else flyBack(ghost, coin);
       };
+      const onLost = ev => setTimeout(() => { if (!ended) onUp({ type: 'lostpointercapture', pointerId: ev.pointerId, clientX: lastX, clientY: lastY }); }, 0);
       try { coin.setPointerCapture(e.pointerId); } catch (err) {}
-      coin.addEventListener('pointermove', onMove); coin.addEventListener('pointerup', onUp); coin.addEventListener('pointercancel', onUp);
+      coin.addEventListener('pointermove', onMove); coin.addEventListener('pointerup', onUp); coin.addEventListener('pointercancel', onUp); coin.addEventListener('lostpointercapture', onLost);
     }
     function flyBack(ghost, coin) {
-      const r = coin.getBoundingClientRect(); const gx = parseFloat(ghost.style.left), gy = parseFloat(ghost.style.top);
-      const tx = r.left + r.width / 2 - gx, ty = r.top + r.height / 2 - gy;
-      ghost.animate([{ transform: 'translate(-50%,-50%) scale(1.15)' }, { transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(1)` }], { duration: reduced ? 1 : 320, easing: 'cubic-bezier(.3,1.4,.5,1)' }).onfinish = () => ghost.remove();
+      const r = coin.getBoundingClientRect();
+      glide(ghost, r.left + r.width / 2, r.top + r.height / 2, 1, 0, 320);
       SFX.pop(); say(pick(['Almost! Drop it ON the piggy.', 'Aim for the piggy! 🐷', 'So close! Try again.']));
     }
-    function deposit(ghost, coin) {
+    function deposit(ghost, coin, kind) {
       const sp = slotPoint();
-      if (ghost) {
-        const gx = parseFloat(ghost.style.left), gy = parseFloat(ghost.style.top);
-        ghost.animate([{ transform: 'translate(-50%,-50%) scale(1.15)', opacity: 1 }, { transform: `translate(calc(-50% + ${sp.x - gx}px), calc(-50% + ${sp.y - gy}px)) scale(.35) rotate(180deg)`, opacity: .2 }], { duration: reduced ? 1 : 260, easing: 'cubic-bezier(.2,.8,.3,1)' }).onfinish = () => ghost.remove();
-      }
+      if (ghost) glide(ghost, sp.x, sp.y, .35, .2, 260, 180);
       // combo: drops within 3 seconds of each other climb the ladder
       const now = performance.now(); combo = (now - lastDrop < 3000) ? Math.min(combo + 1, COMBO.length - 1) : 0; lastDrop = now;
-      saved++; Wallet.set(saved);
-      SFX.clink(combo); setTimeout(() => SFX.slurp(), 120);
+      let v = 1;
+      if (kind) { v = Wallet.depositBill(kind); saved = Wallet.get(); coin.remove(); renderBills(); if (v >= 1000) { SFX.cheer(); confetti(260); } else if (v >= 50) confetti(120); }
+      else { saved++; Wallet.set(saved); }
+      SFX.clink(kind ? Math.min(COMBO.length - 1, combo + (v >= 100 ? 4 : 2)) : combo); setTimeout(() => SFX.slurp(), 120);
       svg.classList.remove('gulp'); void svg.offsetWidth; svg.classList.add('gulp');
-      sparkle(sp.x, sp.y); floatText('+$1', sp.x, sp.y);
-      // refill: the tray coin goes dark for a beat, then pops back
-      coin.classList.add('spent'); coin.disabled = true;
-      setTimeout(() => { coin.classList.remove('spent'); coin.disabled = false; coin.classList.remove('refill'); void coin.offsetWidth; coin.classList.add('refill'); }, 1100);
+      sparkle(sp.x, sp.y); floatText('+$' + v.toLocaleString('en-US'), sp.x, sp.y);
+      // refill: the tray coin goes dark for a beat, then pops back (bills do not refill: they were earned)
+      if (!kind) { coin.classList.add('spent'); coin.disabled = true; setTimeout(() => { coin.classList.remove('spent'); coin.disabled = false; coin.classList.remove('refill'); void coin.offsetWidth; coin.classList.add('refill'); }, 1100); }
       update();
       if (saved < goal.c) {
         if (saved % 10 === 0) { SFX.levelUp(); confetti(70, sp); setTimeout(showTempt, 700); say(`$${saved}! Level up! 🎉`); }
@@ -225,12 +251,14 @@
     $('#temptSpend').onclick = () => { saved = Math.max(0, saved - cur.c); Wallet.set(saved); SFX.buzz(); tempt.classList.add('hidden'); say(`Yum! But now you’re $${cur.c} further from the ${goal.n}. ${goal.e}`, true); update(); };
     $('#temptKeep').onclick = () => { saved += 1; Wallet.set(saved); SFX.levelUp(); tempt.classList.add('hidden'); say('Patience pays! Waiting earned you a bonus buck. 💚'); confetti(40); update(); };
     $('#piggyReset').onclick = () => { if (saved > 0 && !confirm(`Start over? This empties the piggy ($${saved}) and your Builder wallet.`)) return; saved = 0; done = false; combo = 0; Wallet.set(0); tempt.classList.add('hidden'); update(); say('Drag a coin into the piggy!'); };
-    document.addEventListener('wallet', e => { if (e.detail !== saved) { saved = e.detail; done = saved >= goal.c; update(); } });
+    document.addEventListener('wallet', e => { const v = e.detail && typeof e.detail.saved === 'number' ? e.detail.saved : Wallet.get(); if (v !== saved) { saved = v; done = saved >= goal.c; update(); } renderBills(); });
+    window.addEventListener('storage', ev => { if (ev.key === 'cb:wallet') location.reload(); });
 
     const gain = Wallet.interest();
-    renderGoals(); update();
+    renderGoals(); renderBills(); update();
     if (gain) { say(`🌱 Baby money! Your savings made $${gain} while you were away.`); setTimeout(() => { SFX.levelUp(); confetti(60); }, 600); }
-    else say('Drag a coin into the piggy!');
+    else if (Wallet.billCount()) say(`You have ${Wallet.billCount()} paycheck${Wallet.billCount() > 1 ? 's' : ''} from your jobs! Drag them into the piggy. 💵`);
+    else say(picked ? 'Drag a coin into the piggy!' : '👉 Tap the thing you want to save for!');
   })();
 
   /* ---------------- game 2: Need or Want (100 cards) ---------------- */
@@ -416,7 +444,7 @@
 
   /* ---------------- game 4: The Chill-o-Meter ---------------- */
   (function meter() {
-    const wk = $('#wk'), yr = $('#yr'); if (!wk || !yr) return;
+    const wk = $('#wk'), yr = $('#yr'); if (!wk || !yr) return; const DAYS = 365;
     const RATE = 1.07, CHILLION = 1e6; const tower = $('#tower');
     for (let i = 0; i < 24; i++) tower.appendChild(document.createElement('i'));
     function count(el, to) {
@@ -427,12 +455,12 @@
     }
     function calc() {
       const w = +wk.value, y = +yr.value; $('#wkOut').textContent = '$' + w; $('#yrOut').textContent = y;
-      const put = w * 52 * y; let bal = 0; for (let i = 0; i < y; i++) bal = (bal + w * 52) * RATE;
+      const put = w * DAYS * y; let bal = 0; for (let i = 0; i < y; i++) bal = (bal + w * DAYS) * RATE;
       count($('#putIn'), put); count($('#grew'), bal - put); count($('#total'), bal);
       const pct = Math.max(4, Math.min(100, Math.log10(Math.max(10, bal)) / 6 * 100)); $('#chillFill').style.width = pct + '%';
       $('#chillLabel').textContent = bal < 1e3 ? 'Kinda chill 🙂' : bal < 1e4 ? 'Pretty chill 😌' : bal < 1e5 ? 'Very chill 🏖️' : bal < CHILLION ? 'Super chill 🌴' : 'CHILLION MODE 😎💚';
-      let b2 = 0, n = 0; while (b2 < CHILLION && n < 200) { b2 = (b2 + w * 52) * RATE; n++; }
-      $('#chillYears').textContent = n >= 200 ? `At $${w} a week it would take more than 200 years to reach a game Chillion ($1,000,000). Try saving a little more!` : `Keep saving $${w} a week and you would reach a game Chillion ($1,000,000) in about ${n} years.${n <= y ? ' You’re already there in this game! 🎉' : ''}`;
+      let b2 = 0, n = 0; while (b2 < CHILLION && n < 200) { b2 = (b2 + w * DAYS) * RATE; n++; }
+      $('#chillYears').textContent = n >= 200 ? `At $${w} a day it would take more than 200 years to reach a game Chillion ($1,000,000). Try saving a little more!` : `Keep saving $${w} a day (that is $${String(w * DAYS).replace(/\B(?=(\d{3})+(?!\d))/g, ',')} a year) and you would reach a game Chillion ($1,000,000) in about ${n} years.${n <= y ? ' You’re already there in this game! 🎉' : ''}`;
       [...tower.children].forEach((bar, i) => { bar.style.height = Math.max(6, pct * (0.35 + 0.65 * (i + 1) / 24)) + '%'; });
     }
     wk.addEventListener('input', calc); yr.addEventListener('input', calc); calc();

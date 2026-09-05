@@ -2,24 +2,26 @@
    Depends on builder-art.js (window.CB_ART). Exposes window.CB_CATALOG. */
 (() => {
   'use strict';
-  const A = window.CB_ART, S = A.S, P = A.P, H = A.H;
+  const A = window.CB_ART, S = A.S, P = A.P, H = A.H, Z = A.Z, VH = A.VH;
 
   /* Shelves. Each thing belongs to exactly one kit; jobs count things per kit. */
   const KITS = [
-    { id: 'blocks', e: '🧱', name: 'Snap Blocks' }, { id: 'pieces', e: '🧩', name: 'Build parts' },
+    { id: 'blocks', e: '🧱', name: 'Snap Blocks' }, { id: 'tiles', e: '🔷', name: 'Magnet Tiles' }, { id: 'pieces', e: '🧩', name: 'Build parts' },
     { id: 'waterpark', e: '🏊', name: 'Water park' }, { id: 'themepark', e: '🎢', name: 'Theme park' },
     { id: 'zoo', e: '🦁', name: 'Zoo & jungle' }, { id: 'city', e: '🏙️', name: 'City & school' },
     { id: 'castle', e: '🏰', name: 'Castle' }, { id: 'space', e: '🚀', name: 'Space' },
     { id: 'beach', e: '🏖️', name: 'Beach & sea' }, { id: 'nature', e: '🌳', name: 'Nature' },
     { id: 'home', e: '🛋️', name: 'Home & treats' }, { id: 'vehicles', e: '🚗', name: 'Vehicles' },
-    { id: 'people', e: '🧒', name: 'People' },
+    { id: 'people', e: '🧒', name: 'People' }, { id: 'characters', e: '🦸', name: 'Characters' },
   ];
 
   /* V = hand-drawn sticker, E = emoji sticker, G = grid piece (snaps; w = cols/24), B = Snap Block */
   const V = (id, kit, name, price, w, svg, x = {}) => ({ id, kit, name, price, w, svg, ...x });
   const E = (id, kit, name, e, price, w = .14) => ({ id, kit, name, e, price, w });
-  const G = (id, kit, name, price, cols, svg, x = {}) => ({ id, kit, name, price, w: cols / 24, cols, svg, snap: true, ...x });
-  const B = (id, name, price, cols, rows, shape = 'brick') => ({ id, kit: 'blocks', name, price, w: cols / 24, cols, rows, shape, snap: true, block: true, colorable: true, color: 'red', svg: (u, it) => A.blockSVG(u, it, cols, rows, shape) });
+  const G = (id, kit, name, price, cols, svg, x = {}) => ({ id, kit, name, price: kit === 'pieces' ? 0 : price, w: cols / 24, cols, svg, snap: true, ...x });
+  /* a block's art is cols cells of front face plus a DEPTH-wide side face; snapTop = the share of its height that is top face + studs */
+  const B = (id, name, price, cols, rows, shape = 'brick') => ({ id, kit: 'blocks', name, price: 0, w: (cols + A.DEPTH / A.U) / 24, cols, rows, shape, snap: true, block: true, snapTop: (A.STUD + A.DEPTH) / (rows * A.U + A.STUD + A.DEPTH), colorable: true, color: 'red', svg: (u, it) => A.blockSVG(u, it, cols, rows, shape) });
+  const T = (id, name, price, cols, shape) => ({ id, kit: 'tiles', name, price: 0, w: cols / 24, cols, shape, snap: true, colorable: true, color: 'blue', svg: (u, it) => A.tileSVG(u, it, shape) });
   const CL = (c) => ({ colorable: true, color: c });
 
   const ITEMS = [
@@ -27,12 +29,16 @@
     B('b1', '1 block', 1, 1, 1), B('b2', '2 block', 1, 2, 1), B('b3', '3 block', 1, 3, 1), B('b4', '4 block', 2, 4, 1), B('b6', '6 block', 2, 6, 1),
     B('b22', '2 x 2 block', 2, 2, 2), B('b42', '4 x 2 block', 3, 4, 2), B('bslope', 'Slope', 1, 2, 1, 'slope'), B('barch', 'Arch block', 2, 2, 2, 'arch'),
     B('bwin', 'Window block', 2, 2, 2, 'window'), B('bdoor', 'Door block', 2, 2, 3, 'door'), B('bround', 'Round block', 1, 1, 1, 'round'),
-    /* Build parts: walls, roofs, floors, fences, paths */
+    /* Magnet Tiles: translucent shapes that build see-through houses, towers, and castles */
+    T('tsq', 'Square tile', 1, 2, 'sq'), T('tbig', 'Big square', 2, 4, 'big'), T('ttri', 'Triangle', 1, 2, 'tri'), T('trtri', 'Corner triangle', 1, 2, 'rtri'),
+    T('ttall', 'Tall triangle', 1, 2, 'tall'), T('trect', 'Long tile', 2, 4, 'rect'), T('twin', 'Window tile', 1, 2, 'win'), T('tarch', 'Door tile', 1, 2, 'arch'),
+    /* Build parts: walls, roofs, floors, fences, paths, slides */
     G('wall', 'pieces', 'Brick wall', 3, 4, P.wall, CL('orange')), G('wallTall', 'pieces', 'Tall wall', 3, 2, P.wallTall, CL('orange')), G('roof', 'pieces', 'Roof', 3, 4, P.roof, CL('red')),
     G('door', 'pieces', 'Door', 1, 1, P.door, CL('brown')), G('window', 'pieces', 'Window', 1, 1, P.window, CL('white')), G('floorTile', 'pieces', 'Floor tile', 1, 2, P.floorTile, CL('yellow')),
     G('waterTile', 'pieces', 'Water tile', 1, 2, P.waterTile), G('grassTile', 'pieces', 'Grass tile', 1, 2, P.grassTile), G('sandTile', 'pieces', 'Sand tile', 1, 2, P.sandTile),
     G('fence', 'pieces', 'Fence', 1, 4, P.fence, CL('white')), G('hedge', 'pieces', 'Hedge', 1, 2, P.hedge), G('path', 'pieces', 'Path', 1, 2, P.path),
     G('bridge', 'pieces', 'Bridge', 5, 6, P.bridge), G('stairs', 'pieces', 'Stairs', 2, 2, P.stairs, CL('white')), G('ladder', 'pieces', 'Ladder', 1, 1, P.ladder, CL('yellow')), G('pillar', 'pieces', 'Pillar', 2, 1, P.pillar, CL('white')),
+    G('slideRamp', 'pieces', 'Slide', 2, 4, P.slideRamp, CL('yellow')), G('slideSteep', 'pieces', 'Steep slide', 2, 2, P.slideSteep, CL('yellow')), G('slideCurve', 'pieces', 'Curvy slide', 3, 4, P.slideCurve, CL('yellow')), G('slideTop', 'pieces', 'Slide platform', 1, 2, P.slideTop, CL('blue')),
     /* Water park */
     V('pool', 'waterpark', 'Big pool', 20, .42, S.pool), V('roundpool', 'waterpark', 'Round pool', 14, .3, S.roundpool), V('lazyriver', 'waterpark', 'Lazy river', 25, .5, S.lazyriver),
     V('hottub', 'waterpark', 'Hot tub', 8, .22, S.hottub), V('waterslide', 'waterpark', 'Water slide', 18, .3, S.waterslide), V('waterfall', 'waterpark', 'Waterfall', 12, .26, S.waterfall),
@@ -43,6 +49,9 @@
     V('tubeSlide', 'waterpark', 'Tube slide', 14, .3, H.tubeSlide, CL('green')), V('twistySlide', 'waterpark', 'Twisty slide', 12, .28, H.twistySlide, CL('purple')), V('kiddieSlide', 'waterpark', 'Kiddie slide', 5, .2, H.kiddieSlide, CL('yellow')),
     V('dropSlide', 'waterpark', 'Drop slide', 16, .22, H.dropSlide, CL('red')), V('wavePool', 'waterpark', 'Wave pool', 22, .46, H.wavePool), V('sprayMushroom', 'waterpark', 'Spray mushroom', 4, .16, H.sprayMushroom, CL('pink')),
     V('tubeRider', 'waterpark', 'Kid on a tube', 2, .1, H.tubeRider, CL('yellow')), V('raft', 'waterpark', 'Family raft', 4, .16, H.raft, CL('orange')),
+    V('grotto', 'waterpark', 'Waterfall cave', 12, .3, H.grotto), V('poolSlide', 'waterpark', 'Pool slide', 5, .2, H.poolSlide, CL('blue')), V('waterCannon', 'waterpark', 'Water cannon', 4, .18, H.waterCannon, CL('red')),
+    V('poolLadder', 'waterpark', 'Pool ladder', 1, .08, H.poolLadder), V('swimBar', 'waterpark', 'Swim-up snack hut', 8, .24, H.swimBar), V('geyser', 'waterpark', 'Geyser', 5, .14, H.geyser),
+    V('bubbleJets', 'waterpark', 'Jacuzzi jets', 3, .18, H.bubbleJets), V('poolLight', 'waterpark', 'Pool light', 1, .1, H.poolLight, CL('blue')), V('divingRock', 'waterpark', 'Diving rock', 6, .22, H.divingRock),
     E('wave', 'waterpark', 'Wave', '🌊', 2, .16), E('drop', 'waterpark', 'Water drop', '💧', 0, .08), E('ice', 'waterpark', 'Ice block', '🧊', 1, .1),
     /* Theme park */
     V('ferrisWheel', 'themepark', 'Ferris wheel', 20, .3, H.ferrisWheel), V('carousel', 'themepark', 'Carousel', 12, .26, H.carousel), E('coaster', 'themepark', 'Roller coaster', 25, .36),
@@ -61,6 +70,7 @@
     E('zebra', 'zoo', 'Zebra', '🦓', 4, .14), E('hippo', 'zoo', 'Hippo', '🦛', 4, .15), E('gorilla', 'zoo', 'Gorilla', '🦍', 4, .14), E('tiger', 'zoo', 'Tiger', '🐯', 4, .13), E('snake', 'zoo', 'Snake', '🐍', 2, .12),
     /* City and school */
     V('schoolBuilding', 'city', 'School', 12, .38, H.schoolBuilding), V('cityBuilding', 'city', 'Apartment building', 7, .18, H.cityBuilding, CL('blue')), V('skyscraper', 'city', 'Skyscraper', 10, .16, H.skyscraper),
+    G('garageLevel', 'city', 'Garage deck', 3, 6, P.garageLevel), G('garageRamp', 'city', 'Garage ramp', 1, 2, P.garageRamp),
     G('road', 'city', 'Road', 1, 4, P.road), G('roadCorner', 'city', 'Road corner', 1, 2, P.roadCorner), G('crossing', 'city', 'Crosswalk', 1, 4, P.crossing), G('sidewalk', 'city', 'Sidewalk', 1, 4, P.sidewalk),
     V('trafficLight', 'city', 'Traffic light', 2, .07, H.trafficLight), V('streetLamp', 'city', 'Street lamp', 2, .08, H.streetLamp), V('busStop', 'city', 'Bus stop', 3, .18, H.busStop),
     V('flagpole', 'city', 'Flagpole', 2, .1, H.flagpole, CL('green')), V('bench', 'city', 'Bench', 1, .16, H.bench, CL('brown')), V('hydrant', 'city', 'Fire hydrant', 1, .06, H.hydrant),
@@ -106,6 +116,10 @@
     E('bus', 'vehicles', 'Bus', '🚌', 3, .18), E('schoolbus', 'vehicles', 'School bus', '🚍', 3, .18), E('train', 'vehicles', 'Train', '🚂', 5, .2), E('plane', 'vehicles', 'Airplane', '✈️', 6, .2), E('heli', 'vehicles', 'Helicopter', '🚁', 5, .18),
     E('bike', 'vehicles', 'Bike', '🚲', 2, .14), E('scooter', 'vehicles', 'Scooter', '🛴', 1, .12), E('moped', 'vehicles', 'Moped', '🛵', 2, .14), E('tractor', 'vehicles', 'Tractor', '🚜', 3, .16), E('ambulance', 'vehicles', 'Ambulance', '🚑', 4, .18),
     E('taxi', 'vehicles', 'Taxi', '🚕', 3, .16), E('monorail', 'vehicles', 'Monorail', '🚝', 5, .2), E('tram', 'vehicles', 'Tram', '🚊', 4, .18),
+    V('skyRacer', 'vehicles', 'Sky Racer coupe', 6, .2, VH.skyRacer, CL('blue')), V('redRocket', 'vehicles', 'Rocket coupe', 6, .2, VH.redRocket, CL('red')), V('boxyClassic', 'vehicles', 'Boxy classic', 5, .2, VH.boxyClassic, CL('white')),
+    V('pickup', 'vehicles', 'Pickup truck', 4, .2, VH.pickup, CL('red')), V('boxTruck', 'vehicles', 'Box truck (your words!)', 5, .22, VH.boxTruck, { ...CL('white'), label: true, def: 'CHILLION' }), V('semiTruck', 'vehicles', 'Big rig', 7, .3, VH.semiTruck, CL('blue')),
+    V('forklift', 'vehicles', 'Forklift', 4, .14, VH.forklift, CL('yellow')), V('tractorBig', 'vehicles', 'Big tractor', 5, .18, VH.tractorBig, CL('green')), V('yacht', 'vehicles', 'Yacht', 8, .24, VH.yacht, CL('white')),
+    V('monsterTruck', 'vehicles', 'Monster truck (your words!)', 7, .24, VH.monsterTruck, { ...CL('green'), label: true, def: 'CHILLZILLA' }), V('passengerJet', 'vehicles', 'Passenger jet', 10, .34, VH.passengerJet, CL('white')), V('fighterJet', 'vehicles', 'Fighter jet', 8, .28, VH.fighterJet, CL('black')), V('stealthJet', 'vehicles', 'Stealth jet', 9, .28, VH.stealthJet, CL('blue')), V('militaryHeli', 'vehicles', 'Rescue helicopter', 8, .26, VH.militaryHeli, CL('green')),
     /* People (the pal maker comes first, it is the star) */
     V('pal', 'people', 'Make a pal!', 3, .11, H.pal, { pal: true, colorable: true, color: 'red' }),
     E('kid', 'people', 'Kid', '🧒', 1, .09), E('girl', 'people', 'Girl', '👧', 1, .09), E('boy', 'people', 'Boy', '👦', 1, .09), E('baby', 'people', 'Baby', '👶', 1, .08), E('mom', 'people', 'Mom', '👩', 1, .09), E('dad', 'people', 'Dad', '👨', 1, .09),
@@ -114,14 +128,29 @@
     E('scientist', 'people', 'Scientist', '🧑‍🔬', 2, .1), E('artist', 'people', 'Artist', '🧑‍🎨', 2, .1), E('king', 'people', 'King', '🤴', 3, .1), E('queen', 'people', 'Queen', '👸', 3, .1), E('hero', 'people', 'Superhero', '🦸', 3, .1),
     E('wizard', 'people', 'Wizard', '🧙', 3, .1), E('fairy', 'people', 'Fairy', '🧚', 3, .1), E('swimmer', 'people', 'Swimmer', '🏊', 2, .1), E('dancer', 'people', 'Dancer', '💃', 2, .1), E('family', 'people', 'Family', '👨‍👩‍👧‍👦', 3, .16),
     E('lifeguard', 'people', 'Lifeguard', '🛟', 1, .08), E('pilot', 'people', 'Pilot', '🧑‍✈️', 2, .1), E('mechanic', 'people', 'Mechanic', '🧑‍🔧', 2, .1), E('singer', 'people', 'Singer', '🧑‍🎤', 2, .1),
+    /* Characters: our own pals with the shapes and sizes kids love, plus real animals */
+    V('dash', 'characters', 'Dash the hedgehog', 4, .1, Z.dash, CL('blue')), V('midnight', 'characters', 'Midnight', 4, .1, Z.midnight, CL('black')), V('rocky', 'characters', 'Rocky', 4, .105, Z.rocky, CL('red')),
+    V('rosie', 'characters', 'Rosie', 4, .095, Z.rosie, CL('pink')), V('echo', 'characters', 'Echo the bat', 4, .11, Z.echo, CL('white')), V('drOvo', 'characters', 'Dr. Ovo', 5, .14, Z.drOvo, CL('red')),
+    V('plumber', 'characters', 'Jumpy the plumber', 4, .09, Z.plumber, { ...CL('red'), label: true, def: 'J' }), V('spongy', 'characters', 'Spongy', 4, .085, Z.spongy, CL('yellow')), V('squiggy', 'characters', 'Squiggy', 4, .08, Z.squiggy, CL('blue')),
+    V('captainCrab', 'characters', 'Captain Crab', 4, .12, Z.captainCrab, CL('red')), V('shelly', 'characters', 'Shelly the snail', 3, .08, Z.shelly, CL('pink')), V('starPat', 'characters', 'Star Pat', 4, .1, Z.starPat, CL('pink')),
+    V('bluePup', 'characters', 'Blue Pup', 4, .085, Z.bluePup, CL('blue')), V('zappy', 'characters', 'Zappy', 4, .08, Z.zappy, CL('yellow')), V('frostDragon', 'characters', 'Frost Dragon', 9, .24, Z.frostDragon, CL('white')),
+    V('skaterOtto', 'characters', 'Otis the skater', 3, .08, Z.skaterOtto, CL('red')), V('skaterReggie', 'characters', 'Regan the skater', 3, .085, Z.skaterReggie, CL('purple')), V('skaterTwister', 'characters', 'Twizzle', 3, .08, Z.skaterTwister, CL('green')), V('skaterSam', 'characters', 'Sammy the squid kid', 3, .085, Z.skaterSam, CL('blue')),
+    V('ogre', 'characters', 'Big Green Ogre', 5, .14, Z.ogre, CL('green')),
+    V('germanShepherd', 'characters', 'German shepherd', 3, .12, Z.germanShepherd), V('husky', 'characters', 'Husky', 3, .12, Z.husky), V('rottweiler', 'characters', 'Rottweiler', 3, .125, Z.rottweiler),
+    V('pomeranian', 'characters', 'Pomeranian', 2, .07, Z.pomeranian), V('retriever', 'characters', 'Golden retriever', 3, .12, Z.retriever), V('kitty', 'characters', 'Kitty', 2, .08, Z.kitty, CL('orange')), V('lionKing', 'characters', 'Lion', 4, .14, Z.lionKing),
   ];
+  /* Picture sprites (PNG with a transparent background) from sprites.js join the catalog as image items. */
+  (window.CHILLION_SPRITES || []).forEach(sp => { if (sp && sp.id && sp.src && !ITEMS.some(d => d.id === sp.id)) ITEMS.push({ id: sp.id, kit: KITS.some(k => k.id === sp.kit) ? sp.kit : 'home', name: sp.name || sp.id, price: Math.max(0, Math.round(+sp.price || 0)), w: Math.min(.6, Math.max(.05, +sp.w || .2)), img: sp.src, label: false }); });
   const DEF = Object.fromEntries(ITEMS.map(d => [d.id, d]));
 
   /* The Job Board: build orders that PAY. Progress counts things by kit; strokes count drawing. One collect per world. */
   const JOBS = [
     { id: 'waterpark', e: '🏊', name: 'Water Park', pay: 15, need: { waterpark: 6 }, how: 'Put 6 water park things in your world' },
     { id: 'lazyriver', e: '🛟', name: 'Lazy River', pay: 12, need: { waterpark: 4, people: 1 }, how: 'Snap 4 river pieces into a loop and put a kid on a tube' },
-    { id: 'palparty', e: '🦸', name: 'Pal Party', pay: 8, need: { people: 4 }, how: 'Make or add 4 people. Tap Make a pal to dress one up!' },
+    { id: 'palparty', e: '🦸', name: 'Pal Party', pay: 8, need: { people: 4 }, how: 'Make or add 4 people or characters. Tap Make a pal to dress one up!' },
+    { id: 'garage', e: '🅿️', name: 'Parking Garage', pay: 14, need: { city: 3, vehicles: 6 }, how: 'Stack 3 garage decks (City shelf) and park 6 vehicles' },
+    { id: 'tiles', e: '🔷', name: 'Tile Tower', pay: 10, need: { tiles: 8 }, how: 'Snap 8 magnet tiles together' },
+    { id: 'river', e: '🌊', name: 'River Designer', pay: 10, river: 1, need: { waterpark: 3 }, how: 'Draw a river with the 🌊 brush, then add 3 water park things' },
     { id: 'themepark', e: '🎢', name: 'Theme Park', pay: 18, need: { themepark: 6 }, how: 'Build 6 theme park rides, tracks, or stands' },
     { id: 'zoo', e: '🦁', name: 'Zoo', pay: 16, need: { zoo: 6 }, how: 'Add 6 zoo things: pens, bars, signs, and animals' },
     { id: 'jungle', e: '🌴', name: 'Jungle', pay: 12, need: { nature: 5, zoo: 2 }, how: '5 nature things plus 2 jungle animals or vines' },

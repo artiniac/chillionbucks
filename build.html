@@ -19,6 +19,7 @@
   <a class="back" href="index.html#play" aria-label="Back to the games">← Games</a>
   <div class="bbrand">🏗️ <span>Chillion Builder</span></div>
   <div class="wallet" id="wallet" title="Your saved bucks">💰 <b id="walletAmt">$0</b></div>
+  <button type="button" class="paybtn" id="payBtn" hidden title="Money you earned. Drag it into the piggy to save it.">💵 <b>0</b></button>
   <button id="soundBtn" class="sound" aria-pressed="true" aria-label="Toggle sound">🔊</button>
 </header>
 
@@ -62,6 +63,7 @@
   <div class="drawbar" id="drawbar" hidden>
     <div class="colors" id="colors"></div>
     <div class="sizes"><button type="button" data-size=".006" aria-label="Thin brush"><i style="width:6px;height:6px"></i></button><button type="button" data-size=".014" class="on" aria-label="Medium brush"><i style="width:12px;height:12px"></i></button><button type="button" data-size=".03" aria-label="Thick brush"><i style="width:20px;height:20px"></i></button></div>
+    <button type="button" class="river" id="riverBtn">🌊 River brush</button>
     <button type="button" class="eraser" id="eraserBtn">🧽 Eraser</button>
     <button type="button" class="done" id="drawDone">✓ Done drawing</button>
   </div>
@@ -89,9 +91,22 @@
 <div class="sheet" id="jobsSheet" hidden>
   <div class="sheet-card">
     <h2 id="jobsTitle">Job Board 💼</h2>
-    <p class="tiny">Build what a job asks for and you get PAID. Each job pays once per world. Finish the whole world with 🏆 for a big paycheck.</p>
-    <div class="jobs" id="jobs"></div>
+    <div class="jobtabs" id="jobTabs" role="tablist"><button type="button" role="tab" data-tab="work" aria-selected="true">💪 Work</button><button type="button" role="tab" data-tab="orders" aria-selected="false">📋 Build orders</button></div>
+    <p class="tiny" id="workTotal">Pick a job. Do the work. Get paid. Then build whatever you want!</p>
+    <div class="jobs" id="work"></div>
+    <p class="tiny" id="ordersTip" hidden>Build orders are bonus paychecks: build what the order asks for and collect. Each order pays once per world. Finish the whole world with 🏆 for a big paycheck.</p>
+    <div class="jobs" id="jobs" hidden></div>
     <div class="row"><button type="button" class="btn" id="jobsClose">Back to building</button></div>
+  </div>
+</div>
+
+<div class="sheet" id="workSheet" hidden>
+  <div class="sheet-card work-card">
+    <div class="work-head"><h2 id="workTitle">Job</h2><span class="work-count" id="workCount"></span></div>
+    <p class="tiny" id="workHow"></p>
+    <div class="work-bar" id="workBar"><i></i></div>
+    <div class="work-stage" id="workStage"></div>
+    <div class="row"><button type="button" class="btn btn-alt" id="workQuit">Quit this job</button></div>
   </div>
 </div>
 
@@ -115,6 +130,18 @@
   </div>
 </div>
 
+<div class="sheet" id="depositSheet" hidden>
+  <div class="sheet-card dep-card">
+    <h2>Payday! 💵</h2>
+    <p class="tiny" id="depMsg">Drag each bill into the piggy!</p>
+    <div class="dep-stage">
+      <div class="dep-tray" id="depTray"></div>
+      <div class="dep-pig" id="depPig"></div>
+    </div>
+    <div class="row"><button type="button" class="btn btn-alt" id="depClose">Later</button><button type="button" class="btn" id="depDone" hidden>Go build! 🏗️</button></div>
+  </div>
+</div>
+
 <div class="payday" id="payday" hidden></div>
 
 <div class="sheet" id="snapSheet" hidden>
@@ -132,7 +159,9 @@
 <script src="sfx.js"></script>
 <script src="wallet.js"></script>
 <script src="builder-art.js"></script>
+<script src="sprites.js"></script>
 <script src="builder-catalog.js"></script>
+<script src="jobs.js"></script>
 <script src="builder.js"></script>
 </body>
 </html>

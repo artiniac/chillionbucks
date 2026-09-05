@@ -20,7 +20,7 @@
   const fresh = () => ({ v: 2, bg: { type: 'scene', id: 'bedroom' }, items: [], strokes: [], jobsDone: {}, finished: false, born: Date.now() });
   const upgrade = w => { w.v = 2; w.strokes = w.strokes || []; w.jobsDone = w.jobsDone || {}; w.finished = !!w.finished; w.born = w.born || Date.now(); w.items = (w.items || []).filter(it => DEF[it.kind]).map(it => ({ rot: 0, color: DEF[it.kind].color, ...it })); return w; };
   let world = (() => { try { const w = JSON.parse(localStorage.getItem(KEY) || 'null'); if (w && Array.isArray(w.items)) return upgrade(w); } catch (e) {} return fresh(); })();
-  let selected = null, drawing = false, eraser = false, color = '#2563eb', brush = .014, shopColor = 'red';
+  let selected = null, drawing = false, eraser = false, river = false, color = '#2563eb', brush = .014, shopColor = 'red';
   const undo = [];
 
   const STAGE = $('#stage'), BG = $('#bg'), LAYER = $('#items'), DRAW = $('#draw'), HINT = $('#hint'), TOOLS = $('#tools'), SHELF = $('#shelf'), CATSEL = $('#cats'), GRIDEL = $('#grid');
@@ -38,9 +38,10 @@
   function pushUndo() { undo.push(JSON.stringify({ items: world.items, strokes: world.strokes, wallet: Wallet.get() })); if (undo.length > 40) undo.shift(); }
 
   /* ============================== GEOMETRY + SNAP GRID ============================== */
-  const vbCache = {};
+  const vbCache = {}, imgAspect = {};
   function aspect(def, it) { // height / width of the art
     if (def.e) return 1;
+    if (def.img) { if (imgAspect[def.id] === undefined) { imgAspect[def.id] = 1; const im = new Image(); im.onload = () => { imgAspect[def.id] = im.naturalHeight / im.naturalWidth || 1; replaceAll(); }; im.src = def.img; } return imgAspect[def.id]; }
     if (vbCache[def.id] !== undefined) return vbCache[def.id];
     const m = def.svg('vb', it || { color: def.color, label: def.def }).match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/);
     return (vbCache[def.id] = m ? +m[2] / +m[1] : 1);
@@ -53,7 +54,7 @@
     const cell = r.width / GRID;
     const wpx = def.w * r.width * it.s, hpx = wpx * aspect(def, it);
     const bw = rotated(it) ? hpx : wpx, bh = rotated(it) ? wpx : hpx;
-    const studPx = (def.block && it.rot === 0) ? hpx * (10 / (def.rows * 40 + 10)) : 0;
+    const studPx = (def.snapTop && it.rot === 0) ? hpx * def.snapTop : 0;
     const left = it.x * r.width - bw / 2, top = it.y * r.height - bh / 2 + studPx;
     const sl = Math.round(left / cell) * cell, st = Math.round(top / cell) * cell;
     it.x = clamp((sl + bw / 2) / r.width, 0, 1); it.y = clamp((st - studPx + bh / 2) / r.height, 0, 1);
@@ -71,7 +72,7 @@
     d.style.transform = `translate(-50%,-50%) rotate(${it.rot || 0}deg) scale(${it.s})${it.flip ? ' scaleX(-1)' : ''}`;
     const em = d.querySelector('.em'); if (em) em.style.fontSize = (w * .85) + 'px';
   }
-  function art(def, it, u) { return def.svg ? def.svg(u, it) : `<span class="em">${def.e}</span>`; }
+  function art(def, it, u) { return def.img ? `<img class="pic" src="${def.img}" alt="" draggable="false">` : def.svg ? def.svg(u, it) : `<span class="em">${def.e}</span>`; }
   function makeEl(it) {
     const def = DEF[it.kind]; const d = document.createElement('div'); d.className = 'it' + (def.snap ? ' snap' : ''); d.dataset.uid = it.uid;
     d.innerHTML = art(def, it, it.uid); placeEl(d, it); return d;
@@ -98,12 +99,29 @@
   // drawing layer
   const dctx = DRAW.getContext('2d');
   function sizeDraw() { const r = stageRect(); const dpr = Math.min(2, devicePixelRatio || 1); DRAW.width = Math.round(r.width * dpr); DRAW.height = Math.round(r.height * dpr); redraw(); }
+  let waterPhase = 0, waterRaf = null;
+  function tracePath(st, W, H) { dctx.beginPath(); st.pts.forEach(([x, y], i) => { if (i === 0) dctx.moveTo(x * W, y * H); else dctx.lineTo(x * W, y * H); }); if (st.pts.length === 1) dctx.lineTo(st.pts[0][0] * W + .1, st.pts[0][1] * H); }
   function strokePath(st, W, H) {
+    dctx.lineCap = 'round'; dctx.lineJoin = 'round'; dctx.setLineDash([]);
+    if (st.c === 'river') { // a finger-drawn lazy river: concrete edge, water, and a moving current
+      const lw = Math.max(10, st.w * W);
+      dctx.globalCompositeOperation = 'source-over';
+      tracePath(st, W, H); dctx.strokeStyle = '#e2e8f0'; dctx.lineWidth = lw * 1.3; dctx.stroke();
+      tracePath(st, W, H); dctx.strokeStyle = '#0ea5e9'; dctx.lineWidth = lw; dctx.stroke();
+      tracePath(st, W, H); dctx.strokeStyle = 'rgba(224,242,254,.85)'; dctx.lineWidth = Math.max(2, lw * .14); dctx.setLineDash([lw * .5, lw * .9]); dctx.lineDashOffset = -waterPhase * lw * .02; dctx.stroke(); dctx.setLineDash([]);
+      return;
+    }
     dctx.globalCompositeOperation = st.c === 'erase' ? 'destination-out' : 'source-over';
-    dctx.strokeStyle = st.c === 'erase' ? '#000' : st.c; dctx.lineWidth = Math.max(2, st.w * W); dctx.lineCap = 'round'; dctx.lineJoin = 'round';
-    dctx.beginPath(); st.pts.forEach(([x, y], i) => { if (i === 0) dctx.moveTo(x * W, y * H); else dctx.lineTo(x * W, y * H); }); if (st.pts.length === 1) dctx.lineTo(st.pts[0][0] * W + .1, st.pts[0][1] * H); dctx.stroke();
+    dctx.strokeStyle = st.c === 'erase' ? '#000' : st.c; dctx.lineWidth = Math.max(2, st.w * W);
+    tracePath(st, W, H); dctx.stroke();
   }
-  function redraw() { const W = DRAW.width, H = DRAW.height; dctx.clearRect(0, 0, W, H); world.strokes.forEach(st => strokePath(st, W, H)); dctx.globalCompositeOperation = 'source-over'; }
+  function redraw() {
+    const W = DRAW.width, H = DRAW.height; dctx.clearRect(0, 0, W, H); world.strokes.forEach(st => strokePath(st, W, H)); dctx.globalCompositeOperation = 'source-over';
+    const flowing = !reduced && world.strokes.some(st => st.c === 'river');
+    if (flowing && !waterRaf) waterRaf = requestAnimationFrame(waterTick); if (!flowing && waterRaf) { cancelAnimationFrame(waterRaf); waterRaf = null; }
+  }
+  let lastTick = 0;
+  function waterTick(t) { waterRaf = null; if (t - lastTick > 60) { lastTick = t; waterPhase = (waterPhase + 1) % 100000; redraw(); } else waterRaf = requestAnimationFrame(waterTick); }
 
   new ResizeObserver(() => { replaceAll(); sizeDraw(); }).observe(STAGE);
 
@@ -165,15 +183,18 @@
   }
   const SWATCHES = $('#swatches');
   function paintSwatches() { $$('button', SWATCHES).forEach(b => b.classList.toggle('on', b.dataset.c === shopColor)); }
-  COLOR_KEYS.forEach(c => { const b = document.createElement('button'); b.type = 'button'; b.dataset.c = c; b.style.background = PAL[c]; b.setAttribute('aria-label', c + ' blocks'); b.onclick = () => { shopColor = c; paintSwatches(); SFX.tap(); if (selected && DEF[selected.kind].colorable) { pushUndo(); selected.color = c; redrawOne(selected); paintTools(); save(); } renderShelf(); }; SWATCHES.appendChild(b); });
+  COLOR_KEYS.forEach(c => { const b = document.createElement('button'); b.type = 'button'; b.dataset.c = c; b.style.background = PAL[c]; b.setAttribute('aria-label', c + ' blocks'); b.onclick = () => { shopColor = c; paintSwatches(); SFX.tap(); if (selected && DEF[selected.kind].colorable && MATERIAL_KITS.has(DEF[selected.kind].kit)) { pushUndo(); selected.color = c; redrawOne(selected); paintTools(); save(); } renderShelf(); }; SWATCHES.appendChild(b); });
+  const MATERIAL_KITS = new Set(['blocks', 'tiles', 'pieces']);
+  const shopColorFor = def => (def.colorable && MATERIAL_KITS.has(def.kit)) ? shopColor : def.color;
   function renderShelf() {
     SHELF.innerHTML = ''; const bucks = Wallet.get();
-    const list = ITEMS.filter(d => d.kit === kit);
-    $('#swatchRow').hidden = !list.some(d => d.colorable);
+    // hand-drawn things first, emoji after, so every shelf opens on its best stuff
+    const list = ITEMS.filter(d => d.kit === kit).sort((a, b) => ((a.svg || a.img) ? 0 : 1) - ((b.svg || b.img) ? 0 : 1));
+    $('#swatchRow').hidden = !MATERIAL_KITS.has(kit);
     paintSwatches();
     list.forEach((d, i) => {
       const t = document.createElement('button'); t.type = 'button'; t.className = 'tile' + (d.price === 0 ? ' free' : '') + (d.price > bucks ? ' locked' : '') + (d.snap ? ' snapt' : ''); t.dataset.id = d.id; t.style.animationDelay = (Math.min(i, 24) * .02) + 's';
-      t.innerHTML = `<span class="thumb">${art(d, { color: d.colorable ? shopColor : d.color, label: d.def }, 't' + d.id)}</span><span class="nm">${esc(d.name)}</span><span class="pr">${d.price === 0 ? 'FREE' : '$' + d.price}</span>`;
+      t.innerHTML = `<span class="thumb">${art(d, { color: shopColorFor(d), label: d.def }, 't' + d.id)}</span><span class="nm">${esc(d.name)}</span><span class="pr">${d.price === 0 ? 'FREE' : '$' + d.price}</span>`;
       t.setAttribute('aria-label', `${d.name}, ${d.price === 0 ? 'free' : '$' + d.price}`);
       t.onclick = () => buy(d, t); SHELF.appendChild(t);
     });
@@ -181,6 +202,9 @@
   }
   const KIT_TIPS = {
     blocks: 'Snap Blocks click onto the grid. Stack them, tap 🎨 to change colors, 🔄 to turn one, 📋 to copy it. 15 blocks = the Block Master job.',
+    tiles: 'Magnet Tiles are see-through and snap edge to edge. Two squares and a triangle make a house. Mix them right into your block buildings.',
+    characters: 'Every character is a different size, just like real life. Put them in the school, the castle, the pool, or the pirate ship!',
+    vehicles: 'Race cars, big rigs, jets, and a rescue helicopter. Stack Garage decks (City shelf) and fill them with cars!',
     pieces: 'Walls, roofs, floors, and fences snap to the grid. Put a roof on two walls and you built a house!',
     waterpark: 'Pools, slides, and rivers. Six water things finishes the Water Park job for $15.',
     themepark: 'Snap coaster tracks together, add the loop, park a car on top. Six rides = the Theme Park job.',
@@ -196,7 +220,7 @@
     SFX.buzz(); const w = $('#wallet'); w.classList.remove('sad'); void w.offsetWidth; w.classList.add('sad');
     if (tile) { tile.classList.remove('shake'); void tile.offsetWidth; tile.classList.add('shake'); }
     const ready = collectable().length;
-    toast(ready ? `Need $${def.price - Wallet.get()} more. You have ${ready} finished job${ready > 1 ? 's' : ''} to collect! 💼` : `Need $${def.price - Wallet.get()} more for the ${def.name}. Finish a job 💼 or fill the piggy 🐷`);
+    toast(ready ? `Need $${def.price - Wallet.get()} more. You have ${ready} finished build order${ready > 1 ? 's' : ''} to collect! 💼` : `Need $${def.price - Wallet.get()} more for the ${def.name}. Blocks and parts are free. Do a 💼 Job to earn bucks!`);
     $('#needBucks').hidden = false;
   }
   function buy(def, tile, pal) {
@@ -205,7 +229,7 @@
     let label;
     if (def.label) { label = (prompt('What should it say?', def.def) || '').trim(); if (!label) return; label = label.slice(0, 18); }
     pushUndo(); Wallet.add(-def.price);
-    const it = { uid: uid(), kind: def.id, x: .5 + (Math.random() - .5) * .14, y: .55 + (Math.random() - .5) * .14, s: 1, flip: false, rot: 0, z: world.items.length, label, color: def.colorable ? shopColor : def.color };
+    const it = { uid: uid(), kind: def.id, x: .5 + (Math.random() - .5) * .14, y: .55 + (Math.random() - .5) * .14, s: 1, flip: false, rot: 0, z: world.items.length, label, color: shopColorFor(def) };
     if (pal) { it.pal = pal; it.color = pal.suit; }
     if (def.snap) { it.x = .5; it.y = .6; snapItem(it); }
     world.items.push(it); selected = it; render(); save(); flashDrop(it);
@@ -227,10 +251,12 @@
   };
 
   /* ============================== JOB BOARD: build things, get paid ============================== */
-  function kitCounts() { const c = {}; world.items.forEach(it => { const k = DEF[it.kind].kit; c[k] = (c[k] || 0) + 1; }); return c; }
+  const KIT_ALIAS = { characters: 'people' }; // characters are people too, for every job that wants people
+  function kitCounts() { const c = {}; world.items.forEach(it => { const k = KIT_ALIAS[DEF[it.kind].kit] || DEF[it.kind].kit; c[k] = (c[k] || 0) + 1; }); return c; }
   function jobProgress(job) {
     const c = kitCounts(); let have = 0, need = 0;
     if (job.strokes) { have += Math.min(world.strokes.filter(s => s.c !== 'erase').length, job.strokes); need += job.strokes; }
+    if (job.river) { have += Math.min(world.strokes.filter(s => s.c === 'river').length, job.river); need += job.river; }
     for (const k in (job.need || {})) { have += Math.min(c[k] || 0, job.need[k]); need += job.need[k]; }
     return { have, need, done: have >= need };
   }
@@ -239,7 +265,7 @@
   function refreshJobs() {
     const ready = collectable(); const badge = $('#jobsBadge'); badge.textContent = ready.length; badge.hidden = !ready.length;
     $('#jobsBtn').classList.toggle('ready', ready.length > 0);
-    for (const j of ready) if (!lastReady.has(j.id)) { toast(`🎉 Job done: ${j.name}! Tap 💼 Jobs to collect your $${j.pay} paycheck.`); SFX.levelUp(); confetti(60); break; }
+    for (const j of ready) if (!lastReady.has(j.id)) { toast(`🎉 Build order done: ${j.name}! Tap 💼 Jobs to collect your $${j.pay >= 20 ? 20 : 5} bill.`); SFX.levelUp(); confetti(60); break; }
     lastReady = new Set(ready.map(j => j.id));
     if (!$('#jobsSheet').hidden) renderJobs();
     const fin = $('#finishBtn'); fin.classList.toggle('ready', !world.finished && world.items.length >= 5); fin.disabled = false;
@@ -250,8 +276,9 @@
     list.forEach(j => {
       const p = jobProgress(j); const paid = !!world.jobsDone[j.id];
       const card = document.createElement('div'); card.className = 'job' + (paid ? ' paid' : p.done ? ' done' : ''); card.dataset.job = j.id;
+      const bill = j.pay >= 20 ? 20 : 5;
       card.innerHTML = `<div class="je">${j.e}</div><div class="jb"><b>${esc(j.name)}</b><small>${esc(j.how)}</small><div class="jbar"><i style="width:${Math.round(100 * p.have / p.need)}%"></i><span>${p.have} / ${p.need}</span></div></div>
-        <div class="jr">${paid ? '<span class="jpaid">PAID ✓</span>' : p.done ? `<button type="button" class="collect">Collect $${j.pay} 💵</button>` : `<span class="jpay">$${j.pay}</span>`}</div>`;
+        <div class="jr">${paid ? '<span class="jpaid">PAID ✓</span>' : p.done ? `<button type="button" class="collect">Collect $${bill} bill 💵</button>` : `<span class="jpay">$${bill} bill</span>`}</div>`;
       if (p.done && !paid) card.querySelector('.collect').onclick = () => collect(j, card);
       box.appendChild(card);
     });
@@ -259,22 +286,87 @@
   }
   function collect(job, card) {
     if (world.jobsDone[job.id] || !jobProgress(job).done) return;
-    world.jobsDone[job.id] = Date.now(); Wallet.add(job.pay); save();
+    world.jobsDone[job.id] = Date.now(); const kind = job.pay >= 20 ? 'b20' : 'b5'; Wallet.earnBill(kind); save();
     if (card) { card.classList.add('paid', 'cash'); card.querySelector('.jr').innerHTML = '<span class="jpaid">PAID ✓</span>'; }
-    payday(job.pay, `${job.e} ${job.name} built!`); setTimeout(renderJobs, 900);
+    payBill(kind, `${job.e} ${job.name} built!`); setTimeout(() => { $('#jobsSheet').hidden = true; openDeposit(); }, 1500);
   }
-  function payday(amt, why) {
+  function payday(amt, why, sub) {
     SFX.cheer(); SFX.chaChing(); confetti(160);
-    const el = $('#payday'); el.innerHTML = `<b>+$${amt}</b><span>${esc(why)}</span><small>You built it, you earned it. 💪</small>`; el.hidden = false; el.classList.remove('go'); void el.offsetWidth; el.classList.add('go');
+    const el = $('#payday'); el.innerHTML = `<b>+$${amt.toLocaleString ? amt.toLocaleString('en-US') : amt}</b><span>${esc(why)}</span><small>${esc(sub || 'You built it, you earned it. 💪')}</small>`; el.hidden = false; el.classList.remove('go'); void el.offsetWidth; el.classList.add('go');
     clearTimeout(payday.t); payday.t = setTimeout(() => { el.hidden = true; }, 2600);
     const w = $('#wallet'); w.classList.remove('bump'); void w.offsetWidth; w.classList.add('bump');
   }
-  $('#jobsBtn').onclick = () => { renderJobs(); $('#jobsSheet').hidden = false; SFX.tap(); };
-  $('#jobsClose').onclick = () => { $('#jobsSheet').hidden = true; };
+  /* Which bill a piece of work earns: most jobs pay a $5 bill; every 5th job a $20; every 20th a $100; the 100th job a fat
+     stack; the 250th a pot of gold. Bigger money only ever comes from more work. */
+  function billForWork(n) { if (n === 250) return 'pot'; if (n === 100) return 'stack'; if (n % 20 === 0) return 'b100'; if (n % 5 === 0) return 'b20'; return 'b5'; }
+  const BILL_LABEL = { b5: '💵 a $5 bill', b20: '💵 a $20 bill', b50: '💵 a $50 bill', b100: '💵 a $100 bill', stack: '💰 a FAT STACK ($5,000)', pot: '🏆 a POT OF GOLD ($10,000)' };
+  function payBill(kind, why) { const v = Wallet.BILLS[kind].v; SFX.cheer(); SFX.chaChing(); confetti(kind === 'b5' ? 120 : 220); const el = $('#payday'); el.innerHTML = `<b>${esc(BILL_LABEL[kind].replace(/^\S+\s/, ''))}</b><span>${esc(why)}</span><small>Drag it into the piggy to save it. 🐷</small>`; el.hidden = false; el.classList.remove('go'); void el.offsetWidth; el.classList.add('go'); clearTimeout(payday.t); payday.t = setTimeout(() => { el.hidden = true; }, 2600); paintPayBtn(true); }
+  /* ---- the deposit sheet: a piggy and a tray of earned bills; drag a bill onto the piggy and it becomes spendable ---- */
+  const PIGGY_SVG = `<svg viewBox="0 0 220 170" class="dep-piggy" aria-hidden="true"><ellipse cx="110" cy="150" rx="80" ry="10" fill="rgba(5,46,22,.15)"/><g><rect x="50" y="118" width="20" height="30" rx="8" fill="#4ade80" stroke="#052e16" stroke-width="5"/><rect x="140" y="118" width="20" height="30" rx="8" fill="#4ade80" stroke="#052e16" stroke-width="5"/><ellipse cx="100" cy="92" rx="76" ry="54" fill="#86efac" stroke="#052e16" stroke-width="6"/><path d="M28 88 q-16 -6 -8 -22 q10 4 14 12" fill="none" stroke="#052e16" stroke-width="5" stroke-linecap="round"/><circle cx="158" cy="80" r="34" fill="#86efac" stroke="#052e16" stroke-width="6"/><path d="M140 52 l-10 -26 l24 12 z" fill="#4ade80" stroke="#052e16" stroke-width="5" stroke-linejoin="round"/><ellipse cx="186" cy="90" rx="16" ry="12" fill="#4ade80" stroke="#052e16" stroke-width="5"/><circle cx="181" cy="90" r="3" fill="#052e16"/><circle cx="192" cy="90" r="3" fill="#052e16"/><circle cx="160" cy="72" r="7" fill="#fff" stroke="#052e16" stroke-width="3"/><circle cx="160" cy="72" r="3.5" fill="#052e16"/><path d="M168 100 q10 8 20 -2" fill="none" stroke="#052e16" stroke-width="3" stroke-linecap="round"/><rect x="78" y="38" width="44" height="10" rx="4" fill="#052e16"/></g></svg>`;
+  const BILL_TEXT = { b5: '$5', b20: '$20', b50: '$50', b100: '$100', stack: '$5,000', pot: '$10,000' };
+  function billEl(kind) { const b = document.createElement('div'); b.className = 'dbill ' + kind; b.dataset.kind = kind; b.innerHTML = `<span>${BILL_TEXT[kind]}</span>`; b.setAttribute('role', 'button'); b.setAttribute('aria-label', `${Wallet.BILLS[kind].name}. Drag it into the piggy.`); return b; }
+  function renderDepositTray() {
+    const tray = $('#depTray'); tray.innerHTML = ''; const bills = Wallet.bills(); let n = 0;
+    ['pot', 'stack', 'b100', 'b50', 'b20', 'b5'].forEach(k => { for (let i = 0; i < (bills[k] || 0); i++) { const b = billEl(k); b.addEventListener('pointerdown', e => dragBill(e, b)); tray.appendChild(b); n++; } });
+    $('#depMsg').textContent = n ? `Drag ${n === 1 ? 'your bill' : 'each bill'} into the piggy! 🐷👉` : `All saved! You have $${Wallet.get()} to spend. 🛒`;
+    $('#depDone').hidden = n > 0; return n;
+  }
+  function paintPayBtn(bump) { const n = Wallet.billCount(); const b = $('#payBtn'); b.hidden = !n; b.querySelector('b').textContent = n; if (bump && n) { b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); } }
+  function openDeposit() { const pig = $('#depPig'); if (!pig.innerHTML) pig.innerHTML = PIGGY_SVG; renderDepositTray(); $('#depositSheet').hidden = false; SFX.tap(); }
+  function dragBill(e, bill) {
+    e.preventDefault(); const kind = bill.dataset.kind; const pig = $('#depPig');
+    const ghost = bill.cloneNode(true); ghost.classList.add('ghost'); document.body.appendChild(ghost); bill.classList.add('lifted');
+    const move = (x, y) => { ghost.style.left = x + 'px'; ghost.style.top = y + 'px'; const r = pig.getBoundingClientRect(); pig.classList.toggle('hot', x > r.left - 20 && x < r.right + 20 && y > r.top - 30 && y < r.bottom + 10); };
+    move(e.clientX, e.clientY); let lx = e.clientX, ly = e.clientY, ended = false;
+    const mv = ev => { lx = ev.clientX; ly = ev.clientY; move(lx, ly); };
+    const up = ev => {
+      if (ended) return; ended = true; bill.removeEventListener('pointermove', mv); bill.removeEventListener('pointerup', up); bill.removeEventListener('pointercancel', up); bill.removeEventListener('lostpointercapture', up);
+      bill.classList.remove('lifted'); pig.classList.remove('hot'); const r = pig.getBoundingClientRect(); const x = ev.clientX || lx, y = ev.clientY || ly;
+      const over = ev.type === 'pointerup' && x > r.left - 20 && x < r.right + 20 && y > r.top - 30 && y < r.bottom + 10;
+      if (over) { const v = Wallet.depositBill(kind); ghost.style.transition = 'left .25s, top .25s, transform .25s, opacity .25s'; ghost.style.left = (r.left + r.width * .45) + 'px'; ghost.style.top = (r.top + r.height * .22) + 'px'; ghost.style.transform = 'translate(-50%,-50%) scale(.3) rotate(180deg)'; ghost.style.opacity = '.2'; setTimeout(() => ghost.remove(), 300); pig.classList.remove('gulp'); void pig.offsetWidth; pig.classList.add('gulp'); SFX.clink(v >= 100 ? 5 : v >= 20 ? 3 : 1); setTimeout(() => SFX.slurp && SFX.slurp(), 120); if (v >= 1000) { SFX.cheer(); confetti(260); } else if (v >= 50) confetti(120); else confetti(50); toast(`+$${v.toLocaleString('en-US')} saved! Wallet: $${Wallet.get().toLocaleString('en-US')} 💰`); renderDepositTray(); paintPayBtn(false); }
+      else { ghost.remove(); SFX.pop(); }
+    };
+    try { bill.setPointerCapture(e.pointerId); } catch (err) {}
+    bill.addEventListener('pointermove', mv); bill.addEventListener('pointerup', up); bill.addEventListener('pointercancel', up); bill.addEventListener('lostpointercapture', up);
+  }
+  $('#payBtn').onclick = openDeposit; $('#depClose').onclick = () => { $('#depositSheet').hidden = true; }; $('#depDone').onclick = () => { $('#depositSheet').hidden = true; };
+  $('#depositSheet').addEventListener('click', e => { if (e.target.id === 'depositSheet') $('#depositSheet').hidden = true; });
+  /* ---- WORK: the mini-game jobs (jobs.js). Real doing, real pay, then a short break before the same job comes back. ---- */
+  const WORK = window.CB_WORK; let workTab = 'work', workTimer = null, activeJob = null;
+  function fmtLeft(ms) { const s = Math.ceil(ms / 1000); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; }
+  function renderWork() {
+    const box = $('#work'); box.innerHTML = ''; const now = Date.now();
+    WORK.JOBS.forEach(j => {
+      const left = WORK.readyAt(j.id) - now; const n = WORK.timesDone(j.id);
+      const card = document.createElement('div'); card.className = 'job work' + (left > 0 ? ' resting' : ' ready');
+      const nextBill = BILL_TEXT[billForWork(WORK.total() + 1)];
+      card.innerHTML = `<div class="je">${j.e}</div><div class="jb"><b>${esc(j.name)}</b><small>${esc(j.how)}</small>${n ? `<small class="jn">Done ${n} time${n > 1 ? 's' : ''}</small>` : ''}</div><div class="jr">${left > 0 ? `<span class="jrest">Back in ${fmtLeft(left)}</span>` : `<button type="button" class="collect play">Work for a ${nextBill} bill 💪</button>`}</div>`;
+      if (left <= 0) card.querySelector('.play').onclick = () => startWork(j);
+      box.appendChild(card);
+    });
+    $('#workTotal').textContent = WORK.total() ? `You have finished ${WORK.total()} job${WORK.total() > 1 ? 's' : ''}. Work pays! 💪` : 'Pick a job. Do the work. Get paid. Then build whatever you want!';
+  }
+  function setJobTab(t) { workTab = t; $$('#jobTabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t)); $('#work').hidden = t !== 'work'; $('#workTotal').hidden = t !== 'work'; $('#jobs').hidden = t !== 'orders'; $('#ordersTip').hidden = t !== 'orders'; if (t === 'work') renderWork(); else renderJobs(); }
+  $$('#jobTabs button').forEach(b => b.onclick = () => { SFX.tap(); setJobTab(b.dataset.tab); });
+  function startWork(j) {
+    const stage = $('#workStage'); stage.innerHTML = ''; stage.className = 'work-stage bg-' + j.bg; stage.style.fontSize = Math.round(stage.getBoundingClientRect().width / 26 || 16) + 'px';
+    $('#workTitle').textContent = `${j.e} ${j.name}`; $('#workHow').textContent = j.how; $('#workBar i').style.width = '0%'; $('#workCount').textContent = '';
+    $('#jobsSheet').hidden = true; $('#workSheet').hidden = false; activeJob = j; SFX.whoosh ? SFX.whoosh() : SFX.tap();
+    const api = {
+      progress(have, need) { $('#workBar i').style.width = Math.round(100 * have / need) + '%'; $('#workCount').textContent = `${have} / ${need}`; },
+      spark(x, y) { workSpark(x, y); },
+      done() { if (activeJob !== j) return; activeJob = null; WORK.markDone(j.id); const kind = billForWork(WORK.total()); Wallet.earnBill(kind); payBill(kind, `${j.e} ${j.name} done!`); setTimeout(() => { $('#workSheet').hidden = true; openDeposit(); }, 1500); },
+    };
+    requestAnimationFrame(() => { stage.style.fontSize = Math.round(stage.getBoundingClientRect().width / 26) + 'px'; j.start(stage, api); });
+  }
+  function workSpark(x, y) { if (reduced) return; for (let i = 0; i < 6; i++) { const s = document.createElement('i'); s.className = 'wk-spark'; s.style.left = x + 'px'; s.style.top = y + 'px'; s.style.setProperty('--dx', ((Math.random() - .5) * 90) + 'px'); s.style.setProperty('--dy', ((Math.random() - .8) * 90) + 'px'); document.body.appendChild(s); setTimeout(() => s.remove(), 600); } }
+  $('#workQuit').onclick = () => { activeJob = null; $('#workSheet').hidden = true; $('#jobsSheet').hidden = false; setJobTab('work'); SFX.tap(); };
+  $('#jobsBtn').onclick = () => { setJobTab(collectable().length ? 'orders' : 'work'); $('#jobsSheet').hidden = false; SFX.tap(); clearInterval(workTimer); workTimer = setInterval(() => { if (!$('#jobsSheet').hidden && workTab === 'work') renderWork(); }, 1000); };
+  $('#jobsClose').onclick = () => { $('#jobsSheet').hidden = true; clearInterval(workTimer); };
   $('#jobsSheet').addEventListener('click', e => { if (e.target.id === 'jobsSheet') $('#jobsSheet').hidden = true; });
 
   /* ============================== FINISH MY WORLD: the big paycheck + the gallery ============================== */
-  function worldPay() { const kits = new Set(world.items.map(it => DEF[it.kind].kit)); return clamp(2 * kits.size + Math.floor(world.items.length / 3), 3, 30); }
+  function worldPay() { return 50; } // finishing a whole world earns a $50 bill
   const readGallery = () => { try { const g = JSON.parse(localStorage.getItem(GKEY) || '[]'); return Array.isArray(g) ? g : []; } catch (e) { return []; } };
   function writeGallery(g) { try { localStorage.setItem(GKEY, JSON.stringify(g)); return true; } catch (e) { try { g = g.map(w => ({ ...w, world: w.world.bg.type === 'photo' ? { ...w.world, bg: { type: 'scene', id: 'bedroom' } } : w.world })); localStorage.setItem(GKEY, JSON.stringify(g)); return true; } catch (e2) { return false; } } }
   const sceneName = () => world.bg.type === 'photo' ? 'My room' : (SCENES[world.bg.id] || SCENES.bedroom).name;
@@ -285,10 +377,10 @@
     let thumb = null; try { thumb = await snapshot(420, 'image/jpeg', .72); } catch (e) {}
     const g = readGallery(); const n = g.length + 1;
     const entry = { id: uid(), name: `${sceneName()} #${n}`, when: Date.now(), pay, items: world.items.length, thumb, world: { ...world, finished: true } };
-    world.finished = true; world.jobsDone = world.jobsDone || {}; Wallet.add(pay); save();
+    world.finished = true; world.jobsDone = world.jobsDone || {}; Wallet.earnBill('b50'); save();
     g.unshift(entry); while (g.length > 12) g.pop(); const kept = writeGallery(g);
-    payday(pay, `🏆 ${entry.name} finished!`);
-    setTimeout(() => toast(kept ? `Saved to 📚 My worlds. Tap 🧹 New world to build another and earn again!` : 'Paid! (This browser is out of room to save the picture.)'), 1500);
+    payBill('b50', `🏆 ${entry.name} finished!`);
+    setTimeout(() => { toast(kept ? `Saved to 📚 My worlds. Tap 🧹 New world to build another and earn again!` : 'Saved the paycheck. (This browser is out of room to keep the picture.)'); openDeposit(); }, 1600);
     btn.disabled = false; refreshJobs();
   }
   $('#finishBtn').onclick = () => { SFX.tap(); finishWorld(); };
@@ -316,9 +408,9 @@
   /* ============================== MAKE-A-PAL: the dress-up sheet ============================== */
   const { PAL_OPTS, PAL_DEFAULT, OUTFIT_DEFAULTS, SKINS, HAIRC } = ART;
   const PAL_LABELS = {
-    outfit: { hero: '🦸 Hero', tee: '👕 Everyday', space: '🧑‍🚀 Astronaut', knight: '🛡️ Knight', pirate: '🏴‍☠️ Pirate', chef: '👩‍🍳 Chef', swim: '🩳 Swimmer', royal: '👑 Royal', wizard: '🧙 Wizard', builder: '👷 Builder' },
+    outfit: { hero: '🦸 Hero', tee: '👕 Everyday', space: '🧑‍🚀 Astronaut', knight: '🛡️ Knight', pirate: '🏴‍☠️ Pirate', chef: '👩‍🍳 Chef', swim: '🩳 Swimmer', royal: '👑 Royal', wizard: '🧙 Wizard', builder: '👷 Builder', police: '👮 Police', lawyer: '⚖️ Lawyer', doctor: '🩺 Doctor', colonial: '🎩 1776 Patriot' },
     hair: { none: 'None', short: 'Short', spiky: 'Spiky', long: 'Long', curly: 'Curly', ponytail: 'Ponytail', bun: 'Bun', mohawk: 'Mohawk' },
-    hat: { none: 'None', cap: '🧢 Cap', crown: '👑 Crown', space: '🪖 Space helmet', knight: '⚔️ Knight helmet', pirate: '🏴‍☠️ Pirate hat', chef: '👩‍🍳 Chef hat', wizard: '🧙 Wizard hat', hardhat: '👷 Hard hat', headband: 'Headband', bow: '🎀 Bow' },
+    hat: { none: 'None', cap: '🧢 Cap', crown: '👑 Crown', space: '🪖 Space helmet', knight: '⚔️ Knight helmet', pirate: '🏴‍☠️ Pirate hat', chef: '👩‍🍳 Chef hat', wizard: '🧙 Wizard hat', hardhat: '👷 Hard hat', headband: 'Headband', bow: '🎀 Bow', police: '👮 Police cap', tricorn: '🎩 Tricorn hat', wig: '🤍 Powdered wig' },
     mask: { none: 'None', domino: '🎭 Hero mask', cowl: '🦇 Night cowl', goggles: '🥽 Goggles', eyepatch: '🏴‍☠️ Eye patch' },
     emblem: { none: 'None', star: '⭐', bolt: '⚡', heart: '❤️', letter: '🔤 My letter', gem: '💎', skull: '💀', paw: '🐾' },
     eyes: { dots: '• •', big: '👀 Big', happy: '^ ^', stars: '⭐ Stars', wink: '😉 Wink' },
@@ -414,12 +506,13 @@
   const colorsEl = $('#colors');
   COLORS.forEach(c => { const b = document.createElement('button'); b.type = 'button'; b.style.background = c; b.setAttribute('aria-label', 'Color ' + c); b.classList.toggle('on', c === color); b.onclick = () => { color = c; eraser = false; $('#eraserBtn').classList.remove('on'); $$('button', colorsEl).forEach(x => x.classList.toggle('on', x === b)); SFX.tap(); }; colorsEl.appendChild(b); });
   $$('.sizes button').forEach(b => b.onclick = () => { brush = +b.dataset.size; $$('.sizes button').forEach(x => x.classList.toggle('on', x === b)); SFX.tap(); });
-  $('#eraserBtn').onclick = () => { eraser = !eraser; $('#eraserBtn').classList.toggle('on', eraser); SFX.tap(); };
-  function setDrawing(on) { drawing = on; STAGE.classList.toggle('drawing', on); $('#drawbar').hidden = !on; $('#drawBtn').classList.toggle('on', on); if (on) { select(null); toast('Draw with your finger! Tap ✓ Done when you finish. ✏️'); } }
+  $('#eraserBtn').onclick = () => { eraser = !eraser; river = false; $('#riverBtn').classList.remove('on'); $('#eraserBtn').classList.toggle('on', eraser); SFX.tap(); };
+  $('#riverBtn').onclick = () => { river = !river; eraser = false; $('#eraserBtn').classList.remove('on'); $('#riverBtn').classList.toggle('on', river); SFX.tap(); if (river) toast('Draw your own lazy river with your finger! Make a loop, then put kids on tubes in it. 🌊'); };
+  function setDrawing(on) { drawing = on; STAGE.classList.toggle('drawing', on); $('#drawbar').hidden = !on; $('#drawBtn').classList.toggle('on', on); if (on) { select(null); toast(river ? 'River brush is on! Draw a loop with your finger. 🌊' : 'Draw with your finger! Tap 🌊 for the river brush. Tap ✓ Done when you finish. ✏️'); } }
   $('#drawBtn').onclick = () => setDrawing(!drawing); $('#drawDone').onclick = () => setDrawing(false);
   DRAW.addEventListener('pointerdown', e => {
     if (!drawing) return; e.preventDefault(); pushUndo();
-    const r = stageRect(); const st = { c: eraser ? 'erase' : color, w: eraser ? brush * 2.2 : brush, pts: [[(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]] };
+    const r = stageRect(); const st = { c: eraser ? 'erase' : river ? 'river' : color, w: eraser ? brush * 2.2 : river ? Math.max(brush * 3, .04) : brush, pts: [[(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]] };
     world.strokes.push(st); redraw();
     const mv = ev => { st.pts.push([clamp((ev.clientX - r.left) / r.width, 0, 1), clamp((ev.clientY - r.top) / r.height, 0, 1)]); redraw(); };
     const up = () => { DRAW.removeEventListener('pointermove', mv); DRAW.removeEventListener('pointerup', up); DRAW.removeEventListener('pointercancel', up); save(); HINT.hidden = true; };
@@ -450,7 +543,8 @@
     for (const it of [...world.items].sort((a, b) => a.z - b.z)) {
       const def = DEF[it.kind]; const w = def.w * W * it.s; const cx = it.x * W, cy = it.y * H;
       x.save(); x.translate(cx, cy); if (it.rot) x.rotate(it.rot * Math.PI / 180); if (it.flip) x.scale(-1, 1);
-      if (def.svg) { try { const s = def.svg('snap' + it.uid, it); const vb = s.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/); const ar = vb ? +vb[2] / +vb[1] : 1; const im = await loadImg(svgUrl(s.replace('<svg ', `<svg width="${vb ? vb[1] : 200}" height="${vb ? vb[2] : 200}" `))); x.drawImage(im, -w / 2, -w * ar / 2, w, w * ar); } catch (e) {} }
+      if (def.img) { try { const im = await loadImg(def.img); const ar = im.naturalHeight / im.naturalWidth || 1; x.drawImage(im, -w / 2, -w * ar / 2, w, w * ar); } catch (e) {} }
+      else if (def.svg) { try { const s = def.svg('snap' + it.uid, it); const vb = s.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/); const ar = vb ? +vb[2] / +vb[1] : 1; const im = await loadImg(svgUrl(s.replace('<svg ', `<svg width="${vb ? vb[1] : 200}" height="${vb ? vb[2] : 200}" `))); x.drawImage(im, -w / 2, -w * ar / 2, w, w * ar); } catch (e) {} }
       else { x.font = `${w * .85}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(def.e, 0, w * .04); }
       x.restore();
     }
@@ -463,7 +557,7 @@
 
   /* ============================== WALLET DISPLAY, TOAST, CONFETTI ============================== */
   function paintWallet(bump) { const el = $('#walletAmt'); el.textContent = '$' + Wallet.get(); if (bump) { const w = $('#wallet'); w.classList.remove('bump'); void w.offsetWidth; w.classList.add('bump'); } refreshLocks(); }
-  document.addEventListener('wallet', () => paintWallet(true));
+  document.addEventListener('wallet', () => { paintWallet(true); paintPayBtn(false); });
   let toastT = null;
   function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), 2800); }
   const confetti = (() => {
@@ -484,7 +578,7 @@
   /* ============================== INIT ============================== */
   SFX.bind($('#soundBtn'));
   const gain = Wallet.interest();
-  renderBg(); render(); renderCats(); renderShelf(); paintWallet(false); sizeDraw(); lastReady = new Set(collectable().map(j => j.id)); refreshJobs();
+  renderBg(); render(); renderCats(); renderShelf(); paintWallet(false); paintPayBtn(false); sizeDraw(); lastReady = new Set(collectable().map(j => j.id)); refreshJobs();
   if (gain) setTimeout(() => { toast(`🌱 Baby money! Your savings made $${gain} while you were away.`); SFX.levelUp(); confetti(60); }, 500);
-  else if (Wallet.get() === 0 && !world.items.length) setTimeout(() => toast('Wallet empty? Grab the FREE things, then finish a 💼 Job to earn. Building pays! 🏗️'), 900);
+  else if (Wallet.get() === 0 && !world.items.length) setTimeout(() => toast('Blocks, tiles, and build parts are FREE. Want pools, rides, cars, and characters? Do a 💼 Job and get paid! 💪'), 900);
 })();

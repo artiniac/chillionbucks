@@ -148,10 +148,16 @@
 
     <article class="game" id="gPiggy">
       <header class="game-head"><span class="game-emoji">🐷</span><h3>Piggy Bank Power</h3></header>
-      <p class="game-how">Pick a goal. <b>Drag a coin</b> into the piggy to save it. Every buck you save is yours to spend in the <a href="build.html">Builder</a>. Watch out for the candy…</p>
-      <div class="goal-row" id="goalRow"></div>
+      <p class="game-how"><b>Tap the thing you want.</b> Then <b>drag money</b> into the piggy to save for it. Coins are free to drag. Bills come from doing <a href="build.html">Jobs in the Builder</a>. Watch out for the candy…</p>
+      <div class="goal-hint" id="goalHint" aria-hidden="true">👉 Tap what you want to save for</div>
+      <div class="goal-grid" id="goalRow"></div>
+      <div class="goal-done" id="goalDone" hidden></div>
       <div class="piggy-stage drag" id="piggyStage">
-        <div class="dtray" id="coinTray" aria-label="Coins to drag into the piggy"></div>
+        <div class="dtray" id="moneyTray" aria-label="Money to drag into the piggy">
+          <div class="coins" id="coinTray"></div>
+          <div class="bill-label" id="billLabel" hidden>Paychecks</div>
+          <div class="bills" id="billTray" hidden></div>
+        </div>
         <div class="piggy-wrap" id="piggyWrap">
           <div class="drop-glow" aria-hidden="true"></div>
           <svg viewBox="0 0 220 170" class="piggy-svg" aria-hidden="true">
@@ -220,9 +226,9 @@
 
     <article class="game wide meter" id="gMeter">
       <header class="game-head"><span class="game-emoji">😎</span><h3>The Chill-o-Meter</h3></header>
-      <p class="game-how">Save a little every week. Money you don’t spend can <b>grow</b> and make “baby money.” (In this game it grows 7% a year, like a long-term investment.) Slide and see!</p>
+      <p class="game-how">Save a little every day. Money you don’t spend can <b>grow</b> and make “baby money.” (In this game it grows 7% a year, like a long-term investment.) Slide and see!</p>
       <div class="sliders">
-        <label>Save <b id="wkOut">$5</b> every week <input type="range" id="wk" min="1" max="50" value="5"></label>
+        <label>Save <b id="wkOut">$2</b> every day <input type="range" id="wk" min="1" max="20" value="2"></label>
         <label>For <b id="yrOut">10</b> years <input type="range" id="yr" min="1" max="50" value="10"></label>
       </div>
       <div class="meter-out">
@@ -293,7 +299,8 @@
     <div class="pcard">
       <h3>The Builder and photos</h3>
       <p>The Builder can use a photo of your child’s room as the background. The photo is resized and kept only in this browser on this device (it never leaves the phone or computer, and there is no server to send it to). “New world” or clearing the browser’s site data removes it. Finished worlds are saved as small pictures on the same device only.</p>
-      <p>The Builder also pays: the Job Board lists build orders (a water park, a zoo, a city, 15 blocks snapped together…) and pays a few bucks when one is complete, once per world. The idea is simple and it is Leo’s dad’s: if you want money, you build something.</p>
+      <p>How the money works: blocks, tiles, and building parts in the Builder are free. Pools, rides, cars, and characters cost bucks. Bucks come from work: the Job Board has quick jobs (clean the pool, wash a car, paint a fence, deliver packages, feed the animals, run the lemonade stand) that pay a bill, and build orders that pay a bill when a build is complete. Every bill has to be dragged into the piggy before it can be spent. Bigger bills only come from more work: a $5 bill for most jobs, a $20 every fifth job, a $100 every twentieth, and the fat stack and pot of gold are for the truly dedicated (100 and 250 jobs).</p>
+      <p>The savings goals are real things. Edit <code>goals.js</code> to swap in the exact items you would actually buy: a picture, the real price, and the store link. The store button says “grown-up” on purpose and opens in a new tab; nothing on this site takes money or collects anything.</p>
     </div>
     <div class="pcard">
       <h3>Why “Chillion”?</h3>
@@ -320,6 +327,7 @@
 <canvas id="confetti" aria-hidden="true"></canvas>
 <script src="sfx.js"></script>
 <script src="wallet.js"></script>
+<script src="goals.js"></script>
 <script src="videos.js"></script>
 <script src="app.js"></script>
 </body>
