@@ -233,6 +233,19 @@
 .wk-lemon{transform:translate(-50%,-50%);font-size:4.4em;line-height:1;background:#fff;border:3px solid var(--ink);border-radius:50%;width:1.5em;height:1.5em;display:grid;place-items:center;cursor:pointer;box-shadow:0 6px 0 var(--ink);touch-action:manipulation}
 .wk-lemon.sq{animation:squeeze .25s ease}
 @keyframes squeeze{50%{transform:translate(-50%,-50%) scale(.85) rotate(-10deg)}}
+.work-stage.bg-room{background:linear-gradient(180deg,#dbeafe 0 58%,#d9a066 58%)}
+.wk-dust{transform:translate(-50%,-50%);width:1.3em;height:.9em;border-radius:50%;background:radial-gradient(circle at 40% 40%,#cbd5e1,#64748b);border:2px solid #475569;transition:transform .35s ease-in,opacity .35s;font-size:1em;display:grid;place-items:center}
+.wk-dust.big{width:auto;height:auto;background:none;border:0;font-size:2em;line-height:1}
+.wk-dust.gone{transform:translate(calc(-50% + var(--tx,0px)),calc(-50% + var(--ty,0px))) scale(.1) rotate(360deg);opacity:0;pointer-events:none}
+.wk-vac{transform:translate(-50%,-50%);width:5.6em;height:3.6em;pointer-events:none;transition:left .06s linear,top .06s linear}
+.wk-vac .body{position:absolute;left:0;top:0;width:3.4em;height:3.4em;border-radius:1em;background:linear-gradient(180deg,#f87171,#b91c1c);border:3px solid var(--ink);display:grid;place-items:center;font-size:1.8em;box-shadow:0 .25em 0 var(--ink)}
+.wk-vac .hose{position:absolute;left:3.1em;top:1.4em;width:1.6em;height:.5em;background:#374151;border:2px solid var(--ink);border-radius:.3em}
+.wk-vac .nozzle{position:absolute;left:4.4em;top:.9em;width:1.3em;height:1.5em;background:#1f2937;border:3px solid var(--ink);border-radius:.3em .3em .6em .6em}
+.wk-vac.on .body{animation:vacshake .15s linear infinite}
+.wk-vac.on .nozzle::after{content:'';position:absolute;left:-.9em;right:-.9em;top:1.2em;height:.9em;border-radius:50%;background:radial-gradient(ellipse,rgba(186,230,253,.9),rgba(186,230,253,0));animation:suck .3s linear infinite}
+.wk-vac.done .body{background:linear-gradient(180deg,#86efac,#16a34a)}
+@keyframes vacshake{0%,100%{transform:translate(0,0)}25%{transform:translate(1px,-1px)}75%{transform:translate(-1px,1px)}}
+@keyframes suck{from{transform:scale(1.3);opacity:.9}to{transform:scale(.5);opacity:0}}
 .wk-spark{position:fixed;z-index:1400;width:8px;height:8px;border-radius:50%;background:var(--gold);pointer-events:none;animation:wkspark .6s ease-out forwards}
 @keyframes wkspark{to{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0}}
 

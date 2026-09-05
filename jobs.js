@@ -57,6 +57,19 @@
         shuffle([...pairs, ...pairs].map(p => p[1])).forEach(f => { const it = el('div', 'wk-food', f); it.dataset.f = f; tray.appendChild(it); drag(it); });
         function drag(p) { p.onpointerdown = e => { e.preventDefault(); const r = stage.getBoundingClientRect(); const home = p.parentNode; p.classList.add('lift'); stage.appendChild(p); const mv = ev => pos(p, (ev.clientX - r.left) / r.width * 100, (ev.clientY - r.top) / r.height * 100); mv(e); const up = ev => { p.removeEventListener('pointermove', mv); p.removeEventListener('pointerup', up); p.removeEventListener('pointercancel', up); p.classList.remove('lift'); const t = document.elementsFromPoint(ev.clientX, ev.clientY).find(x => x.classList && x.classList.contains('wk-animal')); if (t && t.dataset.f === p.dataset.f) { p.remove(); t.classList.add('yum'); setTimeout(() => t.classList.remove('yum'), 500); SFX.slurp ? SFX.slurp() : SFX.pop(); have++; api.progress(have, need); api.spark(ev.clientX, ev.clientY); if (have >= need) { SFX.levelUp(); setTimeout(api.done, 400); } } else { if (t) { SFX.buzz(); t.classList.add('no'); setTimeout(() => t.classList.remove('no'), 400); } p.style.left = ''; p.style.top = ''; home.appendChild(p); } }; try { p.setPointerCapture(e.pointerId); } catch (err) {} p.addEventListener('pointermove', mv); p.addEventListener('pointerup', up); p.addEventListener('pointercancel', up); }; }
       } },
+    { id: 'vacuum', e: '🧹', name: 'Room Vacuum', pay: 3, how: 'The room is a mess! Drag your finger to drive the super vacuum and suck up every crumb, dust bunny, and sock.', bg: 'room',
+      start(stage, api) {
+        const need = 18; let have = 0; api.progress(0, need);
+        const bits = ['🧦', '🍪', '🧸', '🍬', '🪁', '🧩', '🍟', '✏️', '🧦', '🍕', '🎈', '🍭'];
+        const dust = []; for (let i = 0; i < need; i++) { const d = el('div', 'wk-dust' + (i % 3 === 0 ? ' big' : ''), i % 3 === 0 ? pick(bits) : ''); pos(d, 6 + Math.random() * 88, 24 + Math.random() * 64); stage.appendChild(d); dust.push(d); }
+        const vac = el('div', 'wk-vac', '<i class="hose"></i><b class="body">🧹</b><i class="nozzle"></i>'); pos(vac, 50, 88); stage.appendChild(vac);
+        let on = false; const r = () => stage.getBoundingClientRect();
+        const drive = e => { const b = r(); const x = (e.clientX - b.left) / b.width * 100, y = (e.clientY - b.top) / b.height * 100; pos(vac, Math.max(0, Math.min(100, x)), Math.max(6, Math.min(100, y))); const nz = vac.querySelector('.nozzle').getBoundingClientRect(); const cx = nz.left + nz.width / 2, cy = nz.top + nz.height / 2;
+          dust.forEach(d => { if (d.classList.contains('gone')) return; const db = d.getBoundingClientRect(); const dx = db.left + db.width / 2 - cx, dy = db.top + db.height / 2 - cy; if (Math.hypot(dx, dy) < b.width * .09) { d.classList.add('gone'); d.style.setProperty('--tx', (-dx) + 'px'); d.style.setProperty('--ty', (-dy) + 'px'); have++; SFX.slurp ? SFX.slurp() : SFX.pop(); api.progress(have, need); if (have >= need) { vac.classList.add('done'); SFX.levelUp(); setTimeout(api.done, 500); } } }); };
+        stage.addEventListener('pointerdown', e => { e.preventDefault(); on = true; vac.classList.add('on'); drive(e); try { stage.setPointerCapture(e.pointerId); } catch (err) {} });
+        stage.addEventListener('pointermove', e => { if (on) drive(e); });
+        const off = () => { on = false; vac.classList.remove('on'); }; stage.addEventListener('pointerup', off); stage.addEventListener('pointercancel', off);
+      } },
     { id: 'lemonade', e: '🍋', name: 'Lemonade Stand', pay: 4, how: 'Count the lemons each customer wants. Tap the lemon that many times to make their drink.', bg: 'stand',
       start(stage, api) {
         const need = 6; let have = 0, want = 0, got = 0; api.progress(0, need);

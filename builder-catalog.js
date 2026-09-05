@@ -18,7 +18,8 @@
   /* V = hand-drawn sticker, E = emoji sticker, G = grid piece (snaps; w = cols/24), B = Snap Block */
   const V = (id, kit, name, price, w, svg, x = {}) => ({ id, kit, name, price, w, svg, ...x });
   const E = (id, kit, name, e, price, w = .14) => ({ id, kit, name, e, price, w });
-  const G = (id, kit, name, price, cols, svg, x = {}) => ({ id, kit, name, price: kit === 'pieces' ? 0 : price, w: cols / 24, cols, svg, snap: true, ...x });
+  /* every snap-together STRUCTURE piece is free (Artin 2026-09-05: building never costs; decorations, rides, characters, and vehicles do) */
+  const G = (id, kit, name, price, cols, svg, x = {}) => ({ id, kit, name, price: 0, w: cols / 24, cols, svg, snap: true, ...x });
   /* a block's art is cols cells of front face plus a DEPTH-wide side face; snapTop = the share of its height that is top face + studs */
   const B = (id, name, price, cols, rows, shape = 'brick') => ({ id, kit: 'blocks', name, price: 0, w: (cols + A.DEPTH / A.U) / 24, cols, rows, shape, snap: true, block: true, snapTop: (A.STUD + A.DEPTH) / (rows * A.U + A.STUD + A.DEPTH), colorable: true, color: 'red', svg: (u, it) => A.blockSVG(u, it, cols, rows, shape) });
   const T = (id, name, price, cols, shape) => ({ id, kit: 'tiles', name, price: 0, w: cols / 24, cols, shape, snap: true, colorable: true, color: 'blue', svg: (u, it) => A.tileSVG(u, it, shape) });

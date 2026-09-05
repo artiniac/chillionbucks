@@ -130,6 +130,19 @@ section > h2, section > .lead, .game-grid, .tabs, .video-grid, .cards, .parents-
 .goal-done b{display:block;font-family:var(--font-display);font-size:1.05rem;color:var(--g800)}
 .goal-done small{display:block;font-weight:700;color:#3f2a14}
 .goal-done .btn{grid-column:1/-1;justify-self:start}
+.goal-card .gmine{position:absolute;top:-8px;left:-8px;font-size:.8rem;background:#fff;border:2px solid var(--ink);border-radius:50%;width:24px;height:24px;display:grid;place-items:center;font-style:normal;cursor:pointer}
+.grown{border:3px dashed var(--g600);border-radius:16px;padding:.4rem .8rem;background:#f0fdf4}
+.grown summary{cursor:pointer;font-weight:800;color:var(--g800)}
+.goal-form{display:grid;gap:.5rem;margin-top:.6rem}
+.goal-form label{display:grid;gap:.15rem;font-size:.8rem;font-weight:800;color:var(--g800)}
+.goal-form input{border:3px solid var(--ink);border-radius:10px;padding:.5rem .6rem;font:inherit;font-size:1rem;background:#fff}
+.goal-form .btn{justify-self:start}
+.sheet{position:fixed;inset:0;z-index:100;background:rgba(5,46,22,.7);display:grid;place-items:center;padding:1rem}
+.sheet[hidden]{display:none}
+.sheet-card{background:#fff;border:4px solid var(--ink);border-radius:22px;padding:1.2rem;width:min(720px,100%);max-height:92vh;overflow:auto;box-shadow:var(--comic)}
+.sheet-card h2{font-size:1.6rem;margin-bottom:.8rem;color:var(--g800)}
+.sheet-card img{width:100%;border-radius:14px;border:3px solid var(--ink)}
+.sheet-card .row{margin-top:.8rem;justify-content:flex-end}
 .goal-row{display:flex;gap:.5rem;flex-wrap:wrap}
 .goal{border:3px solid var(--ink);background:var(--mint);border-radius:999px;padding:.35rem .8rem;font-weight:800;transition:transform .1s}
 .goal:hover{transform:translateY(-2px)}

@@ -94,8 +94,11 @@
   /* ---------------- game 1: Piggy Bank Power (drag the coins in!) ---------------- */
   (function piggy() {
     // Real things to save for come from goals.js (a grown-up edits it: picture, price, store link)
-    const GOALS = (window.CHILLION_GOALS || []).filter(g => g && g.id && g.price > 0).map(g => ({ id: g.id, e: g.e || '🎁', n: g.name || g.id, c: Math.round(g.price), img: g.img || '', url: g.url || '' }));
-    if (!GOALS.length) GOALS.push({ id: 'scooter', e: '🛴', n: 'Scooter', c: 50 }, { id: 'bike', e: '🚲', n: 'Bike', c: 120 });
+    const normGoal = g => ({ id: String(g.id), e: g.e || '🎁', n: g.name || g.n || g.id, c: Math.round(+g.price || +g.c || 0), img: g.img || '', url: g.url || '', mine: !!g.mine });
+    const readParentGoals = () => { try { const a = JSON.parse(localStorage.getItem('cb:goals') || '[]'); return Array.isArray(a) ? a.map(g => normGoal({ ...g, mine: true })).filter(g => g.c > 0) : []; } catch (e) { return []; } };
+    const GOALS = [];
+    function loadGoals() { GOALS.length = 0; readParentGoals().forEach(g => GOALS.push(g)); (window.CHILLION_GOALS || []).filter(g => g && g.id && g.price > 0).forEach(g => { if (!GOALS.some(x => x.id === g.id)) GOALS.push(normGoal(g)); }); if (!GOALS.length) GOALS.push({ id: 'scooter', e: '🛴', n: 'Scooter', c: 50 }, { id: 'bike', e: '🚲', n: 'Bike', c: 120 }); }
+    loadGoals();
     const TEMPTS = [
       { e: '🍭', n: 'Candy', c: 3 }, { e: '🍦', n: 'Ice cream', c: 4 }, { e: '🎈', n: 'Balloon', c: 2 },
       { e: '🧃', n: 'Juice box', c: 2 }, { e: '🍩', n: 'Donut', c: 3 }, { e: '🎁', n: 'Mystery toy', c: 5 },
@@ -115,7 +118,7 @@
       goalRow.innerHTML = '';
       GOALS.forEach(g => {
         const b = document.createElement('button'); b.className = 'goal-card' + (saved >= g.c ? ' reached' : ''); b.type = 'button';
-        b.innerHTML = `<span class="gimg">${g.img ? `<img src="${esc(g.img)}" alt="" loading="lazy">` : g.e}</span><b>${esc(g.n)}</b><i>$${g.c}</i>`;
+        b.innerHTML = `<span class="gimg">${g.img ? `<img src="${esc(g.img)}" alt="" loading="lazy" onerror="this.replaceWith(document.createTextNode('${g.e}'))">` : g.e}</span><b>${esc(g.n)}</b><i>$${g.c}</i>${g.mine ? '<em class="gmine" title="Added by a grown-up">👨‍👩‍👧</em>' : ''}`;
         b.setAttribute('aria-pressed', g === goal); b.setAttribute('aria-label', `${g.n}, $${g.c}`);
         b.onclick = () => { goal = g; Wallet.setGoal(g.id); done = saved >= goal.c; picked = true; try { localStorage.setItem('cb:goalPicked', '1'); } catch (e) {} renderGoals(); update(); SFX.tap(); say(`You are saving for the ${g.n}! ${g.e} $${g.c}. Let’s go!`); };
         goalRow.appendChild(b);
@@ -125,14 +128,64 @@
     function renderGoalDone() {
       const box = $('#goalDone'); if (!box) return;
       if (saved < goal.c) { box.hidden = true; return; }
-      box.hidden = false; box.innerHTML = `<span class="gbig">${goal.img ? `<img src="${esc(goal.img)}" alt="">` : goal.e}</span><div><b>You saved $${goal.c} for the ${esc(goal.n)}! 🎉</b><small>That took real work. ${goal.url ? 'A grown-up can open the store, or you can pick a bigger goal.' : 'Show a grown-up, or pick a bigger goal.'}</small></div>${goal.url ? `<a class="btn btn-sm" href="${esc(goal.url)}" target="_blank" rel="noopener noreferrer">🛒 Grown-up: open the store</a>` : ''}`;
+      box.hidden = false; box.innerHTML = `<span class="gbig">${goal.img ? `<img src="${esc(goal.img)}" alt="">` : goal.e}</span><div><b>You saved $${goal.c} for the ${esc(goal.n)}! 🎉</b><small>That took real work. Make your certificate and show a grown-up.</small></div><div class="row"><button type="button" class="btn btn-sm" id="certBtn">🏅 Make my certificate</button>${goal.url ? `<a class="btn btn-sm btn-alt" href="${esc(goal.url)}" target="_blank" rel="noopener noreferrer">🛒 Grown-up: open the store</a>` : ''}</div>`;
+      $('#certBtn').onclick = () => makeCertificate(goal);
     }
+    // ---- grown-ups add REAL goals: a store link, a name, a price, and (optionally) the product photo's link ----
+    const form = $('#goalForm');
+    if (form) form.addEventListener('submit', e => {
+      e.preventDefault();
+      const url = form.url.value.trim(), name = form.gname.value.trim(), price = Math.round(+form.price.value), img = form.img.value.trim();
+      if (!name || !(price > 0)) { say('Give the goal a name and a price.', true); return; }
+      if (url && !/^https?:\/\//i.test(url)) { say('The store link has to start with https://', true); return; }
+      if (img && !/^https?:\/\/.+\.(png|jpe?g|webp|gif)(\?.*)?$/i.test(img) && !/^https?:\/\/m\.media-amazon\.com\//i.test(img)) { say('The photo link should end in .jpg or .png (long-press the product photo and copy its address).', true); return; }
+      const asin = (url.match(/\/(?:dp|gp\/product)\/([A-Z0-9]{10})/i) || [])[1];
+      const g = { id: 'g_' + (asin || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 24) + '-' + Date.now().toString(36)), name, price, url, img, e: '🎁' };
+      const mine = readParentGoals().map(x => ({ id: x.id, name: x.n, price: x.c, url: x.url, img: x.img, e: x.e })); mine.unshift(g);
+      try { localStorage.setItem('cb:goals', JSON.stringify(mine)); } catch (err) {}
+      form.reset(); loadGoals(); goal = GOALS[0]; Wallet.setGoal(goal.id); done = saved >= goal.c; renderGoals(); update(); SFX.levelUp(); say(`Added: ${name} for $${price}. Tap it to save for it! 🎯`);
+    });
+    goalRow.addEventListener('click', e => {
+      const x = e.target.closest('.gmine'); if (!x) return; e.stopPropagation(); e.preventDefault();
+      const card = x.closest('.goal-card'); const idx = [...goalRow.children].indexOf(card); const g = GOALS[idx]; if (!g || !g.mine) return;
+      if (!confirm(`Remove the goal "${g.n}"?`)) return;
+      try { localStorage.setItem('cb:goals', JSON.stringify(readParentGoals().filter(p => p.id !== g.id).map(p => ({ id: p.id, name: p.n, price: p.c, url: p.url, img: p.img, e: p.e })))); } catch (err) {}
+      loadGoals(); if (goal.id === g.id) { goal = GOALS[0]; Wallet.setGoal(goal.id); } renderGoals(); update(); SFX.pop();
+    });
+    // ---- the certificate: proof for the grown-up that the money was really saved ----
+    const loadPic = src => new Promise((res, rej) => { const im = new Image(); im.crossOrigin = 'anonymous'; im.onload = () => res(im); im.onerror = rej; im.src = src; });
+    async function makeCertificate(g) {
+      let kid = localStorage.getItem('cb:kidName') || ''; if (!kid) { kid = (prompt('Whose certificate is this? (first name)', 'Leo') || '').trim().slice(0, 24); if (!kid) return; try { localStorage.setItem('cb:kidName', kid); } catch (e) {} }
+      const W = 1200, H = 850; const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
+      x.fillStyle = '#fffbeb'; x.fillRect(0, 0, W, H); x.strokeStyle = '#052e16'; x.lineWidth = 14; x.strokeRect(28, 28, W - 56, H - 56); x.strokeStyle = '#22c55e'; x.lineWidth = 6; x.strokeRect(52, 52, W - 104, H - 104);
+      const F = 'Fredoka, Nunito, Arial, sans-serif'; x.textAlign = 'center'; x.fillStyle = '#052e16';
+      x.font = `700 62px ${F}`; x.fillText('CERTIFICATE OF SAVING', W / 2, 150);
+      x.font = `600 30px ${F}`; x.fillStyle = '#166534'; x.fillText('chillionbucks.com', W / 2, 195);
+      x.fillStyle = '#052e16'; x.font = `500 34px ${F}`; x.fillText('This certifies that', W / 2, 290);
+      x.font = `700 80px ${F}`; x.fillStyle = '#15803d'; x.fillText(kid, W / 2, 380);
+      x.fillStyle = '#052e16'; x.font = `500 34px ${F}`; x.fillText('saved', W / 2, 450);
+      x.font = `700 72px ${F}`; x.fillStyle = '#b45309'; x.fillText('$' + g.c.toLocaleString('en-US'), W / 2, 530);
+      x.fillStyle = '#052e16'; x.font = `500 34px ${F}`; x.fillText(`for the ${g.n}`, W / 2, 590);
+      const work = (() => { try { return JSON.parse(localStorage.getItem('cb:work') || '{}').total || 0; } catch (e) { return 0; } })(); const coins = +localStorage.getItem('cb:coins') || 0;
+      x.font = `600 26px ${F}`; x.fillStyle = '#374151'; x.fillText(`Earned by real work: ${work} job${work === 1 ? '' : 's'} finished and ${coins} coin${coins === 1 ? '' : 's'} saved, one at a time.`, W / 2, 660);
+      x.fillText(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), W / 2, 705);
+      x.font = `700 28px ${F}`; x.fillStyle = '#052e16'; x.fillText('Signed: the Chillion Piggy 🐷    Grown-up: ____________________', W / 2, 770);
+      // ribbon + the goal picture (or its emoji) in the corner
+      x.fillStyle = '#facc15'; x.beginPath(); x.arc(130, 130, 56, 0, Math.PI * 2); x.fill(); x.strokeStyle = '#052e16'; x.lineWidth = 6; x.stroke(); x.fillStyle = '#052e16'; x.font = `700 46px ${F}`; x.fillText('★', 130, 147);
+      x.font = `120px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`; x.fillText(g.e, W - 170, 330);
+      if (g.img) { try { const im = await loadPic(g.img); const s = Math.min(220 / im.naturalWidth, 220 / im.naturalHeight); x.fillStyle = '#fff'; x.fillRect(W - 290, 230, 240, 240); x.drawImage(im, W - 280 + (220 - im.naturalWidth * s) / 2, 240 + (220 - im.naturalHeight * s) / 2, im.naturalWidth * s, im.naturalHeight * s); x.strokeStyle = '#052e16'; x.lineWidth = 5; x.strokeRect(W - 290, 230, 240, 240); } catch (e) {} }
+      let data; try { data = c.toDataURL('image/png'); } catch (e) { say('The store photo blocked saving, so here is the certificate without it.'); return makeCertificateNoPic(g, kid); }
+      $('#certImg').src = data; $('#certSheet').hidden = false; SFX.cheer(); confetti(200);
+    }
+    function makeCertificateNoPic(g, kid) { const saveImg = g.img; g.img = ''; makeCertificate(g).finally(() => { g.img = saveImg; }); }
+    $('#certClose').onclick = () => { $('#certSheet').hidden = true; };
+    $('#certSheet').addEventListener('click', e => { if (e.target.id === 'certSheet') $('#certSheet').hidden = true; });
     function update() {
       amtEl.textContent = '$' + saved;
       barEl.style.width = Math.min(100, saved / goal.c * 100) + '%';
       labelEl.textContent = saved >= goal.c ? `${goal.e} ${goal.n}: GOT IT! 🎉` : `${goal.e} ${goal.n}: $${saved} of $${goal.c}`;
       svg.style.setProperty('--fat', (1 + Math.min(.14, saved / Math.max(goal.c, 1) * .14)).toFixed(3));
-      if (builderLink) builderLink.textContent = saved > 0 ? `🏗️ Spend your $${saved} in the Builder` : '🏗️ Open the Builder';
+      if (builderLink) builderLink.textContent = saved > 0 ? `🏗️ Spend your $${saved} in Chilltopia` : '🏝️ Open Chilltopia';
       renderGoalDone(); $$('.goal-card', goalRow).forEach((b, i) => b.classList.toggle('reached', saved >= GOALS[i].c));
       if (saved >= goal.c && !done) {
         done = true; SFX.cheer(); confetti(220);
@@ -216,7 +269,7 @@
       const now = performance.now(); combo = (now - lastDrop < 3000) ? Math.min(combo + 1, COMBO.length - 1) : 0; lastDrop = now;
       let v = 1;
       if (kind) { v = Wallet.depositBill(kind); saved = Wallet.get(); coin.remove(); renderBills(); if (v >= 1000) { SFX.cheer(); confetti(260); } else if (v >= 50) confetti(120); }
-      else { saved++; Wallet.set(saved); }
+      else { saved++; Wallet.set(saved); try { localStorage.setItem('cb:coins', String((+localStorage.getItem('cb:coins') || 0) + 1)); } catch (e) {} }
       SFX.clink(kind ? Math.min(COMBO.length - 1, combo + (v >= 100 ? 4 : 2)) : combo); setTimeout(() => SFX.slurp(), 120);
       svg.classList.remove('gulp'); void svg.offsetWidth; svg.classList.add('gulp');
       sparkle(sp.x, sp.y); floatText('+$' + v.toLocaleString('en-US'), sp.x, sp.y);
