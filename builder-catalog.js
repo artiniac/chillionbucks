@@ -141,7 +141,14 @@
     V('pomeranian', 'characters', 'Pomeranian', 2, .07, Z.pomeranian), V('retriever', 'characters', 'Golden retriever', 3, .12, Z.retriever), V('kitty', 'characters', 'Kitty', 2, .08, Z.kitty, CL('orange')), V('lionKing', 'characters', 'Lion', 4, .14, Z.lionKing),
   ];
   /* Picture sprites (PNG with a transparent background) from sprites.js join the catalog as image items. */
-  (window.CHILLION_SPRITES || []).forEach(sp => { if (sp && sp.id && sp.src && !ITEMS.some(d => d.id === sp.id)) ITEMS.push({ id: sp.id, kit: KITS.some(k => k.id === sp.kit) ? sp.kit : 'home', name: sp.name || sp.id, price: Math.max(0, Math.round(+sp.price || 0)), w: Math.min(.6, Math.max(.05, +sp.w || .2)), img: sp.src, label: false }); });
+  (window.CHILLION_SPRITES || []).forEach(sp => { if (sp && sp.id && sp.src && !ITEMS.some(d => d.id === sp.id)) ITEMS.push({ id: sp.id, kit: KITS.some(k => k.id === sp.kit) ? sp.kit : 'home', name: sp.name || sp.id, price: Math.max(0, Math.round(+sp.price || 0)), w: Math.min(.6, Math.max(.05, +sp.w || .2)), img: sp.src, label: false, go: ['drive', 'fly', 'float', 'walk', 'swim', 'spin'].includes(sp.go) ? sp.go : undefined }); });
+  const GO_BY_KIND = { plane: 'fly', heli: 'fly', passengerJet: 'fly', fighterJet: 'fly', stealthJet: 'fly', militaryHeli: 'fly', rocket: 'fly', ufo: 'fly', satellite: 'fly', shooting: 'fly', balloon: 'fly', kite: 'fly', hoverboard: 'fly', butterfly: 'fly', bee: 'fly', parrot: 'fly', owl: 'fly',
+    sailboat: 'float', speedboat: 'float', ship: 'float', canoe: 'float', yacht: 'float', pirateship: 'float', jetski: 'float', submarine: 'swim', tubeRider: 'float', raft: 'float', floatRing: 'float', buoy: 'float', surf: 'float', swimmer: 'swim',
+    dolphin: 'swim', shark: 'swim', octopus: 'swim', whale: 'swim', turtle: 'swim', tropfish: 'swim', fish: 'swim', crab: 'walk', seal: 'swim', mermaid: 'swim', squid: 'swim', lobster: 'walk', shrimp: 'swim', puffer: 'swim',
+    sun: 'spin', star: 'spin', snowflake: 'spin', gem: 'spin', planet: 'spin', moonRock: 'spin', coasterCar: 'drive', monsterTruck: 'drive', train: 'drive', monorail: 'drive', tram: 'drive', cat: 'walk', dog: 'walk', frog: 'walk', snake: 'walk' };
+  const GO_BY_KIT = { vehicles: 'drive', people: 'walk', characters: 'walk', zoo: 'walk' };
+  const NO_GO = new Set(['sign', 'pal']);
+  ITEMS.forEach(d => { if (d.go === undefined && !d.snap && !NO_GO.has(d.id)) { const g = GO_BY_KIND[d.id] || GO_BY_KIT[d.kit]; if (g) d.go = g; } if (d.id === 'pal') d.go = 'walk'; });
   const DEF = Object.fromEntries(ITEMS.map(d => [d.id, d]));
 
   /* The Job Board: build orders that PAY. Progress counts things by kit; strokes count drawing. One collect per world. */

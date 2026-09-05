@@ -67,9 +67,10 @@
     else { const sc = SCENES[world.bg.id] || SCENES.bedroom; BG.innerHTML = sc.svg; }
   }
   function placeEl(d, it) {
-    const def = DEF[it.kind]; const W = stageRect().width; const w = def.w * W;
-    d.style.width = w + 'px'; d.style.left = (it.x * 100) + '%'; d.style.top = (it.y * 100) + '%'; d.style.zIndex = 10 + it.z;
-    d.style.transform = `translate(-50%,-50%) rotate(${it.rot || 0}deg) scale(${it.s})${it.flip ? ' scaleX(-1)' : ''}`;
+    const def = DEF[it.kind]; const W = stageRect().width; const w = def.w * W; const m = MOTION.get(it.uid);
+    d.style.width = w + 'px'; d.style.left = ((it.x + (m ? m.dx : 0)) * 100) + '%'; d.style.top = ((it.y + (m ? m.dy : 0)) * 100) + '%'; d.style.zIndex = 10 + it.z;
+    const flip = m ? (it.flip !== (m.dir < 0)) : it.flip;
+    d.style.transform = `translate(-50%,-50%) rotate(${(it.rot || 0) + (m ? m.spin : 0)}deg) scale(${it.s})${flip ? ' scaleX(-1)' : ''}`;
     const em = d.querySelector('.em'); if (em) em.style.fontSize = (w * .85) + 'px';
   }
   function art(def, it, u) { return def.img ? `<img class="pic" src="${def.img}" alt="" draggable="false">` : def.svg ? def.svg(u, it) : `<span class="em">${def.e}</span>`; }
@@ -84,9 +85,12 @@
     $('#tools [data-act="color"]').hidden = !def.colorable;
     $('#tools [data-act="color"] i').style.background = PAL[selected.color] || PAL.red;
     const wb = $('#tools [data-act="words"]'); wb.hidden = !(def.label || def.pal); wb.querySelector('small').textContent = def.pal ? 'Dress up' : 'Words';
+    const gb = $('#tools [data-act="go"]'); gb.hidden = !def.go; gb.classList.toggle('on', !!selected.go); gb.innerHTML = selected.go ? `⏸<small>Stop</small>` : `▶<small>Go!</small>`;
   }
   function render() {
     world.items.sort((a, b) => a.z - b.z).forEach((it, i) => { it.z = i; });
+    for (const uid of [...MOTION.keys()]) if (!world.items.some(it => it.uid === uid && it.go)) MOTION.delete(uid);
+    world.items.forEach(it => { if (it.go && !MOTION.has(it.uid)) startMotion(it); });
     LAYER.innerHTML = '';
     world.items.forEach(it => { const d = makeEl(it); if (selected && selected.uid === it.uid) d.classList.add('sel'); LAYER.appendChild(d); });
     paintTools();
@@ -95,6 +99,47 @@
   function replaceAll() { $$('.it', LAYER).forEach(d => { const it = world.items.find(x => x.uid === d.dataset.uid); if (it) placeEl(d, it); }); }
   function redrawOne(it) { const d = LAYER.querySelector(`[data-uid="${it.uid}"]`); if (d) { d.innerHTML = art(DEF[it.kind], it, it.uid); placeEl(d, it); } }
   function select(it) { selected = it; $$('.it', LAYER).forEach(d => d.classList.toggle('sel', !!it && d.dataset.uid === it.uid)); paintTools(); }
+
+  /* ============================== MOTION: whole things move (works for pictures too) ============================== */
+  const MOTION = new Map(); let motionRaf = null, motionLast = 0;
+  const GO_TOAST = { drive: 'Vroom! It drives back and forth. Tap ⏸ to park it. 🚗', fly: 'Up it goes! Tap ⏸ to land it. ✈️', float: 'Bobbing along. Drop it on a river and it rides the current. 🛟', walk: 'Off for a walk! Tap ⏸ to stop. 🚶', swim: 'Swimming! Tap ⏸ to stop. 🐠', spin: 'Spinning! Tap ⏸ to stop. ✨' };
+  const SPEED = { drive: .11, fly: .09, float: .035, walk: .03, swim: .05, spin: 0 };
+  function nearestRiver(it) { // a float dropped on a painted river rides it
+    let best = null;
+    world.strokes.forEach(st => { if (st.c !== 'river' || st.pts.length < 3) return; st.pts.forEach((p, i) => { const d = Math.hypot(p[0] - it.x, (p[1] - it.y) * .67); if (d < .06 && (!best || d < best.d)) best = { st, i, d }; }); });
+    return best;
+  }
+  function startMotion(it) {
+    const def = DEF[it.kind]; if (!it.go || !def.go || reduced) return;
+    const m = { dx: 0, dy: 0, dir: it.flip ? -1 : 1, spin: 0, phase: Math.random() * 6.28, hold: false };
+    if (it.go === 'float') { const r = nearestRiver(it); if (r) { m.path = r.st.pts; m.pos = r.i; m.loop = Math.hypot(m.path[0][0] - m.path[m.path.length - 1][0], m.path[0][1] - m.path[m.path.length - 1][1]) < .08; m.dir = 1; } }
+    MOTION.set(it.uid, m);
+    if (!motionRaf) { motionLast = performance.now(); motionRaf = requestAnimationFrame(motionTick); }
+  }
+  function motionTick(now) {
+    const dt = Math.min(.05, (now - motionLast) / 1000); motionLast = now; let any = false;
+    for (const it of world.items) {
+      const m = MOTION.get(it.uid); if (!m || !it.go || m.hold) { if (m && m.hold) any = true; continue; } any = true;
+      const def = DEF[it.kind]; const half = def.w * it.s / 2; const sp = SPEED[it.go]; m.phase += dt * (it.go === 'walk' ? 6 : 2.2);
+      if (m.path) { // ride the river
+        const step = .06 * dt / Math.max(.002, Math.hypot(m.path[Math.min(m.path.length - 1, Math.floor(m.pos) + 1)][0] - m.path[Math.floor(m.pos)][0], m.path[Math.min(m.path.length - 1, Math.floor(m.pos) + 1)][1] - m.path[Math.floor(m.pos)][1]));
+        m.pos += step * m.dir; const n = m.path.length;
+        if (m.loop) { if (m.pos >= n - 1) m.pos -= n - 1; if (m.pos < 0) m.pos += n - 1; } else if (m.pos >= n - 1) { m.pos = n - 1; m.dir = -1; } else if (m.pos <= 0) { m.pos = 0; m.dir = 1; }
+        const i = Math.floor(m.pos), f = m.pos - i, a = m.path[i], b = m.path[Math.min(n - 1, i + 1)];
+        m.dx = a[0] + (b[0] - a[0]) * f - it.x; m.dy = a[1] + (b[1] - a[1]) * f - it.y + Math.sin(m.phase) * .006;
+      } else if (it.go === 'spin') { m.spin = (m.spin + dt * 90) % 360; }
+      else {
+        const range = it.go === 'walk' ? .12 : it.go === 'swim' ? .22 : it.go === 'float' ? .04 : 1;
+        const lo = Math.max(half, it.x - range), hi = Math.min(1 - half, it.x + range);
+        m.dx += m.dir * sp * dt; const x = it.x + m.dx;
+        if (x > hi) { m.dx = hi - it.x; m.dir = -1; } else if (x < lo) { m.dx = lo - it.x; m.dir = 1; }
+        m.dy = it.go === 'fly' ? Math.sin(m.phase) * .025 : it.go === 'walk' ? -Math.abs(Math.sin(m.phase)) * .012 : it.go === 'float' || it.go === 'swim' ? Math.sin(m.phase) * .01 : 0;
+      }
+      const d = LAYER.querySelector(`[data-uid="${it.uid}"]`); if (d) placeEl(d, it);
+    }
+    motionRaf = any ? requestAnimationFrame(motionTick) : null;
+  }
+  function restartMotion() { MOTION.clear(); world.items.forEach(it => { if (it.go) startMotion(it); }); }
 
   // drawing layer
   const dctx = DRAW.getContext('2d');
@@ -134,6 +179,7 @@
     const it = world.items.find(x => x.uid === d.dataset.uid); if (!it) return;
     select(it); pushUndo(); SFX.tap();
     const def = DEF[it.kind]; if (def.snap) showGrid(true);
+    const mo = MOTION.get(it.uid); if (mo) { it.x = clamp(it.x + mo.dx, 0, 1); it.y = clamp(it.y + mo.dy, 0, 1); mo.dx = mo.dy = 0; mo.hold = true; }
     const r = stageRect(); const ox = e.clientX - (r.left + it.x * r.width), oy = e.clientY - (r.top + it.y * r.height);
     let moved = false;
     const mv = ev => { moved = true; it.x = clamp((ev.clientX - ox - r.left) / r.width, 0, 1); it.y = clamp((ev.clientY - oy - r.top) / r.height, 0, 1); placeEl(d, it); };
@@ -141,6 +187,7 @@
       d.removeEventListener('pointermove', mv); d.removeEventListener('pointerup', up); d.removeEventListener('pointercancel', up); showGrid(false);
       if (moved) { if (def.snap) { snapItem(it); placeEl(d, it); d.classList.remove('snapped'); void d.offsetWidth; d.classList.add('snapped'); SFX.clink ? SFX.clink(1) : SFX.pop(); } else SFX.pop(); save(); }
       else undo.pop();
+      if (it.go) { MOTION.delete(it.uid); startMotion(it); }
     };
     try { d.setPointerCapture(e.pointerId); } catch (err) {}
     d.addEventListener('pointermove', mv); d.addEventListener('pointerup', up); d.addEventListener('pointercancel', up);
@@ -150,6 +197,7 @@
     const it = selected; const def = DEF[it.kind]; const act = b.dataset.act;
     if (act === 'sell') { sell(it); return; }
     if (act === 'copy') { copyItem(it); return; }
+    if (act === 'go') { it.go = it.go ? null : def.go; MOTION.delete(it.uid); if (it.go) startMotion(it); else placeEl(LAYER.querySelector(`[data-uid="${it.uid}"]`), it); paintTools(); save(); SFX.tap(); toast(it.go ? GO_TOAST[it.go] : `Parked. Tap ▶ Go! to start it again.`); return; }
     if (act === 'words') { if (def.pal) { openPal(it); return; } const t = (prompt('What should it say?', it.label || def.def || '') || '').trim(); if (!t) return; pushUndo(); it.label = t.slice(0, 18); redrawOne(it); save(); SFX.ding(); return; }
     pushUndo();
     if (act === 'bigger') it.s = def.snap ? Math.min(3, Math.floor(it.s) + 1) : Math.min(3, it.s * 1.18);
@@ -231,6 +279,7 @@
     pushUndo(); Wallet.add(-def.price);
     const it = { uid: uid(), kind: def.id, x: .5 + (Math.random() - .5) * .14, y: .55 + (Math.random() - .5) * .14, s: 1, flip: false, rot: 0, z: world.items.length, label, color: shopColorFor(def) };
     if (pal) { it.pal = pal; it.color = pal.suit; }
+    if (def.go && ['fly', 'float', 'swim', 'spin'].includes(def.go)) it.go = def.go;
     if (def.snap) { it.x = .5; it.y = .6; snapItem(it); }
     world.items.push(it); selected = it; render(); save(); flashDrop(it);
     if (def.price > 0) SFX.chaChing(); else SFX.pop();
@@ -238,6 +287,8 @@
     const n = world.items.filter(x => x.kind === def.id).length;
     toast(pal ? `Your pal is here! Drag them into your world. Tap ✏️ Dress up to change the costume. 🦸` : def.snap ? `${def.name} snapped in! Drag it onto other pieces, they click together. 🧱` : def.price ? `You bought a ${def.name} for $${def.price}! Drag it anywhere. 👆` : `Free ${def.name}! Drag it anywhere. 👆`);
     if (def.block && n === 1 && world.items.filter(x => DEF[x.kind].block).length === 1) setTimeout(() => toast('Tip: tap 📋 Copy to add the same block again, fast. 🧱'), 2800);
+    if (def.go && !it.go) setTimeout(() => toast(def.go === 'drive' ? 'Tap ▶ Go! and it drives. Park it in a garage or let it cruise. 🚗' : 'Tap ▶ Go! and it walks around your world. 🚶'), 2600);
+    if (it.go) startMotion(it);
   }
   function sell(it) {
     const def = DEF[it.kind]; const v = val(it); pushUndo();
@@ -515,7 +566,7 @@
     const r = stageRect(); const st = { c: eraser ? 'erase' : river ? 'river' : color, w: eraser ? brush * 2.2 : river ? Math.max(brush * 3, .04) : brush, pts: [[(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]] };
     world.strokes.push(st); redraw();
     const mv = ev => { st.pts.push([clamp((ev.clientX - r.left) / r.width, 0, 1), clamp((ev.clientY - r.top) / r.height, 0, 1)]); redraw(); };
-    const up = () => { DRAW.removeEventListener('pointermove', mv); DRAW.removeEventListener('pointerup', up); DRAW.removeEventListener('pointercancel', up); save(); HINT.hidden = true; };
+    const up = () => { DRAW.removeEventListener('pointermove', mv); DRAW.removeEventListener('pointerup', up); DRAW.removeEventListener('pointercancel', up); save(); HINT.hidden = true; if (st.c === 'river' || st.c === 'erase') restartMotion(); };
     try { DRAW.setPointerCapture(e.pointerId); } catch (err) {}
     DRAW.addEventListener('pointermove', mv); DRAW.addEventListener('pointerup', up); DRAW.addEventListener('pointercancel', up);
   });
@@ -541,8 +592,8 @@
     try { const im = await loadImg(world.bg.type === 'photo' ? world.bg.data : svgUrl((SCENES[world.bg.id] || SCENES.bedroom).svg.replace('preserveAspectRatio="xMidYMax slice"', '').replace('<svg ', '<svg width="1200" height="800" '))); drawCover(x, im, W, H, world.bg.type !== 'photo'); } catch (e) {}
     x.drawImage(DRAW, 0, 0, W, H);
     for (const it of [...world.items].sort((a, b) => a.z - b.z)) {
-      const def = DEF[it.kind]; const w = def.w * W * it.s; const cx = it.x * W, cy = it.y * H;
-      x.save(); x.translate(cx, cy); if (it.rot) x.rotate(it.rot * Math.PI / 180); if (it.flip) x.scale(-1, 1);
+      const def = DEF[it.kind]; const w = def.w * W * it.s; const mm = MOTION.get(it.uid) || { dx: 0, dy: 0, dir: 1, spin: 0 }; const cx = (it.x + mm.dx) * W, cy = (it.y + mm.dy) * H;
+      x.save(); x.translate(cx, cy); if (it.rot || mm.spin) x.rotate(((it.rot || 0) + mm.spin) * Math.PI / 180); if (it.flip !== (mm.dir < 0)) x.scale(-1, 1);
       if (def.img) { try { const im = await loadImg(def.img); const ar = im.naturalHeight / im.naturalWidth || 1; x.drawImage(im, -w / 2, -w * ar / 2, w, w * ar); } catch (e) {} }
       else if (def.svg) { try { const s = def.svg('snap' + it.uid, it); const vb = s.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/); const ar = vb ? +vb[2] / +vb[1] : 1; const im = await loadImg(svgUrl(s.replace('<svg ', `<svg width="${vb ? vb[1] : 200}" height="${vb ? vb[2] : 200}" `))); x.drawImage(im, -w / 2, -w * ar / 2, w, w * ar); } catch (e) {} }
       else { x.font = `${w * .85}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(def.e, 0, w * .04); }

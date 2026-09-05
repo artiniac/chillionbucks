@@ -1,14 +1,35 @@
-# Picture pack for the Chillion Builder
+# Picture pack for Chilltopia (realistic look)
 
-The Builder draws everything itself as vector art (SVG). An image generator such as ChatGPT makes **raster** pictures (PNG files), which is a different thing: a PNG is a grid of pixels, an SVG is a list of shapes. The Builder can use both. Hand-drawn SVG stays for the things that snap, recolor, and animate (blocks, tiles, walls, river channels, spinning rides). Pictures work best for "hero" things a kid just places: cars, planes, boats, big rides, animals.
+Chilltopia draws its default pieces as vector art (SVG): flat, cartoon, and animated, because that is what can be drawn by hand in code. A realistic look has to come from rendered pictures. An image generator (ChatGPT, Midjourney, Ideogram) makes those as **PNG** files (pixels), and the game places them, drags them, resizes them, saves them in the world picture, and moves them whole (cars drive, jets fly, boats and tube riders float along a painted river, people walk) with the ▶ Go tool. Parts inside a picture do not move (a Ferris wheel picture will not spin), so for rides ask for the still version and let the game move riders and floats instead.
 
-## How to ask (paste this once at the top of the chat)
+## Do a 5-picture pilot first
 
-> I am making picture stickers for a kids' building game. For each item I describe, make one image: a PNG with a fully transparent background, the object alone, centered, filling most of the frame, side view facing right unless I say otherwise, no ground, no shadow on the ground, no text, no logos, no badges, no watermark. Style: clean, colorful, kid-friendly, realistic proportions with soft shading and a thin dark outline, like a modern animated movie. Size 1024 by 512 for vehicles and 1024 by 1024 for everything else. Do not add any brand names or emblems. Each item is my own original design described by shape and color only.
+Make these five with the style block below, drop them in, and judge the look before making a hundred: wave pool, tube slide tower, lazy river segment (straight), row of two lounge chairs with an umbrella, palm tree. If they sit together well, keep going down the list.
 
-Then paste one item prompt at a time. Every prompt below describes shapes and colors only, never a brand, so there is nothing for it to object to. If it still adds a logo, reply "remove all badges and emblems, keep everything else."
+## The style block (paste this once at the top of the chat, then keep the same chat so the style stays consistent)
 
-## Vehicles (1024 by 512, side view facing right)
+> I am making pieces for a kids' park-building game with a realistic, rendered look, like a modern theme-park simulation game. For each item I describe, make ONE image: PNG with a fully transparent background, the object alone, centered, filling most of the frame. Camera: three-quarter view from slightly above (about 30 degrees), the same camera angle and the same soft daylight from the upper left for every image, so all pieces sit together in one scene. Realistic materials (real water, real concrete, real plastic, real chrome), photographic lighting, soft contact shadow directly under the object only, no ground plane, no background, no people unless I say so, no text, no logos, no badges, no watermark. Square 1024 by 1024 unless I say otherwise. Every item is my own original design described by shape and color only.
+
+If it adds a background, reply: "remove the background completely, keep the object exactly as it is." If it adds a badge or writing, reply: "remove all badges, emblems, and text, keep everything else."
+
+## Water park (make these first)
+
+1. **Wave pool**: a large rectangular pool with rolling blue waves, light-grey concrete deck around it, lane of white foam at the wave edge.
+2. **Tube slide tower**: a tall steel tower with stairs and a bright green enclosed tube slide spiraling down into a small splash pool.
+3. **Lazy river, straight segment**: a straight channel of slow blue water between low concrete edges, seen from the same three-quarter angle, ends cut flat so segments line up.
+4. **Lazy river, curve**: the same channel making a quarter turn, ends cut flat.
+5. **Lounge chairs with umbrella**: two white lounge chairs with blue cushions under a striped beach umbrella.
+6. **Snack bar**: a small poolside snack stand with a striped awning and a counter.
+7. **Waterfall grotto**: a grey rock cave with a waterfall curtain and a splash pool, tropical plants.
+8. **Swim-up bar**: a thatched tiki bar with stools half in the water.
+9. **Kids' splash pad**: a flat colorful pad with several water jets spraying up.
+10. **Drop slide**: a very tall slide tower with a near-vertical red slide.
+11. **Kid on an inner tube**: a child in a swimsuit sitting in a yellow inner tube on water (this one moves along rivers in the game).
+12. **Four-person raft**: an orange round raft with four seats, empty, on water.
+13. **Palm tree**: a single tall palm tree in a small concrete planter.
+14. **Lifeguard chair**: a tall white lifeguard chair with a red umbrella and a rescue tube.
+
+## Vehicles (1024 by 512, side view facing right, same lighting; these drive or fly in the game)
 
 1. **Sky Racer coupe**: a 1990s Japanese two-door sports coupe, boxy muscular body, wide fenders, big rear wing on two posts, four round red taillights in a row, low front bumper with a wide grille, five-spoke wheels, deep metallic blue paint.
 2. **Rocket coupe**: a low mid-engine Italian-style supercar from the 2000s, wedge nose, big oval side air intakes behind the doors, small round taillights, glass engine cover, bright red paint, silver wheels.
@@ -25,15 +46,7 @@ Then paste one item prompt at a time. Every prompt below describes shapes and co
 13. **Stealth jet**: a futuristic angular stealth jet, blue-black, glowing cyan edges, side view.
 14. **Rescue helicopter**: a green military-style transport helicopter with a rear tail rotor, side doors open, side view.
 
-## Water park (1024 by 1024)
-
-15. **Wave pool**: a big rectangular pool with rolling blue waves and a wide light-grey deck, three-quarter view from slightly above.
-16. **Tube slide**: a tall yellow tower with a green enclosed spiral water slide ending in a small splash pool.
-17. **Waterfall cave**: a grey rock grotto with a waterfall curtain falling in front of a dark cave mouth, green plants, splash pool at the bottom.
-18. **Swim-up snack hut**: a thatched-roof tiki bar with stools half in the water, tropical drinks on the counter.
-19. **Lazy river raft**: an orange four-person inflatable raft floating on blue water, seen from slightly above.
-
-## Characters (1024 by 1024, front three-quarter view)
+## Characters (1024 by 1024, front three-quarter view; these walk in the game)
 
 Keep these as shape-and-color descriptions, and give each a new name.
 
@@ -54,10 +67,10 @@ Keep these as shape-and-color descriptions, and give each a new name.
 2. Open `sprites.js` and add one line per picture:
 
 ```js
-{ id: 'skyracer', kit: 'vehicles', name: 'Sky Racer (picture)', price: 6, w: .22, src: 'assets/sprites/skyracer.png' },
+{ id: 'skyracer', kit: 'vehicles', name: 'Sky Racer (picture)', price: 6, w: .22, src: 'assets/sprites/skyracer.png', go: 'drive' },
 ```
 
-`kit` is the shelf (blocks, tiles, pieces, waterpark, themepark, zoo, city, castle, space, beach, nature, home, vehicles, people, characters). `w` is how wide it is on the stage as a fraction: a car is about .2, a jet .34, a person .1. `price` is whole bucks, 0 for free.
+`kit` is the shelf (blocks, tiles, pieces, waterpark, themepark, zoo, city, castle, space, beach, nature, home, vehicles, people, characters). `w` is how wide it is on the stage as a fraction: a car is about .2, a jet .34, a person .1, a wave pool .45. `price` is whole bucks, 0 for free. `go` is how it moves: drive, fly, float, walk, swim, or spin; leave it out for things that sit still.
 3. Commit and push. The picture shows up on that shelf, drags, resizes, flips, saves in the world picture, and counts toward jobs like everything else.
 
 Keep each PNG under about 400 KB (ask for "optimized PNG" or run it through any image squeezer). The site stays free; GitHub Pages serves the files.

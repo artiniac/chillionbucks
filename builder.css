@@ -33,6 +33,8 @@
 .tools button small,.actions button small{font-size:.62rem;letter-spacing:.02em;font-family:var(--font-body)}
 .tools button:active,.actions button:active{transform:scale(.92)}
 .tools button.danger{background:#b91c1c}
+.tools button.go{background:linear-gradient(180deg,#4ade80,#16a34a)}
+.tools button.go.on{background:linear-gradient(180deg,#fde047,#f59e0b);color:var(--ink)}
 .actions{display:flex;gap:.4rem;flex-wrap:wrap;justify-content:center;margin:.7rem 0}
 .actions button{background:#fff;color:var(--ink);border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);min-width:64px}
 .actions button.on{background:var(--lime2)}
