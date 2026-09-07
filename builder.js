@@ -331,7 +331,7 @@
     list.forEach(j => {
       const p = jobProgress(j); const paid = !!world.jobsDone[j.id];
       const card = document.createElement('div'); card.className = 'job' + (paid ? ' paid' : p.done ? ' done' : ''); card.dataset.job = j.id;
-      const bill = j.pay >= 20 ? 20 : 5;
+      const bill = 5;
       card.innerHTML = `<div class="je">${j.e}</div><div class="jb"><b>${esc(j.name)}</b><small>${esc(j.how)}</small><div class="jbar"><i style="width:${Math.round(100 * p.have / p.need)}%"></i><span>${p.have} / ${p.need}</span></div></div>
         <div class="jr">${paid ? '<span class="jpaid">PAID ✓</span>' : p.done ? `<button type="button" class="collect">Collect $${bill} bill 💵</button>` : `<span class="jpay">$${bill} bill</span>`}</div>`;
       if (p.done && !paid) card.querySelector('.collect').onclick = () => collect(j, card);
@@ -339,9 +339,9 @@
     });
     const c = collectable().length; $('#jobsTitle').textContent = c ? `Payday! ${c} job${c > 1 ? 's' : ''} ready 💵` : 'Job Board 💼';
   }
-  function collect(job, card) {
+  async function collect(job, card) {
     if (world.jobsDone[job.id] || !jobProgress(job).done) return;
-    world.jobsDone[job.id] = Date.now(); const kind = job.pay >= 20 ? 'b20' : 'b5'; Wallet.earnBill(kind); save();
+    if(!Wallet.canWork('classic')){toast('Paid Classic jobs are finished for today. You can keep building.');return;}world.jobsDone[job.id] = Date.now(); const kind='b5'; const paid=await Wallet.completeWork('classic');save();if(!paid){toast('No paycheck available today.');return;}
     if (card) { card.classList.add('paid', 'cash'); card.querySelector('.jr').innerHTML = '<span class="jpaid">PAID ✓</span>'; }
     payBill(kind, `${job.e} ${job.name} built!`); setTimeout(() => { $('#jobsSheet').hidden = true; openDeposit(); }, 1500);
   }
@@ -353,7 +353,7 @@
   }
   /* Which bill a piece of work earns: most jobs pay a $5 bill; every 5th job a $20; every 20th a $100; the 100th job a fat
      stack; the 250th a pot of gold. Bigger money only ever comes from more work. */
-  function billForWork(n) { if (n === 250) return 'pot'; if (n === 100) return 'stack'; if (n % 20 === 0) return 'b100'; if (n % 5 === 0) return 'b20'; return 'b5'; }
+  function billForWork() { return 'b5'; }
   const BILL_LABEL = { b5: '💵 a $5 bill', b20: '💵 a $20 bill', b50: '💵 a $50 bill', b100: '💵 a $100 bill', stack: '💰 a FAT STACK ($5,000)', pot: '🏆 a POT OF GOLD ($10,000)' };
   function payBill(kind, why) { const v = Wallet.BILLS[kind].v; SFX.cheer(); SFX.chaChing(); confetti(kind === 'b5' ? 120 : 220); const el = $('#payday'); el.innerHTML = `<b>${esc(BILL_LABEL[kind].replace(/^\S+\s/, ''))}</b><span>${esc(why)}</span><small>Drag it into the piggy to save it. 🐷</small>`; el.hidden = false; el.classList.remove('go'); void el.offsetWidth; el.classList.add('go'); clearTimeout(payday.t); payday.t = setTimeout(() => { el.hidden = true; }, 2600); paintPayBtn(true); }
   /* ---- the deposit sheet: a piggy and a tray of earned bills; drag a bill onto the piggy and it becomes spendable ---- */
@@ -395,11 +395,11 @@
       const left = WORK.readyAt(j.id) - now; const n = WORK.timesDone(j.id);
       const card = document.createElement('div'); card.className = 'job work' + (left > 0 ? ' resting' : ' ready');
       const nextBill = BILL_TEXT[billForWork(WORK.total() + 1)];
-      card.innerHTML = `<div class="je">${j.e}</div><div class="jb"><b>${esc(j.name)}</b><small>${esc(j.how)}</small>${n ? `<small class="jn">Done ${n} time${n > 1 ? 's' : ''}</small>` : ''}</div><div class="jr">${left > 0 ? `<span class="jrest">Back in ${fmtLeft(left)}</span>` : `<button type="button" class="collect play">Work for a ${nextBill} bill 💪</button>`}</div>`;
+      card.innerHTML = `<div class="je">${j.e}</div><div class="jb"><b>${esc(j.name)}</b><small>${esc(j.how)}</small>${n ? `<small class="jn">Done ${n} time${n > 1 ? 's' : ''}</small>` : ''}</div><div class="jr">${left > 0 ? `<span class="jrest">Back in ${fmtLeft(left)}</span>` : `<button type="button" class="collect play">${Wallet.canWork('classic') ? 'Work for a '+nextBill+' bill 💪' : 'Practice for fun'}</button>`}</div>`;
       if (left <= 0) card.querySelector('.play').onclick = () => startWork(j);
       box.appendChild(card);
     });
-    $('#workTotal').textContent = WORK.total() ? `You have finished ${WORK.total()} job${WORK.total() > 1 ? 's' : ''}. Work pays! 💪` : 'Pick a job. Do the work. Get paid. Then build whatever you want!';
+    $('#workTotal').textContent = !Wallet.canWork('classic') ? 'Paid Classic jobs are finished today. Practice and building stay open.' : WORK.total() ? `You have finished ${WORK.total()} job${WORK.total() > 1 ? 's' : ''}. Work pays! 💪` : 'Pick a job. Do the work. Get paid. Then build whatever you want!';
   }
   function setJobTab(t) { workTab = t; $$('#jobTabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t)); $('#work').hidden = t !== 'work'; $('#workTotal').hidden = t !== 'work'; $('#jobs').hidden = t !== 'orders'; $('#ordersTip').hidden = t !== 'orders'; if (t === 'work') renderWork(); else renderJobs(); }
   $$('#jobTabs button').forEach(b => b.onclick = () => { SFX.tap(); setJobTab(b.dataset.tab); });
@@ -410,7 +410,7 @@
     const api = {
       progress(have, need) { $('#workBar i').style.width = Math.round(100 * have / need) + '%'; $('#workCount').textContent = `${have} / ${need}`; },
       spark(x, y) { workSpark(x, y); },
-      done() { if (activeJob !== j) return; activeJob = null; WORK.markDone(j.id); const kind = billForWork(WORK.total()); Wallet.earnBill(kind); payBill(kind, `${j.e} ${j.name} done!`); setTimeout(() => { $('#workSheet').hidden = true; openDeposit(); }, 1500); },
+      async done() { if (activeJob !== j) return; activeJob = null; WORK.markDone(j.id); const kind = billForWork(WORK.total()); const paid=await Wallet.completeWork('classic');if(!paid){$('#workSheet').hidden=true;toast('Practice complete. Paid Classic jobs are finished for today.');return;} payBill(kind, `${j.e} ${j.name} done!`); setTimeout(() => { $('#workSheet').hidden = true; openDeposit(); }, 1500); },
     };
     requestAnimationFrame(() => { stage.style.fontSize = Math.round(stage.getBoundingClientRect().width / 26) + 'px'; j.start(stage, api); });
   }
@@ -421,21 +421,21 @@
   $('#jobsSheet').addEventListener('click', e => { if (e.target.id === 'jobsSheet') $('#jobsSheet').hidden = true; });
 
   /* ============================== FINISH MY WORLD: the big paycheck + the gallery ============================== */
-  function worldPay() { return 50; } // finishing a whole world earns a $50 bill
+  function worldPay() { return 5; } // A finished world shares the daily Classic work allowance.
   const readGallery = () => { try { const g = JSON.parse(localStorage.getItem(GKEY) || '[]'); return Array.isArray(g) ? g : []; } catch (e) { return []; } };
   function writeGallery(g) { try { localStorage.setItem(GKEY, JSON.stringify(g)); return true; } catch (e) { try { g = g.map(w => ({ ...w, world: w.world.bg.type === 'photo' ? { ...w.world, bg: { type: 'scene', id: 'bedroom' } } : w.world })); localStorage.setItem(GKEY, JSON.stringify(g)); return true; } catch (e2) { return false; } } }
   const sceneName = () => world.bg.type === 'photo' ? 'My room' : (SCENES[world.bg.id] || SCENES.bedroom).name;
   async function finishWorld() {
-    if (world.finished) { toast('This world already paid out. Tap 🧹 New world to start another and earn again!'); SFX.buzz(); return; }
+    if (world.finished) { toast('This world is already finished. Tap 🧹 New world to build another!'); SFX.buzz(); return; }
     if (world.items.length < 5) { toast(`Put at least 5 things in your world first (you have ${world.items.length}). 🏗️`); SFX.buzz(); return; }
     const pay = worldPay(); const btn = $('#finishBtn'); btn.disabled = true; toast('Taking a picture of your world… 📸');
     let thumb = null; try { thumb = await snapshot(420, 'image/jpeg', .72); } catch (e) {}
     const g = readGallery(); const n = g.length + 1;
     const entry = { id: uid(), name: `${sceneName()} #${n}`, when: Date.now(), pay, items: world.items.length, thumb, world: { ...world, finished: true } };
-    world.finished = true; world.jobsDone = world.jobsDone || {}; Wallet.earnBill('b50'); save();
+    world.finished = true; world.jobsDone = world.jobsDone || {}; const paid=await Wallet.completeWork('classic'); save();
     g.unshift(entry); while (g.length > 12) g.pop(); const kept = writeGallery(g);
-    payBill('b50', `🏆 ${entry.name} finished!`);
-    setTimeout(() => { toast(kept ? `Saved to 📚 My worlds. Tap 🧹 New world to build another and earn again!` : 'Saved the paycheck. (This browser is out of room to keep the picture.)'); openDeposit(); }, 1600);
+    if(paid)payBill('b5', `🏆 ${entry.name} finished!`);else toast('World saved. Paid Classic jobs are finished for today.');
+    setTimeout(() => { toast(kept ? `Saved to 📚 My worlds. Tap 🧹 New world to keep building!` : 'Saved the paycheck. (This browser is out of room to keep the picture.)'); openDeposit(); }, 1600);
     btn.disabled = false; refreshJobs();
   }
   $('#finishBtn').onclick = () => { SFX.tap(); finishWorld(); };
@@ -578,12 +578,12 @@
   /* ============================== UNDO / NEW WORLD / SNAPSHOT ============================== */
   $('#undoBtn').onclick = () => {
     const s = undo.pop(); if (!s) { SFX.buzz(); toast('Nothing to undo yet.'); return; }
-    const st = JSON.parse(s); world.items = st.items.filter(it => DEF[it.kind]); world.strokes = st.strokes; Wallet.set(st.wallet); selected = null; render(); redraw(); save(); SFX.pop(); toast('Undone! ↩️');
+    const st = JSON.parse(s);const before=refundValue();const restored=st.items.filter(it=>DEF[it.kind]);const current=world.items;world.items=restored;const after=refundValue();if(Wallet.get()+before-after<0){world.items=current;undo.push(s);toast('Not enough savings to undo this purchase return.');return;}world.strokes=st.strokes;Wallet.add(before-after); selected = null; render(); redraw(); save(); SFX.pop(); toast('Undone! ↩️');
   };
   $('#newBtn').onclick = () => {
     const refund = refundValue();
     const unpaid = !world.finished && world.items.length >= 5;
-    if ((world.items.length || world.strokes.length || world.bg.type === 'photo') && !confirm(`Start a brand-new world?${unpaid ? ' (Tip: tap 🏆 Finish first to get PAID for this one.)' : ''} Everything here gets sold back${refund ? ` (you get $${refund} back)` : ''}.`)) return;
+    if ((world.items.length || world.strokes.length || world.bg.type === 'photo') && !confirm(`Start a brand-new world?${unpaid ? ' (Tip: tap 🏆 Finish first to save this world.)' : ''} Everything here gets sold back${refund ? ` (you get $${refund} back)` : ''}.`)) return;
     pushUndo(); Wallet.add(refund); world = fresh(); selected = null; undo.length = 0; lastReady = new Set(); renderBg(); render(); redraw(); save(); SFX.levelUp(); toast(refund ? `Fresh start! $${refund} came back to your wallet. 💰` : 'Fresh start! 🧹');
   };
   const loadImg = src => new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = src; });

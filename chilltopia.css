@@ -9,3 +9,7 @@
 @media(max-width:900px){.collection{display:block;margin-left:auto}.shop-heading{flex-wrap:wrap}.shop-tabs{order:3;flex-basis:100%}}
 
 #jobMarkers .delivery-assist{width:auto;height:auto;transform:none;left:50%;top:18px;translate:-50% 0;border-radius:16px;font-size:14px;font-weight:700;padding:14px 20px;white-space:nowrap}#jobMarkers .delivery-assist::after{display:none}@media(max-width:600px){#jobMarkers .delivery-assist{top:140px;left:14px;translate:none;font-size:12px;padding:12px}}
+
+.topbar nav{display:flex;align-items:center}.topbar a.world{text-decoration:none;color:inherit;white-space:nowrap}.shop-tabs{flex-wrap:wrap}@media(max-width:600px){.topbar{height:auto;min-height:98px;flex-wrap:wrap;padding:10px 12px}.topbar nav{order:3;flex-basis:100%;justify-content:center}.wallet{margin-left:auto}.world{min-height:42px}.view-controls button{width:44px;height:44px}.shop-tabs button{min-height:44px}}
+
+.topbar a.world.active{color:#effdcf}

@@ -286,13 +286,14 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.
       const now = performance.now(); combo = (now - lastDrop < 3000) ? Math.min(combo + 1, COMBO.length - 1) : 0; lastDrop = now;
       let v = 1;
       if (kind) { v = Wallet.depositBill(kind); saved = Wallet.get(); coin.remove(); renderBills(); if (v >= 1000) { SFX.cheer(); confetti(260); } else if (v >= 50) confetti(120); }
-      else { saved++; Wallet.set(saved); try { localStorage.setItem('cb:coins', String((+localStorage.getItem('cb:coins') || 0) + 1)); } catch (e) {} }
+      else { try { localStorage.setItem('cb:coins', String((+localStorage.getItem('cb:coins') || 0) + 1)); } catch (e) {} }
       SFX.clink(kind ? Math.min(COMBO.length - 1, combo + (v >= 100 ? 4 : 2)) : combo); setTimeout(() => SFX.slurp(), 120);
       svg.classList.remove('gulp'); void svg.offsetWidth; svg.classList.add('gulp');
-      sparkle(sp.x, sp.y); floatText('+$' + v.toLocaleString('en-US'), sp.x, sp.y);
+      sparkle(sp.x, sp.y); floatText(kind ? '+' + v + ' bucks saved' : 'Practice!', sp.x, sp.y);
       // refill: the tray coin goes dark for a beat, then pops back (bills do not refill: they were earned)
       if (!kind) { coin.classList.add('spent'); coin.disabled = true; setTimeout(() => { coin.classList.remove('spent'); coin.disabled = false; coin.classList.remove('refill'); void coin.offsetWidth; coin.classList.add('refill'); }, 1100); }
       update();
+      if (!kind) { say('Practice coin saved! Earn spendable bucks by doing jobs in Chilltopia.'); return; }
       if (saved < goal.c) {
         if (saved % 10 === 0) { SFX.levelUp(); confetti(70, sp); setTimeout(showTempt, 700); say(`$${saved}! Level up! 🎉`); }
         else if (saved % 5 === 0) { SFX.levelUp(); confetti(50, sp); say(`$${saved} saved! ${pick(CHEERS)}`); }
@@ -319,7 +320,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.
       tempt.classList.remove('hidden'); say('Uh oh… temptation!');
     }
     $('#temptSpend').onclick = () => { saved = Math.max(0, saved - cur.c); Wallet.set(saved); SFX.buzz(); tempt.classList.add('hidden'); say(`Yum! But now you’re $${cur.c} further from the ${goal.n}. ${goal.e}`, true); update(); };
-    $('#temptKeep').onclick = () => { saved += 1; Wallet.set(saved); SFX.levelUp(); tempt.classList.add('hidden'); say('Patience pays! Waiting earned you a bonus buck. 💚'); confetti(40); update(); };
+    $('#temptKeep').onclick = () => { SFX.levelUp(); tempt.classList.add('hidden'); say('You kept your savings for your goal. 💚'); confetti(40); update(); };
     $('#piggyReset').onclick = () => { if (saved > 0 && !confirm(`Start over? This empties the piggy ($${saved}) and your Builder wallet.`)) return; saved = 0; done = false; combo = 0; Wallet.set(0); tempt.classList.add('hidden'); update(); say('Drag a coin into the piggy!'); };
     document.addEventListener('wallet', e => { const v = e.detail && typeof e.detail.saved === 'number' ? e.detail.saved : Wallet.get(); if (v !== saved) { saved = v; done = saved >= goal.c; update(); } renderBills(); });
     window.addEventListener('storage', ev => { if (ev.key === 'cb:wallet') location.reload(); });

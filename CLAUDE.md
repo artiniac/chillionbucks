@@ -8,6 +8,9 @@ Artin authorized replacing the main builder with a genuine 3D experience, includ
 The older builder-specific instructions below apply to Classic. New 3D saves use `cb:chilltopia3d:v1` and must never overwrite `cb:world` or `cb:worlds`. Both versions share `cb:wallet`. Keep the Classic route and all its assets available. Any payout must still create a bill and require a piggy-bank deposit. Refund only what was actually paid; free starter items never refund money.
 
 
+## September 7 expansion overrides
+The newer care economy in `ECONOMY-DESIGN.md` supersedes all older payout, unlimited-coin, interest, and jackpot instructions below. Use `Wallet.completeWork(type)` for payouts, preserve earned balances, and keep construction free. The connected water park is `waterpark.html` and stores `cb:waterpark:v1`.
+
 ## What this is
 Leo's (age almost 5) money site for kids, chillionbucks.com. "A chillion bucks is when you can chill all day and still have a lot of money." Owner: Artin Nazaryan (Leo's dad). Goal: make kids curious about money through games and good videos, and look genuinely cool while doing it.
 
