@@ -1,9 +1,11 @@
 import * as T from './vendor/three.module.js';
+import {naturalTree} from './natural-tree.js';
+import {realisticFish,SPECIES} from './reef-species.js?v=20260907-release3';
 const mats=new Map();
 export function material(color,roughness=.65){const key=color+':'+roughness;if(!mats.has(key))mats.set(key,new T.MeshStandardMaterial({color,roughness,metalness:.03}));return mats.get(key)}
 export function mesh(g,geo,color,x=0,y=0,z=0,sx=1,sy=1,sz=1){const m=new T.Mesh(geo,typeof color==='object'?color:material(color));m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;m.receiveShadow=true;g.add(m);return m}
 const sphere=new T.SphereGeometry(1,20,14), box=new T.BoxGeometry(1,1,1);sphere.userData.shared=true;box.userData.shared=true;
-export function disposeModel(g){g.traverse(o=>{if(o.geometry&&!o.geometry.userData.shared)o.geometry.dispose();if(o.material&&!Array.from(mats.values()).includes(o.material))o.material.dispose();});g.clear();}
+export function disposeModel(g){g.traverse(o=>{if(o.geometry&&!o.geometry.userData.shared)o.geometry.dispose();if(o.material&&!o.material.userData?.shared&&!Array.from(mats.values()).includes(o.material))o.material.dispose();});g.clear();}
 export function orb(g,c,x,y,z,sx,sy= sx,sz=sx){return mesh(g,sphere,c,x,y,z,sx,sy,sz)}
 export function block(g,c,x,y,z,sx,sy,sz){return mesh(g,box,c,x,y,z,sx,sy,sz)}
 function branch(g,a,b,r,c){const d=new T.Vector3(...b).sub(new T.Vector3(...a));const m=mesh(g,new T.CylinderGeometry(r*.65,r,d.length(),8),c);m.position.copy(new T.Vector3(...a).addScaledVector(d,.5));m.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),d.normalize());return m}
@@ -34,7 +36,7 @@ export const CATALOG=[
 {id:'ship',name:'Sunken sailboat',category:'Hideouts',world:'reef',price:20,r:1.3},
 {id:'bubbles',name:'Bubble fountain',category:'Water',world:'reef',price:0,r:.3},
 {id:'shell',name:'Pearl shell',category:'Water',world:'reef',price:8,r:.5},
-{id:'tree',name:'Cloud tree',category:'Garden',world:'town',price:0,r:.65},
+{id:'tree',name:'Shade tree',category:'Garden',world:'town',price:0,r:.65},
 {id:'flowers',name:'Flower patch',category:'Garden',world:'town',price:0,r:.4},
 {id:'bench',name:'Chill bench',category:'Garden',world:'town',price:0,r:.7},
 {id:'townhouse',name:'Little cottage',category:'Build',world:'town',price:0,r:1.2},
@@ -44,16 +46,9 @@ export const CATALOG=[
 {id:'fountain',name:'Town fountain',category:'Play',world:'town',price:12,r:.8},
 ];
 export const DEFINITIONS=Object.fromEntries(CATALOG.map(d=>[d.id,d]));
-export function makeFish(kind){const g=new T.Group(),d=DEFINITIONS[kind],c=d.color;const round=kind==='tang'||kind==='yellow'||kind==='butterfly';
-orb(g,c,0,0,0,.58,round?.43:.28,.17);const tail=new T.Group();tail.position.x=-.5;g.add(tail);const fin=new T.ConeGeometry(.3,.4,3);let m=mesh(tail,fin,kind==='tang'?'#ffdc38':c,-.2,0,0,1,1,.3);m.rotation.z=-Math.PI/2;
-const dorsal=mesh(g,new T.ConeGeometry(.24,.38,3),c,-.12,round?.35:.23,0,1,1,.3);dorsal.rotation.z=.6;
-for(const s of [-1,1]){orb(g,'#fafcf7',.32,.07,s*.145,.09,.09,.045);orb(g,'#102831',.355,.075,s*.18,.046,.054,.025);let f=mesh(g,fin,c,0,-.15,s*.17,.5,.6,.16);f.rotation.z=.7;f.rotation.y=s*.7;}
-if(kind==='clown'){for(const x of [-.32,.02,.3]){const rr=Math.sqrt(1-(x/.65)**2);const band=mesh(g,new T.SphereGeometry(1,16,12), '#fff4dc',x,0,0,.05,.285*rr,.177*rr);band.rotation.z=-.12;}}
-if(kind==='tang'){orb(g,'#14294f',-.04,.01,.173,.29,.23,.012);orb(g,'#14294f',-.04,.01,-.173,.29,.23,.012);}
-if(kind==='royal'){orb(g,'#ffc541',-.28,-.01,0,.28,.245,.173);}
-if(kind==='butterfly'){for(const x of [-.2,0,.2])for(const s of [-1,1])orb(g,'#58452b',x,0,s*.169,.025,.3,.01);}
-g.userData.tail=tail;return g}
-export function makeModel(id){if(DEFINITIONS[id]?.crawler)return makeCrawler(id);if(DEFINITIONS[id]?.fish)return makeFish(id);const g=new T.Group();
+for(const [id,info] of Object.entries(SPECIES))Object.assign(DEFINITIONS[id],info);
+export function makeFish(kind){return realisticFish(kind)}
+export function makeModel(id){if(id==='tree')return naturalTree();if(DEFINITIONS[id]?.crawler)return makeCrawler(id);if(DEFINITIONS[id]?.fish)return makeFish(id);const g=new T.Group();
 if(id==='rock'){for(let i=0;i<4;i++){const m=mesh(g,new T.DodecahedronGeometry(1,1),['#799a92','#9ab2a4','#b0bdb0','#697e76'][i],(i%2-.5)*.65,.2+i*.04,(Math.floor(i/2)-.5)*.6,.5,.32,.45);m.rotation.set(i*.4,i*.8,0)}}
 if(id==='cave'||id==='arch'){const c=id==='cave'?'#839d8b':'#d4b490';const arch=mesh(g,new T.TorusGeometry(.76,.24,8,24,Math.PI),c,0,.22,0);arch.scale.z=2;for(const x of [-.76,.76])orb(g,c,x,.16,0,.3,.25,.48);g.userData.portal=new T.Vector3(0,.58,0);}
 if(id==='grass'){for(let i=0;i<9;i++){const a=i*2.4,h=.8+(i%4)*.24;const curve=new T.CatmullRomCurve3([new T.Vector3(Math.cos(a)*.16,0,Math.sin(a)*.16),new T.Vector3(Math.cos(a)*.25,h*.5,Math.sin(a)*.25),new T.Vector3(Math.cos(a)*.4,h,Math.sin(a)*.3)]);mesh(g,new T.TubeGeometry(curve,8,.045,4,false),i%2?'#389d79':'#79b95b');}orb(g,'#809f89',0,.08,0,.3,.13,.3)}
