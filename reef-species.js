@@ -11,13 +11,13 @@ export const SPECIES={
 const bodyCache=new Map(),materialCache=new Map();
 function mat(color,extra={}){const key=color+JSON.stringify(extra);if(!materialCache.has(key)){const m=new T.MeshPhysicalMaterial({color,roughness:.5,clearcoat:.2,clearcoatRoughness:.4,...extra});m.userData.shared=true;materialCache.set(key,m);}return materialCache.get(key);}
 function colorAt(kind,u,v){let hex=SPECIES[kind].color;const y=Math.cos(v),side=Math.abs(Math.sin(v));
- if(kind==='clown'){const band=Math.min(Math.abs(u-.22),Math.abs(u-.53+.025*y),Math.abs(u-.82));hex=band<.037?'#f7eddd':band<.051?'#352c24':hex;}
+ if(kind==='clown'){const band=Math.min(Math.abs(u-.22),Math.abs(u-.53),Math.abs(u-.82));hex=band<.037?'#f7eddd':band<.051?'#352c24':hex;}
  if(kind==='tang'){const patch=((u-.51)/.29)**2+((y-.26)/.51)**2;const hole=((u-.53)/.16)**2+((y-.12)/.26)**2;if(side>.3&&((patch<1&&hole>1)||(u<.34&&Math.abs(y)<.22)))hex='#10212e';}
  if(kind==='royal')hex=u<.43?'#e5b62c':hex;
  if(kind==='butterfly'){const band=Math.min(...[.2,.43,.69,.88].map(x=>Math.abs(u-x)));if(band<.04)hex='#bb7729';else if(band<.055)hex='#e5a352';if(((u-.23)/.065)**2+((y-.65)/.17)**2<1)hex='#242b29';}
  const c=new T.Color(hex);const scale=.92+.08*Math.sin(u*155+Math.floor(v*10)*1.4)*Math.sin(v*30);c.multiplyScalar(scale*(.9+.1*(1-y)));return c;
 }
-function bodyGeometry(kind){if(bodyCache.has(kind))return bodyCache.get(kind);const d=SPECIES[kind],p=[],n=[],col=[],ix=[],nu=84,nv=32;
+function bodyGeometry(kind){if(bodyCache.has(kind))return bodyCache.get(kind);const d=SPECIES[kind],p=[],n=[],col=[],ix=[],nu=120,nv=48;
  for(let i=0;i<=nu;i++){const u=i/nu,x=-.61+1.2*u,profile=Math.pow(Math.sin(Math.PI*u),.72)*( .65+.35*u);for(let j=0;j<=nv;j++){const v=j/nv*Math.PI*2,y=Math.cos(v)*d.height*profile,z=Math.sin(v)*d.width*profile;p.push(x,y,z);const c=colorAt(kind,u,v);col.push(c.r,c.g,c.b);}}
  for(let i=0;i<nu;i++)for(let j=0;j<nv;j++){const a=i*(nv+1)+j,b=a+nv+1;ix.push(a,a+1,b,b,a+1,b+1);}
  const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(p,3));geo.setAttribute('color',new T.Float32BufferAttribute(col,3));geo.setIndex(ix);geo.computeVertexNormals();geo.userData.shared=true;bodyCache.set(kind,geo);return geo;
@@ -29,7 +29,7 @@ function fin(g,points,color,z=0){const shape=new T.Shape();shape.moveTo(...point
  const ribs=[];for(let i=1;i<points.length-1;i++){ribs.push(points[0][0],points[0][1],z+.002,points[i][0],points[i][1],z+.002);}const lines=new T.LineSegments(new T.BufferGeometry().setAttribute('position',new T.Float32BufferAttribute(ribs,3)),new T.LineBasicMaterial({color,transparent:true,opacity:.65}));g.add(lines);return o;}
 export function realisticFish(kind){const d=SPECIES[kind],g=new T.Group();add(g,bodyGeometry(kind),mat('#ffffff',{vertexColors:true}));
  const tail=new T.Group();tail.position.x=-.55;g.add(tail);const tc=['tang','royal'].includes(kind)?'#e1bc2d':d.color;
- const fork=['tang','yellow','chromis'].includes(kind);fin(tail,[[.04,0],[-.34,.27],[-.27,fork?.13:.2],[-.20,fork?0:.08],[-.27,fork?-.13:-.2],[-.34,-.27]],tc);g.userData.tail=tail;
+ const fork=['tang','yellow','chromis'].includes(kind);fin(tail,(fork?[[.04,0],[-.34,.27],[-.27,.13],[-.20,0],[-.27,-.13],[-.34,-.27]]:[[.04,0],[-.3,.22],[-.36,.16],[-.39,0],[-.36,-.16],[-.3,-.22]]),tc);g.userData.tail=tail;
  const h=d.height;fin(g,[[-.49,.05],[-.43,h*.94],[-.29,h*1.22],[-.13,h*1.24],[.04,h*1.14],[.24,h*.89],[.39,h*.5],[.23,h*.42]],d.color);
  fin(g,[[-.48,-.04],[-.4,-h*.98],[-.24,-h*1.17],[-.08,-h*1.07],[.17,-h*.65]],d.color);
  const fins=[];for(const side of [-1,1]){const f=new T.Group();f.position.set(.12,-.06,side*d.width*.86);g.add(f);fin(f,[[.05,.08],[-.15,-.09],[-.26,-.2],[-.08,-.21],[.08,-.06]],kind==='clown'?'#cb651b':d.color);f.rotation.y=side*.6;fins.push(f);

@@ -1,9 +1,10 @@
 import * as T from './vendor/three.module.js';
-import {mesh,orb,block,makePerson} from './chilltopia-models.js?v=20260907-release3';
+import {detailedPalm} from './living-models.js';
+import {mesh,orb,block,makePerson} from './chilltopia-models.js?v=20260907-sunlit';
 const water=new T.MeshPhysicalMaterial({color:'#64cbdc',transparent:true,opacity:.48,roughness:.12,metalness:.02,side:T.DoubleSide,depthWrite:false});
 water.userData.shared=true;
 function pipe(g,a,b,r=.06,color='#adc4c0'){const start=new T.Vector3(...a),end=new T.Vector3(...b),d=end.clone().sub(start);const m=mesh(g,new T.CylinderGeometry(r,r,d.length(),10),color);m.position.copy(start.addScaledVector(d,.5));m.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),d.normalize());return m;}
-export function palm(){const g=new T.Group();const trunk=new T.CatmullRomCurve3([new T.Vector3(0,0,0),new T.Vector3(.15,2,0),new T.Vector3(.45,4.2,.1)]);mesh(g,new T.TubeGeometry(trunk,12,.15,9,false),'#92785a');for(let i=0;i<12;i++){const a=i*Math.PI*2/12,pts=[],indices=[];for(let j=0;j<=12;j++){const q=j/12,r=q*2.5,w=Math.sin(q*Math.PI)*.28;const x=.45+Math.cos(a)*r,y=4.2+Math.sin(q*Math.PI)*.6-q*q*.9,z=.1+Math.sin(a)*r;pts.push(x-Math.sin(a)*w,y,z+Math.cos(a)*w,x+Math.sin(a)*w,y,z-Math.cos(a)*w);if(j<12){const k=j*2;indices.push(k,k+1,k+2,k+1,k+3,k+2);}}const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(pts,3));geo.setIndex(indices);geo.computeVertexNormals();mesh(g,geo,new T.MeshStandardMaterial({color:i%2?'#39714d':'#63864a',side:T.DoubleSide,roughness:.8}));}for(let i=0;i<3;i++)orb(g,'#745439',.4+Math.cos(i*2)*.2,4,Math.sin(i*2)*.2,.16);return g;}
+export function palm(){return detailedPalm();}
 export const ATTRACTIONS={bucket:'Tipping-bucket tower',mushroom:'Rain mushroom',jets:'Splash arch',pool:'Lagoon pool',icecream:'Ice cream stand',burger:'Burger grill',umbrella:'Shady picnic spot',palm:'Royal palm'};
 export function attraction(type){if(type==='palm')return palm();const g=new T.Group();
  if(type==='bucket'){

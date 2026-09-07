@@ -1,6 +1,6 @@
 # Visual reference research
 
-These are references for original procedural artwork and short educational labels. No photographs or third-party models were copied into the game. Game bucks, animal sizes, compatibility, and care timing are not real husbandry advice.
+These are references for original procedural artwork and short educational labels. Animal and building shapes are original procedural artwork. The later rendering pass uses CC0 captured lighting and scanned surfaces; see assets/realism/ATTRIBUTION.md. No third-party animal or building models were copied. Game bucks, animal sizes, compatibility, and care timing are not real husbandry advice.
 
 ## Aquarium
 

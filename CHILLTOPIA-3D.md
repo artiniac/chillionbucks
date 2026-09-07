@@ -67,3 +67,11 @@ The aquarium catalog is now a wall of animated display tanks. Inspecting an item
 Snap Blocks has its own route, blocks.html. The pure grid rules live in blocks-engine.js, merged mesh factories in blocks-models.js, and the UI in blocks.js. The new cb:blocks3d:v1 key holds up to eight creations of 180 pieces each. Existing Classic creations remain untouched. Exposed studs, overlapping cells, rotation, hollow frames, gravity settling, undo/redo, and guided projects are supported. This is a creative snapping system, not a structural engineering simulation. All pieces are free.
 
 Run node tests/world-rules.mjs for grid, guided-build, and six-slide endpoint checks. Browser verification covers guided completion and reload, desktop and 390-pixel phone layouts, display-tank inspection, and capped food-stand payouts. Actual iPhone Safari performance remains a device check, not something a desktop viewport establishes.
+
+## Clear-water and early-reader pass
+
+The park uses planar scene reflections with a visible tiled bed, turquoise water, and moving underwater light patterns. Captured HDR lighting and scanned sand, grass, and pavement are served locally; attribution is in assets/realism/ATTRIBUTION.md. Reflection targets are 256 pixels on small viewports and 512 on larger ones, with throttled updates. Aquarium glass, water surface, sand, coral, plants, and rocks received the same rendering pass. Original generated meshes remain stylized, so this is not a claim of photographic fidelity for every object.
+
+Walk inside, Build my park, Ride the river, and Add it here have large green action treatments. Picking a construction card automatically suggests an available position, shows the actual model, and scrolls to the preview. Confirm remains explicit, and cancel does not add anything. Large land attractions now require dry space and separation from other land attractions. Existing placements are not moved by this validation change.
+
+The aquarium has an explicit fish-store button and a prominent green Bring home button in its inspection tank. Small-screen layouts and the complete suggested-position and confirmation flow were checked in the browser. The architecture-model draft remains local and is not part of this release; aquarium and park realism are the current priority.
