@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>Chilltopia Classic</title>
+<meta name="description" content="Chilltopia, the Chillion Bucks building game: snap blocks and building parts together, make a water park, a zoo, a city, a castle, or a space station, and get PAID for finishing it. Take a picture of your room or pick a scene.">
+<meta name="theme-color" content="#052e16">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="builder.css">
+</head>
+<body class="builder-page">
+
+<header class="bbar">
+  <a class="back" href="index.html#play" aria-label="Back to the games">← Games</a>
+  <div class="bbrand">🏝️ <span>Chilltopia</span></div>
+  <div class="wallet" id="wallet" title="Your saved bucks">💰 <b id="walletAmt">$0</b></div>
+  <button type="button" class="paybtn" id="payBtn" hidden title="Money you earned. Drag it into the piggy to save it.">💵 <b>0</b></button>
+  <button id="soundBtn" class="sound" aria-pressed="true" aria-label="Toggle sound">🔊</button>
+<a href="build.html" style="color:inherit;font-weight:700;padding:8px">Try Chilltopia 3D ↗</a></header>
+
+<main class="build">
+  <div class="stage-wrap">
+    <div class="stage" id="stage">
+      <div class="bg" id="bg" aria-hidden="true"></div>
+      <canvas class="draw" id="draw" aria-label="Drawing layer"></canvas>
+      <div class="grid" id="grid" aria-hidden="true"></div>
+      <div class="items" id="items"></div>
+      <div class="hint" id="hint">👇 Tap a block or a piece below to buy it, then drag it anywhere. Build things to earn bucks!</div>
+    </div>
+    <div class="tools" id="tools" hidden>
+      <button type="button" data-act="bigger">🔍➕<small>Bigger</small></button>
+      <button type="button" data-act="smaller">🔍➖<small>Smaller</small></button>
+      <button type="button" data-act="rotate">🔄<small>Turn</small></button>
+      <button type="button" data-act="flip">↔️<small>Flip</small></button>
+      <button type="button" data-act="copy">📋<small>Copy</small></button>
+      <button type="button" data-act="go" class="go" hidden>▶<small>Go!</small></button>
+      <button type="button" data-act="color" hidden>🎨<i class="dot"></i><small>Color</small></button>
+      <button type="button" data-act="words" hidden>✏️<small>Words</small></button>
+      <button type="button" data-act="front">⬆️<small>Front</small></button>
+      <button type="button" data-act="back">⬇️<small>Back</small></button>
+      <button type="button" data-act="sell" class="danger">💸<small>Sell $<span id="sellPrice">0</span></small></button>
+    </div>
+  </div>
+
+  <div class="actions" id="actions">
+    <button type="button" id="jobsBtn" class="jobs">💼<small>Jobs</small><b class="badge" id="jobsBadge" hidden>0</b></button>
+    <button type="button" id="finishBtn" class="finish">🏆<small>Finish</small></button>
+    <button type="button" id="worldsBtn">📚<small>My worlds</small></button>
+    <button type="button" id="sceneBtn">🖼️<small>Scene</small></button>
+    <button type="button" id="photoBtn">📷<small>My room</small></button>
+    <button type="button" id="drawBtn">✏️<small>Draw</small></button>
+    <button type="button" id="undoBtn">↩️<small>Undo</small></button>
+    <button type="button" id="surpriseBtn">🎲<small>Surprise</small></button>
+    <button type="button" id="snapBtn">📸<small>Save pic</small></button>
+    <button type="button" id="newBtn">🧹<small>New world</small></button>
+    <input type="file" id="photoInput" accept="image/*" hidden>
+  </div>
+
+  <div class="drawbar" id="drawbar" hidden>
+    <div class="colors" id="colors"></div>
+    <div class="sizes"><button type="button" data-size=".006" aria-label="Thin brush"><i style="width:6px;height:6px"></i></button><button type="button" data-size=".014" class="on" aria-label="Medium brush"><i style="width:12px;height:12px"></i></button><button type="button" data-size=".03" aria-label="Thick brush"><i style="width:20px;height:20px"></i></button></div>
+    <button type="button" class="river" id="riverBtn">🌊 River brush</button>
+    <button type="button" class="eraser" id="eraserBtn">🧽 Eraser</button>
+    <button type="button" class="done" id="drawDone">✓ Done drawing</button>
+  </div>
+
+  <section class="shop" aria-label="Build shop">
+    <div class="cats" id="cats" role="tablist"></div>
+    <div class="swatch-row" id="swatchRow" hidden><span>Color:</span><div class="swatches" id="swatches"></div></div>
+    <p class="kit-tip" id="kitTip"></p>
+    <div class="shelf" id="shelf"></div>
+    <p class="need-bucks" id="needBucks" hidden>Need more bucks? <a href="index.html#play">Drag coins into the piggy 🐷</a></p>
+  </section>
+</main>
+
+<div class="sheet" id="sceneSheet" hidden>
+  <div class="sheet-card">
+    <h2>Pick a place</h2>
+    <div class="scenes" id="scenes"></div>
+    <div class="row">
+      <button type="button" class="btn btn-alt" id="sheetPhoto">📷 Use a photo of my room</button>
+      <button type="button" class="btn" id="sceneClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet" id="jobsSheet" hidden>
+  <div class="sheet-card">
+    <h2 id="jobsTitle">Job Board 💼</h2>
+    <div class="jobtabs" id="jobTabs" role="tablist"><button type="button" role="tab" data-tab="work" aria-selected="true">💪 Work</button><button type="button" role="tab" data-tab="orders" aria-selected="false">📋 Build orders</button></div>
+    <p class="tiny" id="workTotal">Pick a job. Do the work. Get paid. Then build whatever you want!</p>
+    <div class="jobs" id="work"></div>
+    <p class="tiny" id="ordersTip" hidden>Build orders are bonus paychecks: build what the order asks for and collect. Each order pays once per world. Finish the whole world with 🏆 for a big paycheck.</p>
+    <div class="jobs" id="jobs" hidden></div>
+    <div class="row"><button type="button" class="btn" id="jobsClose">Back to building</button></div>
+  </div>
+</div>
+
+<div class="sheet" id="workSheet" hidden>
+  <div class="sheet-card work-card">
+    <div class="work-head"><h2 id="workTitle">Job</h2><span class="work-count" id="workCount"></span></div>
+    <p class="tiny" id="workHow"></p>
+    <div class="work-bar" id="workBar"><i></i></div>
+    <div class="work-stage" id="workStage"></div>
+    <div class="row"><button type="button" class="btn btn-alt" id="workQuit">Quit this job</button></div>
+  </div>
+</div>
+
+<div class="sheet" id="worldsSheet" hidden>
+  <div class="sheet-card">
+    <h2>My worlds 📚</h2>
+    <p class="tiny">Every world you finish gets saved here (on this device only). Open one to keep building it.</p>
+    <div class="worlds" id="worlds"></div>
+    <div class="row"><button type="button" class="btn" id="worldsClose">Close</button></div>
+  </div>
+</div>
+
+<div class="sheet" id="palSheet" hidden>
+  <div class="sheet-card pal-card">
+    <h2 id="palTitle">Make a pal! 🦸</h2>
+    <div class="pal-body">
+      <div class="pal-left"><div class="pal-preview" id="palPreview"></div><button type="button" class="btn btn-alt btn-sm" id="palRandom">🎲 Surprise me</button></div>
+      <div class="pal-opts" id="palOpts"></div>
+    </div>
+    <div class="row"><button type="button" class="btn btn-alt" id="palClose">Cancel</button><button type="button" class="btn" id="palMake">Make it! $3</button></div>
+  </div>
+</div>
+
+<div class="sheet" id="depositSheet" hidden>
+  <div class="sheet-card dep-card">
+    <h2>Payday! 💵</h2>
+    <p class="tiny" id="depMsg">Drag each bill into the piggy!</p>
+    <div class="dep-stage">
+      <div class="dep-tray" id="depTray"></div>
+      <div class="dep-pig" id="depPig"></div>
+    </div>
+    <div class="row"><button type="button" class="btn btn-alt" id="depClose">Later</button><button type="button" class="btn" id="depDone" hidden>Go build! 🏗️</button></div>
+  </div>
+</div>
+
+<div class="payday" id="payday" hidden></div>
+
+<div class="sheet" id="snapSheet" hidden>
+  <div class="sheet-card">
+    <h2>Your world 📸</h2>
+    <img id="snapImg" alt="A picture of the world you built">
+    <p class="tiny">Press and hold the picture to save or share it. On a computer, right-click it.</p>
+    <div class="row"><button type="button" class="btn" id="snapClose">Close</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script src="sfx.js"></script>
+<script src="wallet.js"></script>
+<script src="builder-art.js"></script>
+<script src="sprites.js"></script>
+<script src="builder-catalog.js"></script>
+<script src="jobs.js"></script>
+<script src="builder.js"></script>
+</body>
+</html>

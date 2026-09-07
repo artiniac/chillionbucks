@@ -1,5 +1,7 @@
 # Chillion Bucks 😎💚
 
+**Chilltopia 3D is now the main builder at `build.html`.** It includes a real 3D reef aquarium and a small explorable town. The previous builder remains at `classic.html`, with its saved worlds intact. Read [CHILLTOPIA-3D.md](CHILLTOPIA-3D.md) for the new game architecture. Older sections below describe Classic unless stated otherwise.
+
 **chillionbucks.com** is Leo's money site for kids. A *chillion bucks* is when you can chill all day and still have a lot of money (Leo, age 4¾, invented the word; Dad wrote the definition).
 
 The site teaches money basics through four little games, hand-picked YouTube videos, and flip-card "chill words." Green theme, big buttons, lots of motion.

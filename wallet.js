@@ -10,23 +10,24 @@ window.Wallet = (() => {
   let st = read();
   const write = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} };
   const emit = () => document.dispatchEvent(new CustomEvent('wallet', { detail: { saved: st.saved, bills: { ...st.bills } } }));
+  window.addEventListener('storage', e => { if (e.key === KEY) { st = read(); emit(); } });
   return {
     BILLS,
-    get: () => st.saved,
-    set(n) { st.saved = Math.max(0, Math.round(n)); write(); emit(); },
-    add(n) { this.set(st.saved + n); },
-    goal: () => st.goal || null,
-    setGoal(g) { st.goal = g; write(); },
+    get: () => (st = read()).saved,
+    set(n) { st = read(); if (!Number.isFinite(n)) return; st.saved = Math.max(0, Math.round(n)); write(); emit(); },
+    add(n) { this.set(this.get() + n); },
+    goal: () => (st = read()).goal || null,
+    setGoal(g) { st = read(); st.goal = g; write(); },
     /* bills waiting in the tray */
-    bills: () => ({ ...st.bills }),
-    billCount: () => Object.values(st.bills).reduce((a, b) => a + b, 0),
-    billValue: () => Object.entries(st.bills).reduce((a, [k, n]) => a + (BILLS[k] ? BILLS[k].v * n : 0), 0),
-    earnBill(kind) { if (!BILLS[kind]) return; st.bills[kind] = (st.bills[kind] || 0) + 1; st.earned += 1; write(); emit(); },
-    depositBill(kind) { if (!BILLS[kind] || !(st.bills[kind] > 0)) return 0; st.bills[kind]--; if (!st.bills[kind]) delete st.bills[kind]; st.saved += BILLS[kind].v; write(); emit(); return BILLS[kind].v; },
+    bills: () => ({ ...(st = read()).bills }),
+    billCount: () => Object.values((st = read()).bills).reduce((a, b) => a + b, 0),
+    billValue: () => Object.entries((st = read()).bills).reduce((a, [k, n]) => a + (BILLS[k] ? BILLS[k].v * n : 0), 0),
+    earnBill(kind) { st = read(); if (!BILLS[kind]) return; st.bills[kind] = (st.bills[kind] || 0) + 1; st.earned += 1; write(); emit(); },
+    depositBill(kind) { st = read(); if (!BILLS[kind] || !(st.bills[kind] > 0)) return 0; st.bills[kind]--; if (!st.bills[kind]) delete st.bills[kind]; st.saved += BILLS[kind].v; write(); emit(); return BILLS[kind].v; },
     earnedCount: () => st.earned || 0,
     /* once a day, savings of $5 or more grow a little: 5%, at least $1, at most $5 (labeled "baby money" in the UI) */
     interest() {
-      const t = today(); if (st.lastVisit === t) return 0;
+      st = read(); const t = today(); if (st.lastVisit === t) return 0;
       st.lastVisit = t; let gain = 0;
       if (st.saved >= 5) { gain = Math.min(5, Math.max(1, Math.round(st.saved * .05))); st.saved += gain; }
       write(); if (gain) emit(); return gain;

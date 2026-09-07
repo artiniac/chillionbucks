@@ -2,6 +2,12 @@
 
 Read before touching anything in this repo.
 
+## Chillion Bucks 3D update, September 7, 2026
+Artin authorized replacing the main builder with a genuine 3D experience, including a decorated aquarium, while preserving Classic. `build.html` is now the 3D game; `classic.html` is the previous builder, using the unchanged `builder*` files. Read `CHILLTOPIA-3D.md` for the new architecture. The prior no-library rule has one intentional exception: vendored, MIT-licensed Three.js 0.170.0, used by the new 3D game. There is still no npm install, build step, backend, paid API, or external rendering service. All 3D assets are actual procedural meshes, not image cards in the world.
+
+The older builder-specific instructions below apply to Classic. New 3D saves use `cb:chilltopia3d:v1` and must never overwrite `cb:world` or `cb:worlds`. Both versions share `cb:wallet`. Keep the Classic route and all its assets available. Any payout must still create a bill and require a piggy-bank deposit. Refund only what was actually paid; free starter items never refund money.
+
+
 ## What this is
 Leo's (age almost 5) money site for kids, chillionbucks.com. "A chillion bucks is when you can chill all day and still have a lot of money." Owner: Artin Nazaryan (Leo's dad). Goal: make kids curious about money through games and good videos, and look genuinely cool while doing it.
 

@@ -1,0 +1,66 @@
+import * as T from './vendor/three.module.js';
+const mats=new Map();
+export function material(color,roughness=.65){const key=color+':'+roughness;if(!mats.has(key))mats.set(key,new T.MeshStandardMaterial({color,roughness,metalness:.03}));return mats.get(key)}
+export function mesh(g,geo,color,x=0,y=0,z=0,sx=1,sy=1,sz=1){const m=new T.Mesh(geo,typeof color==='object'?color:material(color));m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;m.receiveShadow=true;g.add(m);return m}
+const sphere=new T.SphereGeometry(1,20,14), box=new T.BoxGeometry(1,1,1);sphere.userData.shared=true;box.userData.shared=true;
+export function disposeModel(g){g.traverse(o=>{if(o.geometry&&!o.geometry.userData.shared)o.geometry.dispose();if(o.material&&!Array.from(mats.values()).includes(o.material))o.material.dispose();});g.clear();}
+export function orb(g,c,x,y,z,sx,sy= sx,sz=sx){return mesh(g,sphere,c,x,y,z,sx,sy,sz)}
+export function block(g,c,x,y,z,sx,sy,sz){return mesh(g,box,c,x,y,z,sx,sy,sz)}
+function branch(g,a,b,r,c){const d=new T.Vector3(...b).sub(new T.Vector3(...a));const m=mesh(g,new T.CylinderGeometry(r*.65,r,d.length(),8),c);m.position.copy(new T.Vector3(...a).addScaledVector(d,.5));m.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),d.normalize());return m}
+export const CATALOG=[
+{id:'rock',name:'River stones',category:'Habitat',world:'reef',price:0,r:.65},
+{id:'grass',name:'Ribbon garden',category:'Habitat',world:'reef',price:0,r:.35},
+{id:'cave',name:'Hideaway cave',category:'Habitat',world:'reef',price:0,r:1.05,portal:true},
+{id:'pinkcoral',name:'Candy coral',category:'Habitat',world:'reef',price:5,r:.6},
+{id:'fan',name:'Sea fan',category:'Habitat',world:'reef',price:10,r:.55},
+{id:'anemone',name:'Waving anemone',category:'Habitat',world:'reef',price:8,r:.5},
+{id:'clown',name:'Clownfish',category:'Fish',world:'reef',price:5,fish:true,color:'#f68c26'},
+{id:'tang',name:'Blue tang',category:'Fish',world:'reef',price:12,fish:true,color:'#157ee9'},
+{id:'yellow',name:'Yellow tang',category:'Fish',world:'reef',price:10,fish:true,color:'#ffd653'},
+{id:'chromis',name:'Green chromis',category:'Fish',world:'reef',price:4,fish:true,color:'#4bd9ba'},
+{id:'butterfly',name:'Butterflyfish',category:'Fish',world:'reef',price:15,fish:true,color:'#fff2a5'},
+{id:'royal',name:'Royal gramma',category:'Fish',world:'reef',price:10,fish:true,color:'#9b65df'},
+{id:'house',name:'Seaside cottage',category:'Hideouts',world:'reef',price:15,r:1,portal:true},
+{id:'castle',name:'Coral castle',category:'Hideouts',world:'reef',price:25,r:1.25,portal:true},
+{id:'arch',name:'Moon gate',category:'Hideouts',world:'reef',price:8,r:.9,portal:true},
+{id:'ship',name:'Sunken sailboat',category:'Hideouts',world:'reef',price:20,r:1.3},
+{id:'bubbles',name:'Bubble fountain',category:'Water',world:'reef',price:0,r:.3},
+{id:'shell',name:'Pearl shell',category:'Water',world:'reef',price:8,r:.5},
+{id:'tree',name:'Cloud tree',category:'Garden',world:'town',price:0,r:.65},
+{id:'flowers',name:'Flower patch',category:'Garden',world:'town',price:0,r:.4},
+{id:'bench',name:'Chill bench',category:'Garden',world:'town',price:0,r:.7},
+{id:'townhouse',name:'Little cottage',category:'Build',world:'town',price:0,r:1.2},
+{id:'tower',name:'Lookout tower',category:'Build',world:'town',price:0,r:.8},
+{id:'pool',name:'Splash pool',category:'Build',world:'town',price:15,r:1.2},
+{id:'car',name:'Sunny roadster',category:'Play',world:'town',price:20,r:.6},
+{id:'fountain',name:'Town fountain',category:'Play',world:'town',price:12,r:.8},
+];
+export const DEFINITIONS=Object.fromEntries(CATALOG.map(d=>[d.id,d]));
+export function makeFish(kind){const g=new T.Group(),d=DEFINITIONS[kind],c=d.color;const round=kind==='tang'||kind==='yellow'||kind==='butterfly';
+orb(g,c,0,0,0,.58,round?.43:.28,.17);const tail=new T.Group();tail.position.x=-.5;g.add(tail);const fin=new T.ConeGeometry(.3,.4,3);let m=mesh(tail,fin,kind==='tang'?'#ffdc38':c,-.2,0,0,1,1,.3);m.rotation.z=-Math.PI/2;
+const dorsal=mesh(g,new T.ConeGeometry(.24,.38,3),c,-.12,round?.35:.23,0,1,1,.3);dorsal.rotation.z=.6;
+for(const s of [-1,1]){orb(g,'#fafcf7',.32,.07,s*.145,.09,.09,.045);orb(g,'#102831',.355,.075,s*.18,.046,.054,.025);let f=mesh(g,fin,c,0,-.15,s*.17,.5,.6,.16);f.rotation.z=.7;f.rotation.y=s*.7;}
+if(kind==='clown'){for(const x of [-.32,.02,.3]){const rr=Math.sqrt(1-(x/.65)**2);const band=mesh(g,new T.SphereGeometry(1,16,12), '#fff4dc',x,0,0,.05,.285*rr,.177*rr);band.rotation.z=-.12;}}
+if(kind==='tang'){orb(g,'#14294f',-.04,.01,.173,.29,.23,.012);orb(g,'#14294f',-.04,.01,-.173,.29,.23,.012);}
+if(kind==='royal'){orb(g,'#ffc541',-.28,-.01,0,.28,.245,.173);}
+if(kind==='butterfly'){for(const x of [-.2,0,.2])for(const s of [-1,1])orb(g,'#58452b',x,0,s*.169,.025,.3,.01);}
+g.userData.tail=tail;return g}
+export function makeModel(id){if(DEFINITIONS[id]?.fish)return makeFish(id);const g=new T.Group();
+if(id==='rock'){for(let i=0;i<4;i++){const m=mesh(g,new T.DodecahedronGeometry(1,1),['#799a92','#9ab2a4','#b0bdb0','#697e76'][i],(i%2-.5)*.65,.2+i*.04,(Math.floor(i/2)-.5)*.6,.5,.32,.45);m.rotation.set(i*.4,i*.8,0)}}
+if(id==='cave'||id==='arch'){const c=id==='cave'?'#839d8b':'#d4b490';const arch=mesh(g,new T.TorusGeometry(.76,.24,8,24,Math.PI),c,0,.22,0);arch.scale.z=2;for(const x of [-.76,.76])orb(g,c,x,.16,0,.3,.25,.48);g.userData.portal=new T.Vector3(0,.58,0);}
+if(id==='grass'){for(let i=0;i<9;i++){const a=i*2.4,h=.8+(i%4)*.24;const curve=new T.CatmullRomCurve3([new T.Vector3(Math.cos(a)*.16,0,Math.sin(a)*.16),new T.Vector3(Math.cos(a)*.25,h*.5,Math.sin(a)*.25),new T.Vector3(Math.cos(a)*.4,h,Math.sin(a)*.3)]);mesh(g,new T.TubeGeometry(curve,8,.045,4,false),i%2?'#389d79':'#79b95b');}orb(g,'#809f89',0,.08,0,.3,.13,.3)}
+if(id==='pinkcoral'||id==='fan'){const color=id==='fan'?'#a87bdb':'#ed8f91';for(let i=0;i<6;i++){const x=(i-2.5)*.16,h=.7+Math.sin(i*2)*.25;branch(g,[0,.05,0],[x,h,.08*Math.sin(i)],.075,color);branch(g,[x*.65,h*.65,0],[x+.16,h+.23,.05],.055,color);branch(g,[x*.65,h*.65,0],[x-.13,h+.15,-.07],.045,color);orb(g,color,x,h,0,.07)}orb(g,'#c7aa9a',0,.05,0,.4,.12,.3)}
+if(id==='anemone'){orb(g,'#ae86ab',0,.12,0,.47,.15,.4);for(let i=0;i<20;i++){const a=i*2.4,r=.15+(i%3)*.1;branch(g,[Math.cos(a)*r,.1,Math.sin(a)*r],[Math.cos(a)*r*1.3,.45+(i%4)*.07,Math.sin(a)*r*1.3],.035,'#c29fcc');orb(g,'#e6bbdf',Math.cos(a)*r*1.3,.45+(i%4)*.07,Math.sin(a)*r*1.3,.06)}}
+if(id==='house'||id==='townhouse'){const c=id==='house'?'#d9c8a6':'#f2df9a';for(const x of [-.57,.57])block(g,c,x,.55,0,.34,1.1,1.1);block(g,c,0,1.04,0,1.5,.22,1.1);block(g,c,0,.65,-.48,1.5,1.3,.16);const roof=mesh(g,new T.ConeGeometry(1.17,.75,4),'#cf7971',0,1.5,0,1,1,.95);roof.rotation.y=Math.PI/4;for(const x of [-.54,.54])orb(g,'#3f8f9b',x,.62,.57,.16,.2,.025);g.userData.portal=new T.Vector3(0,.45,.06);}
+if(id==='castle'){for(const x of [-.8,.8]){mesh(g,new T.CylinderGeometry(.32,.38,1.3,12),'#b9b1d3',x,.65,0);mesh(g,new T.ConeGeometry(.48,.65,12),'#809dc9',x,1.61,0);orb(g,'#ecd48d',x,1.98,0,.07);}block(g,'#d2c3d9',0,1.05,0,1.5,.3,.65);for(const x of [-.45,.45])block(g,'#d2c3d9',x,.45,0,.3,.9,.65);for(let i=0;i<5;i++)block(g,'#d2c3d9',(i-2)*.27,1.29,0,.16,.2,.65);g.userData.portal=new T.Vector3(0,.46,0);}
+if(id==='ship'){orb(g,'#99785d',0,.2,0,1.1,.28,.36);block(g,'#c5a079',0,.42,0,1.8,.09,.6);branch(g,[0,.4,0],[0,1.8,0],.045,'#917253');const sail=mesh(g,new T.ConeGeometry(.62,1.1,3),'#e4dec7',.22,1.22,0,1,1,.03);sail.rotation.z=-.25;for(const x of [-.55,0,.55])for(const z of [-.33,.33])orb(g,'#453e32',x,.24,z,.095,.095,.02);}
+if(id==='bubbles'||id==='fountain'){mesh(g,new T.CylinderGeometry(id==='fountain'?.8:.35,id==='fountain'?.85:.4,.2,24),'#91b8ad',0,.1,0);if(id==='fountain'){mesh(g,new T.CylinderGeometry(.63,.63,.07,24),'#55bfbe',0,.23,0);mesh(g,new T.CylinderGeometry(.16,.23,.8,12),'#c8d8ba',0,.65,0);}g.userData.bubbler=true;}
+if(id==='shell'){for(let i=0;i<7;i++){let s=orb(g,'#e7bfab',(i-3)*.085,.14,0,.13,.09,.43);s.rotation.y=(i-3)*.12;}orb(g,'#fff6e2',0,.23,.02,.16)}
+if(id==='tree'){mesh(g,new T.CylinderGeometry(.1,.17,1.2,8),'#aa8362',0,.6,0);orb(g,'#5d9961',0,1.5,0,.7,.8,.62);orb(g,'#87b367',-.36,1.35,.16,.5,.55,.5);orb(g,'#99c97a',.32,1.65,.06,.42,.5,.45)}
+if(id==='flowers'){for(let i=0;i<7;i++){const a=i*2.4,x=Math.cos(a)*.35,z=Math.sin(a)*.35,h=.25+i%3*.1;branch(g,[x,0,z],[x,h,z],.018,'#4d9160');for(let j=0;j<5;j++)orb(g,i%2?'#f1bda7':'#f1df87',x+Math.cos(j*1.26)*.07,h,z+Math.sin(j*1.26)*.07,.065,.04,.065);orb(g,'#d6a34a',x,h+.02,z,.035)}}
+if(id==='bench'){block(g,'#b5966e',0,.4,0,1.3,.1,.4);block(g,'#b5966e',0,.7,-.17,1.3,.45,.09);for(const x of [-.45,.45])block(g,'#5f7970',x,.2,0,.09,.4,.35)}
+if(id==='tower'){for(const x of [-.4,.4])for(const z of [-.4,.4])block(g,'#ab9870',x,.75,z,.12,1.5,.12);block(g,'#d8bd84',0,1.45,0,1.1,.15,1.1);mesh(g,new T.ConeGeometry(.95,.6,4),'#7a9f80',0,2.15,0).rotation.y=Math.PI/4;for(let i=0;i<5;i++)block(g,'#a79065',0,.2+i*.26,.48,.55,.07,.08)}
+if(id==='pool'){mesh(g,new T.CylinderGeometry(1,1.1,.3,40),'#d5e3cd',0,.15,0,1,1,.75);mesh(g,new T.CylinderGeometry(.88,.88,.04,40),'#69cccd',0,.32,0,1,1,.75)}
+if(id==='car'){block(g,'#e1ad47',0,.4,0,1.25,.4,.66);block(g,'#f4cb65',-.06,.72,0,.68,.32,.61);block(g,'#78a7a5',.24,.76,0,.04,.2,.55);for(const x of [-.42,.42])for(const z of [-.34,.34]){let w=mesh(g,new T.CylinderGeometry(.21,.21,.12,16),'#314943',x,.23,z);w.rotation.x=Math.PI/2;orb(g,'#d9d4b0',x,.23,z*1.18,.1,.1,.025)}for(const z of [-.2,.2])orb(g,'#fff1b6',.64,.43,z,.025,.07,.09)}
+return g;}
+export function makePerson(){const g=new T.Group();orb(g,'#e7b88c',0,1.02,0,.22,.24,.22);orb(g,'#3c5445',0,1.19,-.03,.235,.11,.22);block(g,'#eac665',0,.65,0,.38,.42,.26);for(const x of [-.12,.12]){block(g,'#4b8278',x,.27,0,.15,.4,.17);orb(g,'#f6ecce',x,.06,.06,.12,.07,.16);orb(g,'#152f2e',x*.65,1.06,.205,.025,.025,.014);}for(const x of [-.28,.28])branch(g,[x,.8,0],[x,.47,0],.075,'#e7b88c');return g}
