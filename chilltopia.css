@@ -13,3 +13,7 @@
 .topbar nav{display:flex;align-items:center}.topbar a.world{text-decoration:none;color:inherit;white-space:nowrap}.shop-tabs{flex-wrap:wrap}@media(max-width:600px){.topbar{height:auto;min-height:98px;flex-wrap:wrap;padding:10px 12px}.topbar nav{order:3;flex-basis:100%;justify-content:center}.wallet{margin-left:auto}.world{min-height:42px}.view-controls button{width:44px;height:44px}.shop-tabs button{min-height:44px}}
 
 .topbar a.world.active{color:#effdcf}
+
+.play-actions .earn,.work-cue{background:#8cf238;color:#143b20;border:2px solid #397e20;box-shadow:0 4px 0 #397e20,0 6px 20px #4a9c2635;font-weight:800}.play-actions .earn:hover,.work-cue:hover{background:#a3ff4d}.play-actions .earn:focus-visible,.work-cue:focus-visible{outline:4px solid #fff;outline-offset:3px}
+
+.sound-switch{background:#e3edda;border:1px solid #b8cca4;border-radius:12px;min-width:44px;height:44px;font-size:22px}.topbar{gap:10px}.topbar nav{flex-wrap:wrap}

@@ -2,8 +2,8 @@
 window.SFX = (() => {
   let on = true;
   try { on = localStorage.getItem('cb:sound') !== 'off'; } catch (e) { /* storage blocked: default on */ }
-  let actx = null;
-  const ctx = () => { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); return actx; };
+  let actx = null, master = null, ambient = null, ambientMode = 'off', unlocked = false;
+  const ctx = () => { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if(!master){master=actx.createGain();master.gain.value=on?1:0;master.connect(actx.destination);}if (actx.state === 'suspended') actx.resume().catch(()=>{});return actx; };
 
   function tone(freq, dur = .12, type = 'sine', gain = .07, when = 0, glideTo = null) {
     if (!on) return;
@@ -15,7 +15,7 @@ window.SFX = (() => {
       g.gain.setValueAtTime(.0001, t);
       g.gain.exponentialRampToValueAtTime(gain, t + .01);
       g.gain.exponentialRampToValueAtTime(.0001, t + dur);
-      o.connect(g).connect(a.destination); o.start(t); o.stop(t + dur + .02);
+      o.connect(g).connect(master); o.start(t); o.stop(t + dur + .02);
     } catch (e) { /* no audio, no problem */ }
   }
   function noise(dur = .25, gain = .04, freq = 1800, when = 0) {
@@ -27,12 +27,16 @@ window.SFX = (() => {
       const f = a.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = .8;
       const g = a.createGain(); const t = a.currentTime + when;
       g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
-      s.connect(f).connect(g).connect(a.destination); s.start(t);
+      s.connect(f).connect(g).connect(master); s.start(t);
     } catch (e) { /* silent */ }
   }
   const api = {
     get on() { return on; },
-    toggle() { on = !on; try { localStorage.setItem('cb:sound', on ? 'on' : 'off'); } catch (e) {} if (on) api.ding(); return on; },
+    toggle() { on = !on; try { localStorage.setItem('cb:sound', on ? 'on' : 'off'); } catch (e) {} if(master)master.gain.setValueAtTime(on?1:0,actx.currentTime);if(on){api.unlock();api.ding();}document.dispatchEvent(new CustomEvent('soundchange'));return on; },
+    unlock() { if(!on)return;try{unlocked=true;ctx();api.ambience(ambientMode);}catch{} },
+    ambience(mode='off') { ambientMode=mode;if(!actx||!master)return;if(!ambient){const a=actx,buffer=a.createBuffer(1,a.sampleRate*3,a.sampleRate),data=buffer.getChannelData(0);let smooth=0;for(let i=0;i<data.length;i++){smooth=(smooth+Math.random()*.08-.04)/1.02;data[i]=smooth;}const source=a.createBufferSource();source.buffer=buffer;source.loop=true;const filter=a.createBiquadFilter();filter.type='lowpass';filter.frequency.value=750;const gain=a.createGain();gain.gain.value=0;source.connect(filter).connect(gain).connect(master);source.start();ambient=gain;}ambient.gain.setTargetAtTime(mode==='water'?.045:0,actx.currentTime,.2); },
+    splash() { noise(.45,.065,1100);tone(380,.13,'sine',.03,0,130);tone(640,.16,'sine',.025,.1,240); },
+    snap() { noise(.045,.035,2400);tone(540,.06,'triangle',.055);tone(810,.07,'sine',.025,.045); },
     tone, noise,
     ding() { tone(880, .08); tone(1320, .14, 'sine', .07, .08); },
     buzz() { tone(150, .2, 'square', .04); },
@@ -46,7 +50,8 @@ window.SFX = (() => {
     levelUp() { [523, 659, 784, 1046, 1318].forEach((f, i) => tone(f, .16, 'triangle', .07, i * .07)); noise(.3, .03, 3000, .2); },
     cheer() { for (let i = 0; i < 7; i++) noise(.14, .035, 1200 + Math.random() * 1800, i * .07); [784, 988, 1175, 1568].forEach((f, i) => tone(f, .22, 'triangle', .06, .1 + i * .08)); },
     chaChing() { tone(1568, .06, 'square', .03); tone(2093, .25, 'sine', .07, .06); tone(2637, .3, 'sine', .04, .08); },
-    bind(btn) { if (!btn) return; const paint = () => { btn.textContent = on ? '🔊' : '🔇'; btn.setAttribute('aria-pressed', on); }; btn.addEventListener('click', () => { api.toggle(); paint(); }); paint(); },
+    bind(btn) { if (!btn) return; const paint = () => { btn.textContent = on ? '🔊' : '🔇'; btn.setAttribute('aria-pressed', on); }; btn.addEventListener('click', () => { api.toggle(); paint(); });document.addEventListener('soundchange',paint);paint(); },
   };
+  document.addEventListener('pointerdown',()=>api.unlock(),{once:true,passive:true});document.addEventListener('keydown',()=>api.unlock(),{once:true});document.addEventListener('visibilitychange',()=>{if(!actx)return;if(document.hidden)actx.suspend();else if(unlocked&&on)actx.resume().catch(()=>{});});
   return api;
 })();
