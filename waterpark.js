@@ -32,7 +32,7 @@ for(let i=0;i<27;i++){const a=i*2.4,r=20+(i%4)*2;if(Math.sin(a)*r>19&&Math.abs(M
 for(const x of [-30,30]){block(land,pathMaterial,x,-.22,1,13,.10,36);for(const z of [-20,22]){const tree=palm();tree.position.set(x,-.2,z);land.add(tree);}}
 for(const x of [-22,22])block(land,pathMaterial,x,-.22,15,16,.10,2.4);
 for(const x of [-44,44])block(land,'#9da58b',x,.4,0,.2,1,88);
-block(land,'#9da58b',0,.4,44,88,1,.2);for(const x of [-24,24])block(land,'#9da58b',x,.4,-44,40,1,.2);
+block(land,'#9da58b',0,.4,44,88,1,.2);for(const x of [-33,33])block(land,'#9da58b',x,.4,-44,22,1,.2);for(const x of [-22,22])block(land,'#9da58b',x,.4,-69,.2,1,50);block(land,'#9da58b',0,.4,-94,44,1,.2);
 // Open north gateway and a continuous walking path into Grotto Springs.
 block(land,pathMaterial,0,-.12,-48,6,.2,15);for(const x of [-3.4,3.4])block(land,'#b7a98d',x,.65,-44,.35,1.7,.35);
 const grotto=createParkGrotto(scene,renderer);let grottoRideStart=0;

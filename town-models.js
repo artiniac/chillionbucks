@@ -54,7 +54,11 @@ function window(g,x,y,z,w=.55,h=.8,sash=false){
  box(g,'#d1d0c4',x,y,z+.068,.021,h,.025);if(sash){box(g,'#d1d0c4',x,y,z+.068,w,.021,.025);for(const side of [-1,1])box(g,'#d1d0c4',x+side*w*.25,y,z+.068,.014,h,.019);}
  box(g,'#e2dece',x,y-h/2-.045,z+.06,w+.15,.06,.17);
 }
-function hedge(g,x,z,w=1){box(g,'#3c6639',x,.24,z,w,.43,.35);for(let i=0;i<Math.ceil(w*7);i++)sphere(g,'#456c3c',x-w/2+i/7,.47,z,.12,.08,.14);}
+function hedge(g,x,z,w=1){
+ // Irregular clipped foliage, with individual leaf silhouettes instead of rows of spheres.
+ for(let i=0;i<Math.ceil(w*5);i++){const shrub=new T.Mesh(new T.IcosahedronGeometry(1,1),material(i%2?'#385333':'#425e39'));shrub.position.set(x-w/2+(i+.5)/Math.ceil(w*5)*w,.24+Math.sin(i*4+x)*.018,z);shrub.scale.set(.16,.22,.18);g.add(shrub);}
+ for(let i=0;i<Math.ceil(w*70);i++){const a=i*2.39996,u=(i*.618033)%1,px=x+(u-.5)*w,py=.23+Math.sin(a)*.20,pz=z+Math.cos(a)*.18;const sh=new T.Shape();sh.moveTo(0,-.055);sh.quadraticCurveTo(.045,0,0,.055);sh.quadraticCurveTo(-.045,0,0,-.055);const leaf=new T.Mesh(new T.ShapeGeometry(sh,2),material(i%3?'#4a663e':'#667b4e'));leaf.material.side=T.DoubleSide;leaf.position.set(px,py,pz);leaf.rotation.set(a*.6,a,Math.sin(i)*.6);g.add(leaf);}
+}
 function pool(g,x,z,w,d){box(g,'#c6c6b6',x,.045,z,w+.24,.1,d+.24,'stone');box(g,'#286f78',x,.104,z,w,.035,d,'glass');for(let i=0;i<6;i++)box(g,'#abd7d5',x-w*.45+i*w*.16,.124,z,.012,.002,d*.85);}
 function pergola(g,x,z,w,d){for(const a of [-1,1])for(const b of [-1,1])box(g,'#8d7658',x+a*w/2,1,z+b*d/2,.07,2,.07,'wood');for(let i=0;i<12;i++)box(g,'#9b8261',x-w/2+i*w/11,2,z,.065,.08,d+.2,'wood');}
 function hipRoof(g,x,y,z,w,d,h,color){const geo=new T.CylinderGeometry(.65,1,h,4,1);const m=new T.Mesh(geo,material(color,'roof'));m.rotation.y=Math.PI/4;m.scale.set(w/1.414,1,d/1.414);m.position.set(x,y,z);g.add(m);return m;}
@@ -75,7 +79,7 @@ function mansion(g,id){box(g,'#c2b9a1',0,.025,0,5.8,.08,4.8,'stone');
  }
 }
 // Pitched, closed roofs and repeated details remain true geometry from every view.
-function gable(g,x,y,z,w,d,h,c){const sh=new T.Shape();sh.moveTo(-w/2,0);sh.lineTo(w/2,0);sh.lineTo(0,h);sh.closePath();const geo=new T.ExtrudeGeometry(sh,{depth:d,bevelEnabled:false});geo.translate(0,0,-d/2);const m=new T.Mesh(geo,material('#d9d2bf','stucco'));m.position.set(x,y,z);g.add(m);for(const side of [-1,1]){const slope=box(g,c,x+side*w/4,y+h/2,z,Math.hypot(w/2,h),.055,d+.08,'roof');slope.rotation.z=-side*Math.atan2(h,w/2);const fascia=box(g,'#c8c1ae',x+side*w/4,y+h/2-.035,z+d/2+.052,Math.hypot(w/2,h)+.03,.065,.055);fascia.rotation.z=slope.rotation.z;box(g,'#a8a28e',x+side*w/2,y-.035,z,.045,.065,d+.13);}return m;}
+function gable(g,x,y,z,w,d,h,c,infill='#d9d2bf',infillType='stucco'){const sh=new T.Shape();sh.moveTo(-w/2,0);sh.lineTo(w/2,0);sh.lineTo(0,h);sh.closePath();const geo=new T.ExtrudeGeometry(sh,{depth:d,bevelEnabled:false});geo.translate(0,0,-d/2);const m=new T.Mesh(geo,material(infill,infillType));m.position.set(x,y,z);g.add(m);for(const side of [-1,1]){const slope=box(g,c,x+side*w/4,y+h/2,z,Math.hypot(w/2,h),.055,d+.08,'roof');slope.rotation.z=-side*Math.atan2(h,w/2);const fascia=box(g,'#c8c1ae',x+side*w/4,y+h/2-.035,z+d/2+.052,Math.hypot(w/2,h)+.03,.065,.055);fascia.rotation.z=slope.rotation.z;box(g,'#a8a28e',x+side*w/2,y-.035,z,.045,.065,d+.13);}return m;}
 function rail(g,x,y,z,w){for(let i=0;i<=12;i++)box(g,'#373b34',x-w/2+i*w/12,y,z,.022,.45,.022);box(g,'#373b34',x,y+.23,z,w,.035,.035);box(g,'#373b34',x,y-.2,z,w,.025,.025);}
 function garage(g,x,z,w=1.4){box(g,'#544c3c',x,.62,z,w,1.1,.06,'wood');for(let i=0;i<6;i++)box(g,'#9a8c70',x,.15+i*.18,z+.04,w,.016,.025);}
 function estate(g,id){const d=ESTATE_STYLES[id],spanish=['spanish','mission','hacienda'].includes(d.form),ranch=d.form==='ranch'||d.form==='hacienda',h=ranch?1.45:2.75;
@@ -118,8 +122,8 @@ function chatsboro(g){const cream='#ded7c5',roof='#777261',brick='#996d54';
  box(g,cream,-1.8,1.18,.15,3.5,2.36,2.8,'stucco');const garageRoof=new T.Group();gable(garageRoof,0,2.36,0,3.05,3.8,1.05,roof);garageRoof.userData.blueprintStage='roof';garageRoof.rotation.y=Math.PI/2;garageRoof.position.set(-1.8,0,.15);g.add(garageRoof);
  box(g,brick,-1.8,.62,1.57,3.5,1.24,.10,'brick');for(const x of [-2.65,-1.05])garage(g,x,1.66,1.4);for(const x of [-2.95,-1.8,-.65]){box(g,cream,x,2.66,1.38,.78,.7,.72,'stucco');gable(g,x,3.01,1.38,.96,.95,.55,roof);window(g,x,2.7,1.76,.48,.56,true);}
  box(g,brick,1.18,1.36,-.2,2.9,2.72,3.1,'brick');gable(g,1.18,2.72,-.2,3.18,3.35,1.42,roof);
- box(g,brick,1.36,1.47,1.14,1.48,2.94,1.05,'brick');gable(g,1.36,2.94,1.14,1.73,1.28,1.18,roof);
- box(g,'#413a2b',1.35,.78,1.69,.7,1.5,.08,'wood');window(g,1.35,2.28,1.69,.48,.78,true);
+ for(const x of [.825,1.895])box(g,brick,x,.75,1.14,.41,1.5,1.05,'brick');box(g,brick,1.36,2.22,1.14,1.48,1.44,1.05,'brick');gable(g,1.36,2.94,1.14,1.73,1.28,1.18,roof,brick,'brick');
+ box(g,'#302b22',1.35,.75,1.39,.65,1.46,.04,'wood');for(const x of [1.16,1.54]){box(g,'#51452e',x,.75,1.418,.29,1.38,.025,'wood');window(g,x,1.05,1.445,.20,.61,true);}box(g,'#aa9362',1.35,.66,1.46,.024,.095,.028);window(g,1.35,2.28,1.69,.48,.78,true);
  cylinder(g,brick,-.2,.62,1.09,.51,1.24);cylinder(g,cream,-.2,2.44,1.09,.51,2.4);const cap=new T.Mesh(new T.ConeGeometry(.69,1.43,8),material(roof,'roof'));cap.position.set(-.2,4.32,1.09);g.add(cap);window(g,-.2,2.6,1.62,.32,.66,true);
  for(const x of [-3.2,-2.2,1,2]){const w=new T.Group();for(const y of [.83,2.02])window(w,0,y,0,.55,.72,true);w.position.set(x,0,-1.79);w.rotation.y=Math.PI;g.add(w);}
  for(const x of [2.67,-3.57]){const side=new T.Group();for(const z of [-.9,.1,.85])for(const y of [.83,1.95])window(side,z,y,0,.44,.66,true);side.position.x=x;side.rotation.y=x>0?Math.PI/2:-Math.PI/2;g.add(side);}
@@ -129,9 +133,9 @@ function chatsboro(g){const cream='#ded7c5',roof='#777261',brick='#996d54';
 }
 function allentown(g){const wall='#e2e0d8',roof='#656962';box(g,'#8eab70',0,-.04,0,7.4,.08,7.4);box(g,'#bbbdb2',-2.4,.02,2.3,2.35,.05,2.6,'stone');box(g,'#c9c9ba',.15,.025,2.3,.85,.05,2.7,'stone');
  // Broad front bar with the rear bedroom wing forming an L.
- box(g,wall,0,.67,.45,6.7,1.34,2.05,'stucco');box(g,wall,2.35,.67,-1.18,1.95,1.34,2.8,'stucco');
+ box(g,wall,-1.725,.67,.45,3.25,1.34,2.05,'stucco');box(g,wall,1.925,.67,.45,2.85,1.34,2.05,'stucco');box(g,wall,.2,.67,.1,.6,1.34,1.35,'stucco');box(g,wall,.2,1.24,1.12,.6,.2,.7,'stucco');box(g,wall,2.35,.67,-1.18,1.95,1.34,2.8,'stucco');
  const frontRoof=new T.Group();gable(frontRoof,0,1.34,0,2.35,7.05,.22,roof);frontRoof.userData.blueprintStage='roof';frontRoof.rotation.y=Math.PI/2;frontRoof.position.z=.45;g.add(frontRoof);const wing=new T.Group();gable(wing,0,1.34,0,2.18,3.15,.43,roof);wing.position.set(2.35,0,-1.2);g.add(wing);
- garage(g,-2.45,1.51,1.55);box(g,'#302f2b',.2,.61,1.505,.48,1.16,.07);window(g,.2,.75,1.55,.22,.54);
+ garage(g,-2.45,1.51,1.55);box(g,'#302f2b',.2,.61,.805,.48,1.16,.07);window(g,.2,.75,.85,.22,.54);box(g,'#c4bdad',.2,.045,1.18,.57,.08,.85,'stone');
  // The two projecting bay windows and long shuttered window band are characteristic of the front.
  for(const x of [-1.28,-.55]){box(g,wall,x,.72,1.57,.56,1.04,.29,'stucco');window(g,x,.79,1.74,.46,.62,true);for(const side of [-1,1]){const w=new T.Group();window(w,0,.79,0,.2,.62,true);w.position.set(x+side*.3,0,1.61);w.rotation.y=side*Math.PI/3;g.add(w);}box(g,'#ededdf',x,1.29,1.6,.7,.08,.44);}
  for(let i=0;i<5;i++)window(g,1.1+i*.43,.87,1.51,.35,.45,true);
@@ -210,7 +214,7 @@ export function townBlueprint(id){if(!hasBlueprint(id))return null;if(blueprintC
   else if(child.material?.color){const c=child.material.color;if(c.g>c.r*1.13&&c.g>c.b*1.08)stage='garden';else if(child.material.metalness>.3)stage='windows';else if(size.y>.7&&size.x>.65&&size.z>.65)stage='walls';else if(b.min.y>1.5)stage='roof';}
   if(child.geometry?.type==='ExtrudeGeometry'&&b.min.y>1)stage='roof';
   if(child.userData.blueprintStage)stage=child.userData.blueprintStage;
-  const zone=stage==='foundation'?'base':center.x<-.65?'left':center.x>.65?'right':'center';let key=stage+':'+zone;const layout=BLUEPRINT_LAYOUT[id];if(layout&&!layout.includes(key)){key=layout.find(k=>k===stage+':center')||layout.find(k=>k.startsWith(stage+':'))||layout.find(k=>k==='details:'+zone)||'foundation:base';}if(!groups.has(key))groups.set(key,new T.Group());groups.get(key).add(child);
+  const zone=stage==='foundation'?'base':center.x<-.65?'left':center.x>.65?'right':'center';let key=stage+':'+zone;const layout=BLUEPRINT_LAYOUT[id];if(layout&&!layout.includes(key)){key=layout.find(k=>k===stage+':center')||layout.find(k=>k.startsWith(stage+':'))||layout.find(k=>k==='details:'+zone)||layout[0];}if(!groups.has(key))groups.set(key,new T.Group());groups.get(key).add(child);
  }
  const names={foundation:'Lot and paving',walls:'Building section',roof:'Roof and upper details',windows:'Windows and frames',details:'Entry and trim',garden:'Garden and hedges'},order=['foundation','walls','roof','windows','details','garden'],parts=[];
  for(const stage of order)for(const zone of ['base','left','center','right']){const group=groups.get(stage+':'+zone);if(!group)continue;const model=compact(group),bounds=new T.Box3().setFromObject(model),center=bounds.getCenter(new T.Vector3());parts.push({id:stage+':'+zone,name:names[stage]+(zone==='base'?'':' · '+zone),model,center,size:bounds.getSize(new T.Vector3())});}

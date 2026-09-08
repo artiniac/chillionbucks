@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-import {townBlueprint,hasBlueprint} from './town-models.js?v=homes3';
+import {townBlueprint,hasBlueprint} from './town-models.js?v=homes4';
 export {hasBlueprint};
 export function createPropertyBuilder({host,scene,camera,canvas,onProgress,onView,onClose,thumbnail,reduced=false}){
  const panel=document.createElement('section');panel.className='property-rulebook';panel.hidden=true;panel.setAttribute('aria-label','Property building rulebook');
