@@ -31,3 +31,10 @@ No source establishes that 5 or 10 bucks is ideal. These amounts are a transpare
 ## Aquarium learning boundary
 
 Crayfish are freshwater animals, as illustrated by the [U.S. Fish and Wildlife Service species description](https://www.fws.gov/species/big-sandy-crayfish-cambarus-callainus). The collection is explicitly a make-believe aquarium, not advice to house freshwater crayfish with marine fish, lobsters, or crabs. There is no real feeding-volume recommendation or life-support simulation.
+
+
+## Seafood Scoop, September 7, 2026
+
+Five claw catches in a separate pretend fishing cove earn 10 bucks once per local day. The existing shared daily cap remains 45 bucks. Each catch requires a close/lift action and a separate open/release action. The claw cycles are animated and accept no extra input while moving. Leaving or reloading an unfinished job does not earn a paycheck. Practice remains available after paid work is finished. Owned aquarium animals are never read or removed.
+
+Payment uses Wallet.completeWork('seafood'), including the existing cross-tab Web Lock and paycheck-before-deposit flow. tests/seafood-wallet.mjs checks concurrent claims, repeat claims, pending bills, and the shared cap. The exact pay is a game-economy choice, not an experimentally established psychological optimum.

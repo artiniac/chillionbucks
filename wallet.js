@@ -6,7 +6,7 @@ window.Wallet = (() => {
   /* the money that can be earned: a bill sits in the tray until the kid drags it into the piggy */
   const BILLS = { b5: { v: 5, name: '$5 bill' }, b20: { v: 20, name: '$20 bill' }, b50: { v: 50, name: '$50 bill' }, b100: { v: 100, name: '$100 bill' }, stack: { v: 5000, name: 'fat stack of cash' }, pot: { v: 10000, name: 'pot of gold' } };
   const today = () => { const d = new Date(); return [d.getFullYear(), d.getMonth()+1, d.getDate()].join('-'); };
-  const JOBS = {feed:{pay:5,limit:1},clean:{pay:10,limit:1},delivery:{pay:10,limit:2},park:{pay:10,limit:1},classic:{pay:5,limit:2}};
+  const JOBS = {seafood:{pay:10,limit:1},feed:{pay:5,limit:1},clean:{pay:10,limit:1},delivery:{pay:10,limit:2},park:{pay:10,limit:1},classic:{pay:5,limit:2}};
   function ledger() { const t=today(); if(st.workDay!==t){st.workDay=t;st.workClaims={};st.workPay=0;}st.workClaims=st.workClaims||{};return st; }
   const read = () => { try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && typeof s.saved === 'number') { s.bills = s.bills || {}; s.earned = s.earned || 0; return s; } } catch (e) {} return { saved: 0, lastVisit: today(), bills: {}, earned: 0 }; };
   let st = read();
