@@ -1,6 +1,6 @@
 import * as T from './vendor/three.module.js';
 import {detailedPalm} from './living-models.js';
-import {mesh,orb,block,makePerson} from './chilltopia-models.js?v=20260907-sunlit';
+import {mesh,orb,block,makePerson} from './chilltopia-models.js?v=reef3';
 const water=new T.MeshPhysicalMaterial({color:'#64cbdc',transparent:true,opacity:.48,roughness:.12,metalness:.02,side:T.DoubleSide,depthWrite:false});
 water.userData.shared=true;
 function pipe(g,a,b,r=.06,color='#adc4c0'){const start=new T.Vector3(...a),end=new T.Vector3(...b),d=end.clone().sub(start);const m=mesh(g,new T.CylinderGeometry(r,r,d.length(),10),color);m.position.copy(start.addScaledVector(d,.5));m.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),d.normalize());return m;}

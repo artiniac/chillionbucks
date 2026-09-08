@@ -2,7 +2,7 @@
 
 This release improves the existing static games without changing wallet data, saved-world formats, prices, paid work limits, or hosting.
 
-- Six illustrated home-page cards lead directly to the aquarium, water park, driving, blocks, town, and catching game. Each 3D game has an All games link. Explicit aquarium and town URLs override the last-opened world.
+- The newly published 3D home-page design is retained and extended with a Little town card. Six 3D worlds now have direct entry points, alongside the money games. Each 3D game has an All games link. Explicit aquarium and town URLs override the last-opened world.
 - Chill Drive has five visible star gates, a lap progress bar, and checkpoint markers on its map. Stars are play feedback only and never create money. Checkpoints use traveled distance, with exact-boundary and finish-line tests. Track bounds and map samples are cached. The play area sizes against the actual header height on phones.
 - Snap Blocks has nearby piece and guided-build shortcuts, one-stud preview arrows, and arrow-key/Enter placement when the mat is focused. Choosing a shelf piece returns to the mat. Reloading or undoing a guided creation restores the correct next-piece preview.
 - Aquarium close-ups cycle through the animals instead of repeatedly following the first fish. Offscreen aquarium rendering is skipped while browsing the shop.
@@ -15,4 +15,4 @@ All application JavaScript passed Node syntax checks. World rules, driving geome
 
 Browser checks covered desktop and a 390 by 844 viewport: illustrated navigation; real driving checkpoint collection; responsive controls; guided bridge completion, undo, and reload; one-stud nudging; a complete five-catch paycheck flow; pause; aquarium cycling; direct town entry; and the water-park ride shortcut. No application errors were reported in the checked flows. A phone-sized desktop browser is not a physical iPhone Safari performance test.
 
-A separate checkout was used. Uncommitted edits in the September 7 local workspace were not modified or included.
+A separate checkout was used. The September 7 local workspace was not modified. A concurrent published update (d02d8be) was merged before release, preserving its homepage, savings overlays, new reef models, explicit claw aiming, and improved driving physics. Combined checks include the new steering tests and targeted browser regression testing.
