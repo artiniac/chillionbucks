@@ -13,3 +13,9 @@ Source and license: https://polyhaven.com/license
 Files are the 1K HDR environment maps and 1K JPEG diffuse, OpenGL normal, and roughness maps. Each downloaded file was checked against the MD5 checksum in the provider's asset manifest. Powered by Poly Haven.
 
 The Three.js RGBELoader and Water helpers are vendored from the official r170 examples, under the existing MIT license at vendor/THREE-LICENSE.txt. Imports were adapted for local loading, and Water exposes its reflection target cleanup through disposeReflection.
+
+## Grotto Springs rock surface
+Rock Face, Poly Haven, CC0. Photography: Greg Zaal. Processing: Dario Barresi. Source: https://polyhaven.com/a/rock_face . 2K diffuse, OpenGL normal, and roughness maps.
+
+## Architectural surfaces
+Red Brick (Rob Tuytel), https://polyhaven.com/a/red_brick , and Roof Slates 02, https://polyhaven.com/a/roof_slates_02 . Poly Haven CC0. 1K diffuse, OpenGL normal, and roughness maps. Used as building materials, not property listing photographs.
