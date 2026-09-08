@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-import {scannedMaterial} from './realism.js';
+import {scannedMaterial} from './realism.js?v=estates4';
 const cache=new Map();
 function copyReef(source){const copy=source.clone(true);if(source.userData.portal)copy.userData.portal=source.userData.portal.clone();return copy;}
 export function reefExtra(id){if(!['reefarch','coralgarden','reefledge','pineapplehome','stonefacehome'].includes(id))return null;if(cache.has(id))return copyReef(cache.get(id));const g=new T.Group();

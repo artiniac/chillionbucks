@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-import {scannedMaterial} from './realism.js?v=20260907-sunlit';
+import {scannedMaterial} from './realism.js?v=estates4';
 const supported=new Set(['rock','grass','pinkcoral','fan','anemone']),cache=new Map(),mats=new Map();
 function mat(color){if(!mats.has(color)){const m=new T.MeshStandardMaterial({color,roughness:.84});m.userData.shared=true;mats.set(color,m);}return mats.get(color);}
 function add(g,geo,color){const m=new T.Mesh(geo,typeof color==='string'?mat(color):color);m.castShadow=true;m.receiveShadow=true;g.add(m);return m;}

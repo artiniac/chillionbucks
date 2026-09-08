@@ -1,6 +1,6 @@
 import * as T from './vendor/three.module.js';
-import {makeModel,mesh,block,orb} from './chilltopia-models.js?v=reef3';
-import {attraction,animateAttraction} from './park-attractions.js';
+import {makeModel,mesh,block,orb} from './chilltopia-models.js?v=estates4';
+import {attraction,animateAttraction} from './park-attractions.js?v=estates4';
 import {makeCar} from './driving-car.js?v=handling3';
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches,canvases=[...document.querySelectorAll('[data-world],#heroWorld')];let renderer;try{renderer=new T.WebGLRenderer({alpha:true,antialias:true});}catch{for(const c of canvases){const ctx=c.getContext('2d');ctx.font='90px sans-serif';ctx.fillText(c.dataset.world==='drive'?'🏎️':'🐠',70,130);}}
 if(renderer){renderer.setPixelRatio(1);renderer.setSize(680,500);renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.3;

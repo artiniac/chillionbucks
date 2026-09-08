@@ -2,7 +2,7 @@ import * as T from './vendor/three.module.js';
 import {PRESETS,copy,curveFor,validate,editPoints,ribbon,WIDTH} from './driving-track.js?v=handling3';
 import {makeCar,Motor,driftStep} from './driving-car.js?v=handling3';
 import {CHECKPOINTS,crossedCheckpoints} from './driving-adventure.js';
-import {loadLighting} from './realism.js';
+import {loadLighting,scannedMaterial} from './realism.js?v=estates4';
 const $=s=>document.querySelector(s),KEY='cb:drive:v1',clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let custom=null,active='meadow',color='#c3d2df',pace='cruise';try{const s=JSON.parse(localStorage.getItem(KEY));if(s?.v===1){if(s.custom&&!validate(s.custom))custom=copy(s.custom);if(PRESETS[s.active]||(s.active==='custom'&&custom))active=s.active;if(/^#[0-9a-f]{6}$/i.test(s.color))color=s.color;if(['gentle','cruise','zoom'].includes(s.pace))pace=s.pace;}}catch{}
 let points=copy(active==='custom'?custom:PRESETS[active].points),curve,length,editing=false,selected=0,history=[],running=false,driftHeld=false,driftAmount=0,driftVelocity=0,driftSeconds=0,driftAwarded=false,drifts=0,laps=0,travel=0,speed=0,lane=0,steer=0,view=reduced?2:0,last=0;
@@ -11,9 +11,9 @@ function tell(s){$('#message').textContent=s;}function save(){try{localStorage.s
 window.SFX?.bind($('#sound'));window.SFX?.ambience('off');const motor=new Motor();
 new ResizeObserver(([entry])=>document.documentElement.style.setProperty('--drive-header',entry.target.getBoundingClientRect().height+'px')).observe(document.querySelector('header'));
 const host=$('#viewport');let renderer;try{renderer=new T.WebGLRenderer({antialias:true});}catch{$('#loading').innerHTML='This device could not start 3D. <a href="classic.html">Play Classic</a>';throw Error('WebGL unavailable');}renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.domElement.tabIndex=0;renderer.domElement.setAttribute('aria-label','Driving world. Space to drift, arrow keys to move.');host.append(renderer.domElement);$('#loading').remove();
-const scene=new T.Scene();scene.background=new T.Color('#bbdcec');scene.fog=new T.Fog('#bbd4c5',170,420);const camera=new T.PerspectiveCamera(48,1,.5,600);scene.add(new T.HemisphereLight('#eef9ff','#626d43',2));const sun=new T.DirectionalLight('#fff0cb',3);sun.position.set(-55,95,35);sun.castShadow=true;sun.shadow.mapSize.set(innerWidth<650?1024:2048,innerWidth<650?1024:2048);Object.assign(sun.shadow.camera,{left:-105,right:105,top:105,bottom:-105,far:240});sun.shadow.normalBias=.05;scene.add(sun);loadLighting(renderer,scene,'park');
+const scene=new T.Scene();scene.background=new T.Color('#bbdcec');scene.fog=new T.Fog('#bbd4c5',170,420);const camera=new T.PerspectiveCamera(48,1,.5,600);scene.add(new T.HemisphereLight('#eef9ff','#626d43',.6));const sun=new T.DirectionalLight('#fff0cb',3);sun.position.set(-55,95,35);sun.castShadow=true;sun.shadow.mapSize.set(innerWidth<650?1024:2048,innerWidth<650?1024:2048);Object.assign(sun.shadow.camera,{left:-105,right:105,top:105,bottom:-105,far:240});sun.shadow.normalBias=.05;scene.add(sun);loadLighting(renderer,scene,'park');
 const mat=(color,roughness=.8)=>new T.MeshStandardMaterial({color,roughness});
-const ground=new T.Mesh(new T.PlaneGeometry(1200,1200),mat('#a8b780'));ground.rotation.x=-Math.PI/2;ground.position.y=-.18;ground.receiveShadow=true;scene.add(ground);
+const ground=new T.Mesh(new T.PlaneGeometry(1200,1200),scannedMaterial('leafy_grass',[140,140],'#a9b795'));ground.rotation.x=-Math.PI/2;ground.position.y=-.18;ground.receiveShadow=true;scene.add(ground);
 function mesh(g,m,x,y,z,parent=scene){const o=new T.Mesh(g,m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o;}
 const asphalt=mat('#424b51'),verge=mat('#c8b88c'),lineMat=mat('#faf2d4'),supportMat=mat('#c1c5b8'),archMat=mat('#173f47'),red=mat('#e26450'),white=mat('#fff9e5');
 // Original repeating asphalt grain, without an external asset request.

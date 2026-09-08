@@ -1,8 +1,9 @@
-import {reefExtra} from './reef-extras.js';
+import {TOWN_CATALOG,townModel} from './town-models.js?v=estates4';
+import {reefExtra} from './reef-extras.js?v=estates4';
 import * as T from './vendor/three.module.js';
 import {human} from './living-models.js';
-import {reefHabitat} from './reef-habitat.js?v=20260907-sunlit';
-import {naturalTree} from './natural-tree.js';
+import {reefHabitat} from './reef-habitat.js?v=estates4';
+import {naturalTree} from './natural-tree.js?v=estates4';
 import {realisticFish,SPECIES} from './reef-species.js?v=20260907-sunlit';
 const mats=new Map();
 export function material(color,roughness=.65){const key=color+':'+roughness;if(!mats.has(key))mats.set(key,new T.MeshStandardMaterial({color,roughness,metalness:.03}));return mats.get(key)}
@@ -13,6 +14,7 @@ export function orb(g,c,x,y,z,sx,sy= sx,sz=sx){return mesh(g,sphere,c,x,y,z,sx,s
 export function block(g,c,x,y,z,sx,sy,sz){return mesh(g,box,c,x,y,z,sx,sy,sz)}
 function branch(g,a,b,r,c){const d=new T.Vector3(...b).sub(new T.Vector3(...a));const m=mesh(g,new T.CylinderGeometry(r*.65,r,d.length(),8),c);m.position.copy(new T.Vector3(...a).addScaledVector(d,.5));m.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),d.normalize());return m}
 export const CATALOG=[
+...TOWN_CATALOG,
 {id:'reefarch',name:'Living reef arch',category:'Habitat',world:'reef',price:18,r:1.2},
 {id:'coralgarden',name:'Branching coral garden',category:'Habitat',world:'reef',price:20,r:1.2},
 {id:'reefledge',name:'Layered reef ledges',category:'Habitat',world:'reef',price:15,r:1.1},
@@ -56,7 +58,7 @@ export const CATALOG=[
 export const DEFINITIONS=Object.fromEntries(CATALOG.map(d=>[d.id,d]));
 for(const [id,info] of Object.entries(SPECIES))Object.assign(DEFINITIONS[id],info);
 export function makeFish(kind){return realisticFish(kind)}
-export function makeModel(id){const extra=reefExtra(id);if(extra)return extra;const habitat=reefHabitat(id);if(habitat)return habitat;if(id==='tree')return naturalTree();if(DEFINITIONS[id]?.crawler)return makeCrawler(id);if(DEFINITIONS[id]?.fish)return makeFish(id);const g=new T.Group();
+export function makeModel(id){const town=townModel(id);if(town)return town;const extra=reefExtra(id);if(extra)return extra;const habitat=reefHabitat(id);if(habitat)return habitat;if(id==='tree')return naturalTree();if(DEFINITIONS[id]?.crawler)return makeCrawler(id);if(DEFINITIONS[id]?.fish)return makeFish(id);const g=new T.Group();
 if(id==='rock'){for(let i=0;i<4;i++){const m=mesh(g,new T.DodecahedronGeometry(1,1),['#799a92','#9ab2a4','#b0bdb0','#697e76'][i],(i%2-.5)*.65,.2+i*.04,(Math.floor(i/2)-.5)*.6,.5,.32,.45);m.rotation.set(i*.4,i*.8,0)}}
 if(id==='cave'||id==='arch'){const c=id==='cave'?'#839d8b':'#d4b490';const arch=mesh(g,new T.TorusGeometry(.76,.24,8,24,Math.PI),c,0,.22,0);arch.scale.z=2;for(const x of [-.76,.76])orb(g,c,x,.16,0,.3,.25,.48);g.userData.portal=new T.Vector3(0,.58,0);}
 if(id==='grass'){for(let i=0;i<9;i++){const a=i*2.4,h=.8+(i%4)*.24;const curve=new T.CatmullRomCurve3([new T.Vector3(Math.cos(a)*.16,0,Math.sin(a)*.16),new T.Vector3(Math.cos(a)*.25,h*.5,Math.sin(a)*.25),new T.Vector3(Math.cos(a)*.4,h,Math.sin(a)*.3)]);mesh(g,new T.TubeGeometry(curve,8,.045,4,false),i%2?'#389d79':'#79b95b');}orb(g,'#809f89',0,.08,0,.3,.13,.3)}
