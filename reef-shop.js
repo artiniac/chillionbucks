@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-import {makeModel,mesh,block,orb,disposeModel} from './chilltopia-models.js?v=20260907-sunlit';
+import {makeModel,mesh,block,orb,disposeModel} from './chilltopia-models.js?v=reef3';
 // One WebGL renderer supplies all visible display tanks, including the inspection tank.
 let renderer,last=0,entries=[],inspection=null,onChoose;
 const dialog=document.createElement('dialog');dialog.id='fishShopDetail';dialog.className='fish-detail';document.body.append(dialog);

@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="home.css?v=1"><link rel="stylesheet" href="savings-ui.css?v=1">
 </head>
 <body>
 <a class="skip" href="#play">Skip to games</a>
@@ -32,8 +32,8 @@
     <span>Chillion<b>Bucks</b></span>
   </a>
   <nav class="links" aria-label="Sections">
-    <a href="#play">🎮 Play</a>
-    <a href="build.html">🏝️ Chilltopia</a><a href="blocks.html">🧱 Snap Blocks</a><a href="driving.html">🏎️ Chill Drive</a>
+    <a href="#worlds">🎮 Worlds</a>
+    <a href="#play">🪙 Money games</a>
     <a href="#watch">▶ Watch</a>
     <a href="#learn">💡 Learn</a>
     <a href="#parents">👨‍👩‍👦 Parents</a>
@@ -43,85 +43,9 @@
 
 <main id="top">
 
-<section class="hero" id="home">
-  <canvas id="coinRain" aria-hidden="true"></canvas>
-  <div class="sun" aria-hidden="true"></div>
-  <div class="hills" aria-hidden="true">
-    <svg viewBox="0 0 1440 240" preserveAspectRatio="none">
-      <path d="M0 140 C 240 60, 420 200, 720 120 S 1200 40, 1440 130 L1440 240 L0 240Z" fill="#22c55e"/>
-      <path d="M0 180 C 300 110, 520 230, 860 160 S 1240 100, 1440 180 L1440 240 L0 240Z" fill="#16a34a"/>
-      <path d="M0 210 C 360 170, 700 250, 1040 200 S 1300 180, 1440 215 L1440 240 L0 240Z" fill="#14532d"/>
-    </svg>
-  </div>
-
-  <div class="hero-inner">
-    <div class="hero-text">
-      <p class="kicker">Leo’s money site for kids</p>
-      <h1 class="title" id="heroTitle" aria-label="Chillion Bucks">CHILLION BUCKS</h1>
-      <p class="tag">A <b>chillion bucks</b> is when you can <b>chill all day</b>… and <b>still</b> have a lot of money. 😎</p>
-      <div class="cta">
-        <a class="btn btn-big" href="#play">🎮 Play a game</a>
-        <a class="btn btn-big btn-alt" href="#watch">▶ Watch videos</a>
-      </div>
-    </div>
-
-    <div class="hero-art" aria-hidden="true">
-      <svg viewBox="0 0 520 380">
-        <!-- palm trunks -->
-        <path d="M70 360 C 80 260, 60 200, 95 120" fill="none" stroke="#7c4a1e" stroke-width="18" stroke-linecap="round"/>
-        <path d="M450 360 C 440 260, 470 200, 430 120" fill="none" stroke="#7c4a1e" stroke-width="18" stroke-linecap="round"/>
-        <!-- fronds -->
-        <g fill="#16a34a" class="frond">
-          <ellipse cx="60" cy="100" rx="70" ry="18" transform="rotate(-30 60 100)"/>
-          <ellipse cx="120" cy="95" rx="70" ry="18" transform="rotate(20 120 95)"/>
-          <ellipse cx="95" cy="80" rx="60" ry="16" transform="rotate(-80 95 80)"/>
-          <ellipse cx="140" cy="120" rx="60" ry="15" transform="rotate(50 140 120)"/>
-        </g>
-        <g fill="#16a34a" class="frond frond2">
-          <ellipse cx="460" cy="100" rx="70" ry="18" transform="rotate(30 460 100)"/>
-          <ellipse cx="400" cy="95" rx="70" ry="18" transform="rotate(-20 400 95)"/>
-          <ellipse cx="425" cy="80" rx="60" ry="16" transform="rotate(80 425 80)"/>
-          <ellipse cx="380" cy="120" rx="60" ry="15" transform="rotate(-50 380 120)"/>
-        </g>
-        <!-- coconuts -->
-        <circle cx="100" cy="128" r="9" fill="#5b3a1a"/><circle cx="116" cy="136" r="9" fill="#5b3a1a"/>
-        <circle cx="420" cy="128" r="9" fill="#5b3a1a"/><circle cx="404" cy="136" r="9" fill="#5b3a1a"/>
-
-        <g class="sway">
-          <!-- hammock ropes -->
-          <path d="M95 150 L 150 250" stroke="#f5deb3" stroke-width="5" stroke-linecap="round"/>
-          <path d="M430 150 L 370 250" stroke="#f5deb3" stroke-width="5" stroke-linecap="round"/>
-          <!-- hammock cloth -->
-          <path d="M150 250 Q 260 330 370 250 L 380 262 Q 260 350 140 262 Z" fill="#fbbf24" stroke="#b45309" stroke-width="5" stroke-linejoin="round"/>
-          <path d="M175 262 Q 260 322 345 262" fill="none" stroke="#b45309" stroke-width="3" opacity=".6"/>
-          <path d="M200 272 Q 260 312 320 272" fill="none" stroke="#b45309" stroke-width="3" opacity=".6"/>
-
-          <!-- Chilly the buck -->
-          <g class="chilly">
-            <ellipse cx="262" cy="292" rx="66" ry="12" fill="rgba(5,46,22,.18)"/>
-            <circle cx="262" cy="232" r="56" fill="#86efac" stroke="#052e16" stroke-width="6"/>
-            <circle cx="262" cy="232" r="42" fill="none" stroke="#052e16" stroke-width="3" stroke-dasharray="6 6" opacity=".35"/>
-            <!-- sunglasses -->
-            <rect x="222" y="214" width="34" height="22" rx="8" fill="#052e16"/>
-            <rect x="268" y="214" width="34" height="22" rx="8" fill="#052e16"/>
-            <rect x="254" y="220" width="16" height="6" fill="#052e16"/>
-            <path d="M228 220 l14 0" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7" class="glint"/>
-            <!-- smile + cheeks -->
-            <path d="M238 254 q24 18 48 0" fill="none" stroke="#052e16" stroke-width="5" stroke-linecap="round"/>
-            <circle cx="228" cy="250" r="6" fill="#fca5a5" opacity=".8"/>
-            <circle cx="296" cy="250" r="6" fill="#fca5a5" opacity=".8"/>
-            <!-- drink -->
-            <rect x="318" y="234" width="26" height="36" rx="5" fill="#f472b6" stroke="#052e16" stroke-width="4"/>
-            <rect x="318" y="234" width="26" height="10" rx="5" fill="#fff" opacity=".6"/>
-            <path d="M332 234 L 344 200" stroke="#052e16" stroke-width="4" stroke-linecap="round"/>
-            <path d="M330 202 l 24 -8 l -6 14 z" fill="#a3e635" stroke="#052e16" stroke-width="3" stroke-linejoin="round"/>
-          </g>
-        </g>
-      </svg>
-    </div>
-  </div>
-</section>
-
+<section class="launch-hero" id="home"><div class="hero-copy"><span class="eyebrow">DREAMED UP BY A KID. BUILT FOR BIG IDEAS.</span><h1>Little builders.<br>Big dreamers.<br><em>Always chill.</em></h1><p>A whole world of making, playing, and learning what money can do.</p><div class="hero-actions"><a class="launch-button" href="#worlds">👍 Let's play <span>↗</span></a><a class="quiet-link" href="#gPiggy">🐷 My piggy bank</a></div><div class="hero-note"><span>✦ Free to play</span><span>✦ No accounts</span><span>✦ Made for curious kids</span></div></div><div class="hero-diorama"><canvas id="heroWorld" aria-label="A playful preview of our aquarium world"></canvas><span class="orbit-label label-one">🐠 A world you make</span><span class="orbit-label label-two">✨ A little more possible</span></div></section>
+<section id="worlds" class="world-hub"><div class="hub-heading"><div><span class="eyebrow">PICK YOUR KIND OF AMAZING</span><h2>Where are we going today?</h2></div><p>Big green buttons. Little adventures.<br>Every world is yours to explore.</p></div><div class="world-grid">
+<a class="world-card reef" href="build.html"><div class="world-picture"><canvas data-world="reef" aria-hidden="true"></canvas><span class="world-tag">BUILD A LIVING WORLD</span></div><div class="world-caption"><div><small>MAKE A LITTLE OCEAN</small><h3>Chilltopia Aquatics</h3><p>Fish, coral, and a home you imagine.</p></div><span class="play-orb" aria-label="Play">▶</span></div></a><a class="world-card park" href="waterpark.html"><div class="world-picture"><canvas data-world="park" aria-hidden="true"></canvas><span class="world-tag">SPLASH INTO YOUR CREATION</span></div><div class="world-caption"><div><small>DREAM IT. BUILD IT. RIDE IT.</small><h3>Your water park</h3><p>Lazy rivers, wild slides, and sunny days.</p></div><span class="play-orb" aria-label="Play">▶</span></div></a><a class="world-card drive" href="driving.html"><div class="world-picture"><canvas data-world="drive" aria-hidden="true"></canvas><span class="world-tag">BIG DRIFTS. EASY DRIVING.</span></div><div class="world-caption"><div><small>TAKE THE SCENIC ROUTE</small><h3>Chill Drive</h3><p>Build a track. Hold to drift. Just cruise.</p></div><span class="play-orb" aria-label="Play">▶</span></div></a><a class="world-card blocks" href="blocks.html"><div class="world-picture"><canvas data-world="blocks" aria-hidden="true"></canvas><span class="world-tag">EVERY PIECE IS FREE</span></div><div class="world-caption"><div><small>SMALL PIECES. HUGE IDEAS.</small><h3>Snap Blocks Studio</h3><p>Make the thing only you can imagine.</p></div><span class="play-orb" aria-label="Play">▶</span></div></a><a class="world-card seafood" href="seafood.html"><div class="world-picture"><canvas data-world="seafood" aria-hidden="true"></canvas><span class="world-tag">A LITTLE WORK. A LITTLE REWARD.</span></div><div class="world-caption"><div><small>CATCH. LIFT. SCOOP.</small><h3>Seafood Scoop</h3><p>An underwater claw and a job well done.</p></div><span class="play-orb" aria-label="Play">▶</span></div></a><a class="world-card learning" href="#play"><div class="learning-art"><span>🐷</span><span>💛</span><span>🪙</span></div><div class="world-caption"><div><small>PLAY YOUR WAY TO MONEY SMARTS</small><h3>Little money adventures</h3><p>Choose, save, count, and grow.</p></div><span class="play-orb">▶</span></div></a></div></section>
 <section class="define" data-reveal>
   <div class="define-inner">
     <div class="dict">
@@ -143,14 +67,14 @@
 </section>
 
 <section id="play" class="games" data-reveal>
-  <h2>🎮 Play</h2>
-  <p class="lead">Little games, big money brain.</p>
+  <span class="eyebrow section-eyebrow">THE LITTLE HABITS THAT MAKE BIG DREAMS</span><h2>Play with a little purpose.</h2>
+  <p class="lead">A choice. A coin. One step closer.</p>
   <div class="game-grid">
 
     <article class="game" id="gPiggy">
       <header class="game-head"><span class="game-emoji">🐷</span><h3>Piggy Bank Power</h3></header>
-      <p class="game-how"><b>Tap the thing you want.</b> Then <b>drag money</b> into the piggy to save for it. Coins are for practice and do not add spendable bucks. Earn bills by doing <a href="build.html">Jobs in Chilltopia</a>. Watch out for the candy…</p>
-      <div class="goal-hint" id="goalHint" aria-hidden="true">👉 Tap what you want to save for</div>
+      <p class="game-how"><b>Tap the thing you want.</b> Then <b>drag money</b> into the piggy to save for it. Tap a coin or bill to save it, or drag it to the piggy. Coins are for practice and do not add spendable bucks. Earn bills by doing <a href="build.html">Jobs in Chilltopia</a>. Practice choosing between a treat now and your goal later.</p>
+      <div class="saving-steps"><span>🎯 Pick a dream</span><span>💼 Earn a paycheck</span><span>🐷 Save a little</span></div><div class="goal-hint" id="goalHint" aria-hidden="true">👉 Tap what you want to save for</div>
       <div class="goal-grid" id="goalRow"></div>
       <div class="goal-done" id="goalDone" hidden></div>
       <details class="grown" id="grownGoals">
@@ -165,7 +89,7 @@
           <p class="tiny">Saved on this device only. Tap the little 👨‍👩‍👧 on a goal card to remove it.</p>
         </form>
       </details>
-      <div class="piggy-stage drag" id="piggyStage">
+      <div class="piggy-stage drag" id="piggyStage"><div class="home-save-guide save-demo" aria-hidden="true"><span>1</span>👆</div>
         <div class="dtray" id="moneyTray" aria-label="Money to drag into the piggy">
           <div class="coins" id="coinTray"></div>
           <div class="bill-label" id="billLabel" hidden>Paychecks</div>
@@ -173,19 +97,19 @@
         </div>
         <div class="piggy-wrap" id="piggyWrap">
           <div class="drop-glow" aria-hidden="true"></div>
-          <svg viewBox="0 0 220 170" class="piggy-svg" aria-hidden="true">
+          <svg viewBox="0 0 220 170" class="piggy-svg" aria-hidden="true"><defs><radialGradient id="piggyPink" cx="32%" cy="23%" r="85%"><stop stop-color="#ffe4e1"/><stop offset=".5" stop-color="#f6a5b4"/><stop offset="1" stop-color="#d96c94"/></radialGradient><linearGradient id="piggyFeet" x2="0" y2="1"><stop stop-color="#e998ad"/><stop offset="1" stop-color="#ba537e"/></linearGradient></defs>
             <ellipse cx="110" cy="150" rx="80" ry="10" fill="rgba(5,46,22,.15)"/>
             <g class="piggy-body">
-              <rect x="50" y="118" width="20" height="30" rx="8" fill="#4ade80" stroke="#052e16" stroke-width="5"/>
-              <rect x="140" y="118" width="20" height="30" rx="8" fill="#4ade80" stroke="#052e16" stroke-width="5"/>
-              <ellipse cx="100" cy="92" rx="76" ry="54" fill="#86efac" stroke="#052e16" stroke-width="6"/>
-              <path d="M28 88 q-16 -6 -8 -22 q10 4 14 12" fill="none" stroke="#052e16" stroke-width="5" stroke-linecap="round" class="piggy-tail"/>
-              <circle cx="158" cy="80" r="34" fill="#86efac" stroke="#052e16" stroke-width="6"/>
-              <path d="M140 52 l-10 -26 l24 12 z" fill="#4ade80" stroke="#052e16" stroke-width="5" stroke-linejoin="round"/>
-              <ellipse cx="186" cy="90" rx="16" ry="12" fill="#4ade80" stroke="#052e16" stroke-width="5"/>
+              <rect x="50" y="118" width="20" height="30" rx="8" fill="url(#piggyFeet)" stroke="#b76c87" stroke-width="2"/>
+              <rect x="140" y="118" width="20" height="30" rx="8" fill="url(#piggyFeet)" stroke="#b76c87" stroke-width="2"/>
+              <ellipse cx="100" cy="92" rx="76" ry="54" fill="url(#piggyPink)" stroke="#b76c87" stroke-width="1.5"/>
+              <path d="M28 88 q-16 -6 -8 -22 q10 4 14 12" fill="none" stroke="#b76c87" stroke-width="2" stroke-linecap="round" class="piggy-tail"/>
+              <circle cx="158" cy="80" r="34" fill="url(#piggyPink)" stroke="#b76c87" stroke-width="1.5"/>
+              <path d="M140 52 l-10 -26 l24 12 z" fill="url(#piggyFeet)" stroke="#b76c87" stroke-width="2" stroke-linejoin="round"/>
+              <ellipse cx="186" cy="90" rx="16" ry="12" fill="url(#piggyFeet)" stroke="#b76c87" stroke-width="2"/>
               <circle cx="181" cy="90" r="3" fill="#052e16"/><circle cx="192" cy="90" r="3" fill="#052e16"/>
               <circle cx="160" cy="72" r="7" fill="#fff" stroke="#052e16" stroke-width="3"/>
-              <circle id="pupil" cx="160" cy="72" r="3.5" fill="#052e16"/>
+              <ellipse cx="143" cy="90" rx="8" ry="4" fill="#ef7897" opacity=".5"/><ellipse cx="73" cy="64" rx="29" ry="9" fill="#fff" opacity=".3" transform="rotate(-18 73 64)"/><circle id="pupil" cx="160" cy="72" r="3.5" fill="#052e16"/>
               <path class="piggy-smile" d="M168 100 q10 8 20 -2" fill="none" stroke="#052e16" stroke-width="3" stroke-linecap="round"/>
               <rect x="78" y="38" width="44" height="10" rx="4" fill="#052e16" class="piggy-slot"/>
               <text x="92" y="105" text-anchor="middle" font-size="34" font-weight="900" fill="#052e16" opacity=".25" font-family="Fredoka, sans-serif">$</text>
@@ -195,7 +119,7 @@
         <div class="piggy-total"><span id="piggyAmt">$0</span><small>saved</small></div>
       </div>
       <div class="bar"><div class="bar-fill" id="piggyBar"></div><span class="bar-label" id="piggyGoalLabel"></span></div>
-      <p class="game-msg" id="piggyMsg">Drag a coin into the piggy!</p>
+      <p class="game-msg" id="piggyMsg" role="status">Drag a coin into the piggy!</p>
       <div class="tempt hidden" id="tempt">
         <p><span id="temptEmoji">🍭</span> <b id="temptText">Candy for $3!</b> Spend it, or keep saving?</p>
         <div class="row">
@@ -212,17 +136,17 @@
     <article class="game" id="gNW">
       <header class="game-head"><span class="game-emoji">🤔</span><h3>Need or Want?</h3></header>
       <p class="game-how">A <b>NEED</b> is something you must have to live and stay safe. A <b>WANT</b> is something fun you’d like. Which one is it?</p>
-      <div class="nw-card" id="nwCard">
+      <div class="nw-progress" id="nwProgress" aria-label="Round progress"></div><button class="hear-card" id="nwHear">🔊 Hear this card</button><div class="nw-card" id="nwCard"><span class="display-label">ON TODAY’S LITTLE SHOPPING TRIP</span>
         <div class="nw-emoji" id="nwEmoji">🍎</div>
         <div class="nw-name" id="nwName">An apple</div>
         <div class="nw-stamp" id="nwStamp" aria-hidden="true"></div>
         <div class="nw-next" id="nwNext" hidden></div>
       </div>
       <div class="row big">
-        <button class="btn btn-need" id="nwNeed">NEED</button>
-        <button class="btn btn-want" id="nwWant">WANT</button>
+        <button class="btn btn-need" id="nwNeed"><span>🏠</span> NEED<small>To stay safe & healthy</small></button>
+        <button class="btn btn-want" id="nwWant"><span>🌟</span> WANT<small>A lovely extra</small></button>
       </div>
-      <p class="game-msg" id="nwMsg"></p>
+      <p class="game-msg" id="nwMsg" role="status"></p><button class="btn nw-continue" id="nwContinue" hidden>👍 Next card</button>
       <div class="score">Card <b id="nwCount">1 / 10</b> · Score <b id="nwScore">0</b> / <span id="nwTotal">10</span> · Streak 🔥 <b id="nwStreak">0</b></div>
       <div class="score small"><span id="nwPool">100</span> different cards. Play again for a fresh set!</div>
       <button class="link-btn" id="nwReset">play again</button>
@@ -258,29 +182,12 @@
   </div>
 </section>
 
-<section id="build" class="buildteaser" data-reveal>
-  <div class="buildteaser-inner">
-    <div class="buildteaser-text">
-      <h2>🏝️ Chilltopia: build your world</h2>
-      <p class="lead">Build a living 3D aquarium with swimming fish, coral, caves, and underwater homes. Explore a little town, drive a roadster, and deliver packages. Build a connected water park with a lazy river, working slides, and bridges. Start with free pieces, do jobs to earn paychecks, and drag your bills into the piggy to save for your next addition.</p>
-      <a class="btn btn-big btn-build" href="build.html">🏝️ Open Chilltopia</a>
-      <p class="tiny">Your worlds stay on this device. <a href="classic.html">Your classic builder and saved worlds are still here.</a></p>
-    </div>
-    <div class="buildteaser-art" aria-hidden="true">
-      <div class="bt-scene">
-        <span class="bt bt1">🌴</span><span class="bt bt2">🐬</span><span class="bt bt3">⛵</span><span class="bt bt4">🎢</span><span class="bt bt5">🚀</span><span class="bt bt6">🦖</span>
-        <div class="bt-pool"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <section id="watch" class="watch" data-reveal>
   <h2>▶ Watch</h2>
-  <p class="lead">Good money videos from YouTube, picked by hand. Tap a topic, then tap a video.</p>
+  <p class="lead">A little inspiration for curious minds. Choose a topic and watch together.</p>
   <div class="tabs" id="videoTabs" role="tablist"></div>
   <div class="video-grid" id="videoGrid"></div>
-  <p class="watch-note">Videos play right here from YouTube and belong to the creators who made them. Grown-ups: add or swap videos in <code>videos.js</code>.</p>
+  <p class="watch-note">Videos play right here from YouTube and belong to the creators who made them. Choose a video together with a grown-up.</p>
 </section>
 
 <section id="learn" class="learn" data-reveal>
@@ -341,7 +248,7 @@
 
 <nav class="tabbar" aria-label="Sections">
   <a href="#home" data-tab="home"><span aria-hidden="true">😎</span>Home</a>
-  <a href="#play" data-tab="play"><span aria-hidden="true">🎮</span>Play</a>
+  <a href="#worlds" data-tab="play"><span aria-hidden="true">🎮</span>Play</a>
   <a href="build.html" data-tab="build"><span aria-hidden="true">🏝️</span>Chilltopia</a>
   <a href="#watch" data-tab="watch"><span aria-hidden="true">▶</span>Watch</a>
   <a href="#learn" data-tab="learn"><span aria-hidden="true">💡</span>Learn</a>
@@ -350,9 +257,9 @@
 
 <canvas id="confetti" aria-hidden="true"></canvas>
 <script src="sfx.js"></script>
-<script src="wallet.js?v=20260907-expansion"></script>
+<script src="wallet.js?v=seafood1"></script>
 <script src="goals.js"></script>
 <script src="videos.js"></script>
-<script src="app.js?v=20260907-expansion"></script>
-</body>
+<script src="app.js?v=home2"></script>
+<script type="module" src="home-worlds.js?v=review3"></script></body>
 </html>
