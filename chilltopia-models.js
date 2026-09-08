@@ -1,9 +1,9 @@
-import {TOWN_CATALOG,townModel} from './town-models.js?v=estates4';
-import {reefExtra} from './reef-extras.js?v=estates4';
+import {TOWN_CATALOG,townModel} from './town-models.js?v=expansion2';
+import {reefExtra} from './reef-extras.js?v=expansion2';
 import * as T from './vendor/three.module.js';
 import {human} from './living-models.js';
-import {reefHabitat} from './reef-habitat.js?v=estates4';
-import {naturalTree} from './natural-tree.js?v=estates4';
+import {reefHabitat} from './reef-habitat.js?v=expansion2';
+import {naturalTree} from './natural-tree.js?v=expansion2';
 import {realisticFish,SPECIES} from './reef-species.js?v=20260907-sunlit';
 const mats=new Map();
 export function material(color,roughness=.65){const key=color+':'+roughness;if(!mats.has(key))mats.set(key,new T.MeshStandardMaterial({color,roughness,metalness:.03}));return mats.get(key)}

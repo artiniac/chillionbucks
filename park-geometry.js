@@ -1,16 +1,17 @@
 import * as T from './vendor/three.module.js';
+import {PARK_LIMIT} from './park-expansion.js?v=expansion2';
 export const WIDTH=2.1;
 export const START_ROUTE=[[-6,-3],[0,-4.5],[6,-3],[7,1],[3,4.5],[-3,4.5],[-7,1]];
 export const curveFor=points=>new T.CatmullRomCurve3(points.map(([x,z])=>new T.Vector3(x,.12,z)),true,'centripetal');
 export function frame(curve,t){const p=curve.getPointAt(((t%1)+1)%1),v=curve.getTangentAt(((t%1)+1)%1).normalize();return {p,v,n:new T.Vector3(-v.z,0,v.x)};}
 export function validateRoute(points){
  if(!Array.isArray(points)||points.length<4||points.length>18)return 'Use between 4 and 18 river bends.';
- if(points.some(p=>!Array.isArray(p)||p.length!==2||p.some(v=>!Number.isFinite(v)||Math.abs(v)>20)))return 'Keep river bends inside the park.';
+ if(points.some(p=>!Array.isArray(p)||p.length!==2||p.some(v=>!Number.isFinite(v)||Math.abs(v)>PARK_LIMIT)))return 'Keep river bends inside the park.';
  for(let i=0;i<points.length;i++)if(Math.hypot(points[i][0]-points[(i+1)%points.length][0],points[i][1]-points[(i+1)%points.length][1])<2)return 'Give neighboring bends more space.';
  const c=curveFor(points),len=c.getLength();if(len<18)return 'Make a larger loop with room for the water.';
  const count=160,ps=Array.from({length:count},(_,i)=>c.getPointAt(i/count));
  for(let i=0;i<count;i++){
-  if(Math.abs(ps[i].x)>21||Math.abs(ps[i].z)>21)return 'This bend goes outside the park.';
+  if(Math.abs(ps[i].x)>PARK_LIMIT+1||Math.abs(ps[i].z)>PARK_LIMIT+1)return 'This bend goes outside the park.';
   for(let j=i+1;j<count;j++){
    const separation=Math.min(j-i,count-j+i)*len/count;
    if(separation>WIDTH*2.4&&ps[i].distanceTo(ps[j])<WIDTH+1)return 'Those channels are too close. Move the bend outward.';
