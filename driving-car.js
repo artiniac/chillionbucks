@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-export {skylineCoupe as makeCar} from './skyline-model.js';
+export {makeCar} from './skyline-import.js?v=1';
 export {Motor} from './motor-sound.js?v=1';
 
 export function driftStep(state,{held,running,turn,steer=0,dt}){

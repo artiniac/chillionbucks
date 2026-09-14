@@ -1,14 +1,18 @@
 import * as T from './vendor/three.module.js';
 export const WIDTH=8,MAX_POINTS=24;
 export const PRESETS={
- academy:{name:'Apex Academy',icon:'🏁',width:16,points:[[-84,0,-48],[-35,0,-52],[0,0,-35],[35,0,-52],[76,0,-32],[82,0,3],[57,0,22],[25,0,5],[0,0,27],[26,0,52],[66,0,57],[72,0,80],[28,0,89],[-8,0,65],[-41,0,80],[-75,0,57],[-85,0,24],[-58,0,0],[-82,0,-20]]},
+ academy:{name:'Apex Academy',icon:'🏁',width:16,smooth:true,points:[[-84,0,-48],[-35,0,-52],[0,0,-35],[35,0,-52],[76,0,-32],[82,0,3],[57,0,22],[25,0,5],[0,0,27],[26,0,52],[66,0,57],[72,0,80],[28,0,89],[-8,0,65],[-41,0,80],[-75,0,57],[-85,0,24],[-58,0,0],[-82,0,-20]]},
  meadow:{name:'Sunshine loop',icon:'🌼',points:[[-46,0,-22],[-14,0,-34],[20,0,-29],[42,0,-10],[35,0,18],[15,0,26],[2,0,10],[-17,0,27],[-42,0,18],[-48,0,0]]},
  coast:{name:'Seaside sweep',icon:'🌊',points:[[-48,0,-22],[-18,0,-38],[20,1,-32],[45,3,-14],[46,2,18],[19,0,30],[0,0,12],[-25,0,29],[-49,0,14]]},
  corkscrew:{name:'Corkscrew canyon',icon:'🏔️',points:[[-52,0,-30],[-18,0,-40],[27,1,-34],[54,4,-12],[44,9,20],[19,14,35],[-3,15,28],[-17,10,13],[-33,4,19],[-52,1,8]]}
 };
 export const copy=p=>p.map(a=>a.slice());
 class TrackCurve extends T.CatmullRomCurve3 {getPoint(t,target=new T.Vector3()){const p=super.getPoint(t,target);p.y=Math.max(.32,p.y);return p;}}
-export function curveFor(points){return new TrackCurve(points.map(p=>new T.Vector3(p[0],p[1]+.32,p[2])),true,'centripetal');}
+class SmoothTrack extends T.Curve {
+ constructor(points){super();this.points=points;this.arcLengthDivisions=2400;}
+ getPoint(t,target=new T.Vector3()){const p=this.points,u=((t%1+1)%1)*p.length,i=Math.floor(u),f=u-i,w=[(1-f)**3/6,(3*f**3-6*f*f+4)/6,(-3*f**3+3*f*f+3*f+1)/6,f**3/6];target.set(0,.32,0);for(let j=0;j<4;j++){const a=p[(i+j-1+p.length)%p.length];target.x+=a[0]*w[j];target.y+=a[1]*w[j];target.z+=a[2]*w[j];}return target;}
+}
+export function curveFor(points,smooth=false){if(smooth)return new SmoothTrack(points);return new TrackCurve(points.map(p=>new T.Vector3(p[0],p[1]+.32,p[2])),true,'centripetal');}
 export function validate(points){
  if(!Array.isArray(points)||points.length<4||points.length>MAX_POINTS)return 'Use 4 to 24 track pieces.';
  if(points.some(p=>!Array.isArray(p)||p.length!==3||p.some(n=>!Number.isFinite(n))||Math.abs(p[0])>100||Math.abs(p[2])>100||p[1]<0||p[1]>18))return 'Keep your track inside the building field.';
