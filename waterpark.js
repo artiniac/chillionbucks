@@ -1,5 +1,6 @@
+import {parkPromenade,grottoApproach} from './park-promenade.js';
 import {createParkGrotto} from './park-grotto.js?v=integrated1';
-import {GROTTO_Z,parkGroundGeometry,canWalkParkExtension} from './park-grotto-geometry.js';
+import {GROTTO_Z,parkGroundGeometry,canWalkParkExtension} from './park-grotto-geometry.js?v=promenade1';
 import {parkAmbience} from './park-ambience.js?v=expansion2';
 import {PARK_LIMIT,PARK_ITEM_LIMIT,expandPark} from './park-expansion.js?v=expansion2';
 import {riverTunnel} from './park-tunnels.js?v=expansion2';
@@ -22,11 +23,11 @@ function save(){try{localStorage.setItem(KEY,JSON.stringify(state));$('#saveStat
 const tell=t=>{$('#hint').textContent=t;};
 let renderer;try{renderer=new T.WebGLRenderer({antialias:true,powerPreference:'high-performance'});}catch{$('#loading').innerHTML='3D is unavailable. <a href="classic.html">Open Classic</a>';throw Error('WebGL unavailable');}
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=.95;renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;$('#parkViewport').append(renderer.domElement);$('#loading').remove();
-const scene=new T.Scene();scene.background=new T.Color('#a5cede');scene.fog=new T.Fog('#bed6d7',90,240);scene.add(new T.HemisphereLight('#dfedf3','#556343',.45));const sun=new T.DirectionalLight('#fff0d0',2.4);sun.position.set(-32,55,24);sun.castShadow=true;sun.shadow.mapSize.set(innerWidth<650?1024:2048,innerWidth<650?1024:2048);Object.assign(sun.shadow.camera,{left:-95,right:95,top:95,bottom:-95,far:240});sun.shadow.bias=-.0004;sun.shadow.normalBias=.035;scene.add(sun);
+const scene=new T.Scene();scene.background=new T.Color('#a5cede');scene.fog=new T.Fog('#bed6d7',140,260);scene.add(new T.HemisphereLight('#dfedf3','#556343',.45));const sun=new T.DirectionalLight('#fff0d0',2.4);sun.position.set(-32,55,24);sun.castShadow=true;sun.shadow.mapSize.set(innerWidth<650?1024:2048,innerWidth<650?1024:2048);Object.assign(sun.shadow.camera,{left:-95,right:95,top:95,bottom:-95,far:240});sun.shadow.bias=-.0004;sun.shadow.normalBias=.035;scene.add(sun);
 const sky=new T.Mesh(new T.SphereGeometry(180,32,16),new T.ShaderMaterial({side:T.BackSide,uniforms:{},vertexShader:'varying vec3 dir;void main(){dir=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',fragmentShader:'varying vec3 dir;void main(){vec3 n=normalize(dir);float h=max(n.y,0.0);vec3 col=mix(vec3(.76,.85,.86),vec3(.20,.47,.68),pow(h,.55));float sun=pow(max(0.0,dot(n,normalize(vec3(-.55,.8,.35)))),500.0);gl_FragColor=vec4(col+vec3(5.0,4.1,2.6)*sun,1.0);}'}));scene.add(sky);const environmentScene=new T.Scene();environmentScene.add(sky.clone());const pmrem=new T.PMREMGenerator(renderer);scene.environment=pmrem.fromScene(environmentScene,.025,.1,150).texture;pmrem.dispose();
-const camera=new T.PerspectiveCamera(48,1,.1,300);let yaw=.25,pitch=.6,distance=innerWidth<600?150:135,viewMode='overview',rideTarget=null;const walker={x:-6,z:17,angle:Math.PI,look:0};const walkKeys=new Set(),viewFocus=new T.Vector3(0,0,-25);
+const camera=new T.PerspectiveCamera(48,1,.1,300);let yaw=.25,pitch=.6,distance=innerWidth<600?115:94,viewMode='overview',rideTarget=null;const walker={x:-6,z:17,angle:Math.PI,look:0};const walkKeys=new Set(),viewFocus=new T.Vector3(0,0,-13);
 const land=new T.Group(),riverGroup=new T.Group(),pieces=new T.Group(),ridersGroup=new T.Group(),visitorsGroup=new T.Group();scene.add(land,riverGroup,pieces,ridersGroup,visitorsGroup);land.add(resortPromenade(()=>{renderer.shadowMap.needsUpdate=true;}));
-const grass=scannedMaterial('leafy_grass',[1,1],'#a7b493');const ground=mesh(land,worldUV(parkGroundGeometry(),.18),grass,0,-.32,0);const pathMaterial=scannedMaterial('concrete_pavement',[1,1],'#e7e1cb');loadLighting(renderer,scene,'park',()=>{scene.remove(sky);renderer.shadowMap.needsUpdate=true;});
+const grass=scannedMaterial('leafy_grass',[1,1],'#b1ce86');const ground=mesh(land,worldUV(parkGroundGeometry(),.18),grass,0,-.32,0);const pathMaterial=scannedMaterial('concrete_pavement',[1,1],'#e7e1cb');loadLighting(renderer,scene,'park',()=>{scene.remove(sky);scene.background=new T.Color('#bed6d7');renderer.shadowMap.needsUpdate=true;});
 for(let i=0;i<27;i++){const a=i*2.4,r=20+(i%4)*2;if(Math.sin(a)*r>19&&Math.abs(Math.cos(a)*r)<14)continue;const tree=palm();tree.position.set(Math.cos(a)*r,-.2,Math.sin(a)*r);tree.scale.setScalar(.8+(i%3)*.2);tree.rotation.y=i;land.add(tree);}for(let i=0;i<18;i++){const a=i*2.4;if(Math.sin(a)*20>18&&Math.abs(Math.cos(a)*22)<14)continue;const rock=mesh(land,new T.DodecahedronGeometry(1,1),'#889183',Math.cos(a)*22,.2,Math.sin(a)*20,1.2,.7,.9);rock.rotation.y=i;}
 // Paths connect the expanded east and west splash gardens.
 for(const x of [-30,30]){block(land,pathMaterial,x,-.22,1,13,.10,36);for(const z of [-20,22]){const tree=palm();tree.position.set(x,-.2,z);land.add(tree);}}
@@ -35,6 +36,7 @@ for(const x of [-44,44])block(land,'#9da58b',x,.4,0,.2,1,88);
 block(land,'#9da58b',0,.4,44,88,1,.2);for(const x of [-33,33])block(land,'#9da58b',x,.4,-44,22,1,.2);for(const x of [-22,22])block(land,'#9da58b',x,.4,-69,.2,1,50);block(land,'#9da58b',0,.4,-94,44,1,.2);
 // Open north gateway and a continuous walking path into Grotto Springs.
 block(land,pathMaterial,0,-.12,-48,6,.2,15);for(const x of [-3.4,3.4])block(land,'#b7a98d',x,.65,-44,.35,1.7,.35);
+land.add(parkPromenade());
 const grotto=createParkGrotto(scene,renderer);let grottoRideStart=0;
 // Entrance promenade, food court paving, and loungers give visitors places to explore.
 block(land,pathMaterial,3,-.19,14,19,.12,8);for(const x of [-3,11]){block(land,'#9b8971',x,1.8,18,.3,4,.3);}block(land,'#366d61',4,3.4,18,14,.8,.3);
@@ -46,6 +48,7 @@ const riders=[];let slides=[],riverWater=null;
 function clearGroup(g){g.traverse(o=>o.disposeReflection?.());disposeModel(g);}
 function buildRiver(){// Keep the shared water material alive when replacing its mesh.
  for(const child of [...riverGroup.children]){riverGroup.remove(child);child.disposeReflection?.();child.geometry?.dispose();if(child.material!==waterMaterial&&child.material!==pathMaterial&&child.material!==poolBedMaterial)child.material?.dispose();}
+ const approach=new T.Mesh(worldUV(grottoApproach(curve),.45),pathMaterial);approach.receiveShadow=true;riverGroup.add(approach);
  const walkway=new T.Mesh(worldUV(ribbon(curve,WIDTH/2+1.6,-.24),.45),pathMaterial);walkway.receiveShadow=true;riverGroup.add(walkway);const bank=new T.Mesh(ribbon(curve,WIDTH/2+.3,-.18),new T.MeshStandardMaterial({color:'#cbbda3',side:T.DoubleSide,roughness:.7}));bank.receiveShadow=true;riverGroup.add(bank);
  const bed=new T.Mesh(ribbon(curve,WIDTH/2,-.16),poolBedMaterial);bed.receiveShadow=true;riverGroup.add(bed);riverWater=poolWater(ribbon(curve,WIDTH/2),{sun:sun.position});riverWater.receiveShadow=true;riverGroup.add(riverWater);
  for(const side of [-1,1]){const ps=Array.from({length:161},(_,i)=>{const {p,n}=frame(curve,i/160);return p.addScaledVector(n,side*(WIDTH/2+.11)).add(new T.Vector3(0,.03,0));});mesh(riverGroup,new T.TubeGeometry(new T.CatmullRomCurve3(ps),180,.12,12,false),'#e9dfbe');}

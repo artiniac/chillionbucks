@@ -1,7 +1,7 @@
 import * as T from './vendor/three.module.js';
 export const GROTTO_Z=-70;
 export function parkGroundGeometry(){
- const shape=new T.Shape();shape.moveTo(-90,-90);shape.lineTo(90,-90);shape.lineTo(90,100);shape.lineTo(-90,100);shape.closePath();
+ const shape=new T.Shape();shape.moveTo(-350,-350);shape.lineTo(350,-350);shape.lineTo(350,350);shape.lineTo(-350,350);shape.closePath();
  const pool=new T.Path();pool.moveTo(-7,-GROTTO_Z-13);pool.lineTo(-7,-GROTTO_Z+13);pool.lineTo(7,-GROTTO_Z+13);pool.lineTo(7,-GROTTO_Z-13);pool.closePath();shape.holes.push(pool);
  return new T.ShapeGeometry(shape).rotateX(-Math.PI/2);
 }
