@@ -408,3 +408,6 @@ footer a{color:var(--lime2)}
   *,*::before,*::after{animation:none!important;transition:none!important}
   [data-reveal]{opacity:1;transform:none}
 }
+.bank-choices{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:18px 0}.bank-choices button{padding:10px 13px;min-height:46px;border:2px solid #d4e1d8;border-radius:16px;background:#fffdf6;color:#294b3d;font:inherit;font-weight:700;cursor:pointer}.bank-choices button[aria-pressed=true]{border-color:#417855;background:#e9f4de;box-shadow:0 3px 0 #bfd1b0}.piggy-svg.gulp{animation:ceramic-rock .42s ease-out}.piggy-wrap.hot .piggy-svg{transform:scale(var(--fat,1))}.piggy-wrap.hot .piggy-slot{stroke:#efc257;fill:none}@keyframes ceramic-rock{0%,100%{transform:rotate(0)}25%{transform:rotate(-2deg) translateY(1px)}60%{transform:rotate(1deg)}}
+
+#piggyStage{background:#fffdf6}.piggy-wrap.hot .piggy-slot{fill:#ffd45e44;stroke:#e9bf55;stroke-width:3}.piggy-svg{max-width:330px}.piggy-wrap.hot .drop-glow{opacity:.25}

@@ -1,0 +1,4 @@
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
+const window={},store=new Map();vm.runInNewContext(fs.readFileSync(new URL('../bank-art.js',import.meta.url),'utf8'),{window,localStorage:{getItem:k=>store.get(k)}});
+for(const k of ['pig','dog','cat','lion','giraffe','rhino']){const svg=window.BankArt.art(k);assert.ok(svg.includes('class="piggy-slot"'));assert.ok(svg.includes('clip-path="url(#bankCrop'));assert.ok(!svg.includes('undefined'));}
+assert.equal(window.BankArt.selected(),'pig');store.set('cb:bank-animal','rhino');assert.equal(window.BankArt.selected(),'rhino');store.set('cb:bank-animal','invalid');assert.equal(window.BankArt.selected(),'pig');console.log('PASS: six slot-aligned bank sprites, clipping, saved selection, and invalid preference fallback.');

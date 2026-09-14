@@ -1,6 +1,6 @@
 import * as T from './vendor/three.module.js';
 import {PRESETS,copy,curveFor,validate,editPoints,ribbon,WIDTH} from './driving-track.js?v=handling3';
-import {makeCar,Motor,driftStep} from './driving-car.js?v=handling3';
+import {makeCar,Motor,driftStep} from './driving-car.js?v=audio4';
 import {CHECKPOINTS,crossedCheckpoints} from './driving-adventure.js';
 import {loadLighting,scannedMaterial} from './realism.js?v=estates4';
 const $=s=>document.querySelector(s),KEY='cb:drive:v1',clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;

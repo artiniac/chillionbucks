@@ -1,0 +1,3 @@
+import assert from 'node:assert/strict';
+import {IDEAS,placementError,settle,validProject} from '../blocks-engine.js';
+for(const name of ['allentown','chatsboro']){let parts=[];for(const [i,p]of IDEAS[name].parts.entries()){const piece={...p,id:name+i};assert.equal(placementError(parts,piece),null,name+' step '+i);parts.push(piece);const result=settle(parts);assert.deepEqual(result,[...parts].sort((a,b)=>a.y-b.y),name+' must keep target positions after snapping');assert.ok(validProject(result),'Every intermediate save must reload');}console.log('PASS:',name,parts.length,'sequential pieces, stable positions, and reloadable saves');}

@@ -5,3 +5,9 @@
 .save-coin{width:68px;min-height:68px;border-radius:50%;background:radial-gradient(circle at 35% 25%,#fff7b0,#e5b132);border-color:#bc8c29;box-shadow:inset 0 0 0 3px #ffe891,0 5px 0 #b18335}.save-coin>span{font-size:29px}.save-coin small{font-size:9px}.save-tray{max-height:170px}
 
 .save-drop{position:absolute;left:44%;top:0;font-style:normal;font-size:30px;pointer-events:none;animation:save-insert .5s ease-in both}@keyframes save-insert{0%{transform:translateY(-24px) rotate(-20deg);opacity:1}65%{transform:translateY(37px) rotate(65deg) scale(.6);opacity:1}100%{transform:translateY(65px) rotate(95deg) scale(.15);opacity:0}}
+
+.bank-choices{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin:12px}.bank-choices button{min-height:44px;padding:8px 12px;border:2px solid #c8d7c5;border-radius:14px;background:#fffdf3;color:#214b39;font:inherit}.bank-choices button[aria-pressed=true]{border-color:#48754b;background:#e6f4d9}.save-target.saved .save-pig-body{animation:bank-rock .42s ease-out;transform-origin:50% 85%}@keyframes bank-rock{25%{transform:rotate(-2deg)}65%{transform:rotate(1deg)}}
+
+.savings-play{background:#fffdf6}.save-target.ready .piggy-slot{fill:#ffd45e44;stroke:#e9bf55;stroke-width:3}
+
+.save-ghost small{display:none}

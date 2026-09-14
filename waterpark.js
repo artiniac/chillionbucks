@@ -6,7 +6,7 @@ import {PARK_LIMIT,PARK_ITEM_LIMIT,expandPark} from './park-expansion.js?v=expan
 import {riverTunnel} from './park-tunnels.js?v=expansion2';
 import {poolWater} from './pool-water.js?v=water1';
 import {resortPromenade} from './resort-scenery.js?v=cabana1';
-import {mountSavings} from './savings-ui.js?v=piggy3';
+import {mountSavings} from './savings-ui.js?v=animals1';
 import * as T from './vendor/three.module.js';
 import {makeModel,makePerson,mesh,orb,block,disposeModel} from './chilltopia-models.js?v=estates4';
 import {attraction,animateAttraction,ATTRACTIONS,palm,surfaceTexture} from './park-attractions.js?v=water1';

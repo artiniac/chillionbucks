@@ -1,0 +1,1 @@
+Ceramic animal bank atlas generated with Higgsfield gpt_image_2_5, job e21dac82-ec8f-4ab9-b296-56598962c606, September 14, 2026 UTC. Six independent selectable bank appearances, cropped at render time with SVG viewports. Slot targets aligned to the generated image. This is rendered artwork, not a rotatable 3D model. Original PNG kept outside the published site.

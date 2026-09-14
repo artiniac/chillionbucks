@@ -48,7 +48,10 @@ window.SFX = (() => {
     coinDrop(delay = 0) {
       const f = 1550 + Math.random() * 450;
       noise(.035,.022,3400,delay);tone(f*1.4,.045,'sine',.025,delay);
-      const fall=.16+Math.random()*.06;
+      const fall=.18+Math.random()*.04;
+      // The hollow ceramic shell resonates underneath the metallic pile.
+      tone(185+Math.random()*45,.19,'sine',.027,delay+fall,125);
+      tone(430+Math.random()*80,.12,'sine',.012,delay+fall+.013);
       [0,.075,.135,.18,.215].forEach((offset,i)=>{
         const t=delay+fall+offset,amp=.075*Math.pow(.58,i),pitch=f*(.88+Math.random()*.24);
         tone(pitch,.22-i*.025,'sine',amp,t);

@@ -35,3 +35,17 @@ export const IDEAS={
  house:{name:'Garden cottage',hint:'Make a doorway, add walls, and finish with the roof.',parts:[b('door',-2,0,1,'coral'),b('four',-2,0,-1,'mint'),b('four',-2,1,-1,'mint'),b('four',-2,2,-1,'mint'),b('four',-2,3,-1,'mint'),b('pillar',1,0,1,'cream'),b('one',1,3,1,'cream'),b('roof',-2,4,-1,'gold')]},
  tower:{name:'Sky lookout',hint:'Stack wide foundations and finish with a colorful lookout.',parts:[b('wide',-2,0,-1,'blue'),b('wide',-2,1,-1,'mint'),b('square',-1,2,-1,'gold'),b('square',-1,3,-1,'coral'),b('square',-1,4,-1,'purple'),b('wide',-2,5,-1,'cream'),b('round',-1,6,-1,'blue'),b('square',-1,8,-1,'gold')]},
 };
+
+// Toy interpretations of the exterior references, not measured architectural replicas.
+function homeKit(chatsboro){const parts=[];const add=(...args)=>parts.push(b(...args));
+ const wing=(x,z,height,wall,garage=false)=>{for(let y=0;y<height;y++){
+ add('four',x,y,z,wall);add('one',x,y,z+1,wall);add('one',x+3,y,z+1,wall);
+ }for(let y=0;y<height;y+=3){if(garage)add('arch',x,y,z+2,wall);else{add('window',x,y,z+2,wall);add('pillar',x+3,y,z+2,wall);}}add('roof',x,height,z,'charcoal');};
+ if(chatsboro){wing(-6,-2,3,'cream',true);wing(0,-2,6,'coral');for(let y=0;y<6;y+=2)add('round',-2,y,0,'cream');add('square',-2,6,0,'charcoal');add('door',1,0,1,'cream');add('roof',0,4,1,'charcoal');}
+ else{wing(-6,0,3,'cream',true);wing(-2,0,3,'cream');wing(2,0,3,'cream');wing(2,-3,3,'cream');}
+ for(let x=-6;x<6;x+=2)add('tile',x,0,4,'cream');
+ for(let x=-4;x<2;x+=2)add('tile',x,0,-6,'blue');
+ for(const x of [-8,6]){add('square',x,0,5,'green');add('round',x,1,5,'green');}
+ return parts;}
+IDEAS.allentown={name:'20171 Allentown Dr',hint:'Leo’s Allentown house: a broad ranch, a rear wing, a pool, and a garden. A snapblock interpretation of the exterior.',parts:homeKit(false)};
+IDEAS.chatsboro={name:'20536 Chatsboro Dr',hint:'Leo’s Chatsboro house: cream garage wing, tall brick wing, turret, and pool. A snapblock interpretation of the exterior.',parts:homeKit(true)};

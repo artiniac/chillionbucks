@@ -232,7 +232,8 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.
       ['pot', 'stack', 'b100', 'b50', 'b20', 'b5'].forEach(k => { for (let i = 0; i < (bills[k] || 0); i++) { const b = document.createElement('div'); b.className = 'dbill ' + k; b.dataset.kind = k; b.innerHTML = `<span>${BILL_TEXT[k]}</span>`; b.setAttribute('role', 'button');b.tabIndex=0;b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();if(b.isConnected&&tempt.classList.contains('hidden'))deposit(null,b,k);}}); b.setAttribute('aria-label', `${Wallet.BILLS[k].name}. Drag it into the piggy.`); b.addEventListener('pointerdown', e => startDrag(e, b, k)); billTray.appendChild(b); n++; } });
       billTray.hidden = !n; $('#billLabel').hidden = !n;
     }
-    const slotPoint = () => { const r = svg.getBoundingClientRect(); return { x: r.left + r.width * .455, y: r.top + r.height * .24 }; };
+    window.BankArt.mount(svg,document.querySelector('#bankChoices'));
+    const slotPoint = () => { const r = svg.querySelector('.piggy-slot').getBoundingClientRect(); return { x: r.left+r.width/2, y: r.top+r.height/2 }; };
     const overPiggy = (x, y) => { const r = piggyEl.getBoundingClientRect(); return x > r.left - 24 && x < r.right + 24 && y > r.top - 40 && y < r.bottom + 16; };
     function eyesAt(x, y) {
       if (!pupil) return;
@@ -243,7 +244,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.
 
     // A ghost coin follows the finger. Every way a drag can end (up, cancel, lost capture, page hide) cleans it up,
     // and the fly animations remove it on a timer too, so a missed animation event can never leave a stray coin behind.
-    const sweepGhosts = (force) => document.querySelectorAll('.dcoin.ghost').forEach(g => { if (force || performance.now() - (+g.dataset.t || 0) > 1600) g.remove(); });
+    const sweepGhosts = (force) => document.querySelectorAll('.dcoin.ghost,.dbill.ghost').forEach(g => { if (force || performance.now() - (+g.dataset.t || 0) > 1600) g.remove(); });
     function glide(ghost, x, y, scale, opacity, dur, rot) {
       const d = reduced ? 1 : dur;
       try { ghost.style.transition = `left ${d}ms cubic-bezier(.3,1.3,.5,1), top ${d}ms cubic-bezier(.3,1.3,.5,1), transform ${d}ms ease, opacity ${d}ms ease`; ghost.style.left = x + 'px'; ghost.style.top = y + 'px'; ghost.style.transform = `translate(-50%,-50%) scale(${scale})${rot ? ` rotate(${rot}deg)` : ''}`; ghost.style.opacity = opacity; } catch (err) {}
@@ -280,16 +281,18 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.
       SFX.pop(); say(pick(['Almost! Drop it ON the piggy.', 'Aim for the piggy! 🐷', 'So close! Try again.']));
     }
     function deposit(ghost, coin, kind) {
+      if(coin.classList.contains('spent')){ghost?.remove();return;}
       const sp = slotPoint();
-      if (ghost) glide(ghost, sp.x, sp.y, .35, .2, 260, 180);
+      if(!ghost){const r=coin.getBoundingClientRect();ghost=coin.cloneNode(true);ghost.classList.add('ghost');ghost.style.left=r.left+r.width/2+'px';ghost.style.top=r.top+r.height/2+'px';document.body.append(ghost);}
+      window.BankArt.deposit(ghost,sp,reduced);
       // combo: drops within 3 seconds of each other climb the ladder
       const now = performance.now(); combo = (now - lastDrop < 3000) ? Math.min(combo + 1, COMBO.length - 1) : 0; lastDrop = now;
       let v = 1;
-      if (kind) { v = Wallet.depositBill(kind);if(!v){renderBills();return;} saved = Wallet.get(); coin.remove(); renderBills(); if (v >= 1000) { confetti(100); } else if (v >= 50) confetti(120); }
+      if (kind) { v = Wallet.depositBill(kind);if(!v){ghost?.remove();renderBills();return;} saved = Wallet.get(); coin.remove(); renderBills(); if (v >= 1000) { confetti(100); } else if (v >= 50) confetti(120); }
       else { try { localStorage.setItem('cb:coins', String((+localStorage.getItem('cb:coins') || 0) + 1)); } catch (e) {} }
-      document.dispatchEvent(new CustomEvent('piggy-saved',{detail:{value:kind?v:0}})); SFX.unlock(); if(kind && kind!=='pot')SFX.cashDrop(ghost ? .22 : 0);else SFX.coinDrop(ghost ? .22 : 0);
-      svg.classList.remove('gulp'); void svg.offsetWidth; svg.classList.add('gulp');
-      sparkle(sp.x, sp.y); floatText(kind ? '+' + v + ' bucks saved' : 'Practice!', sp.x, sp.y);
+      document.dispatchEvent(new CustomEvent('piggy-saved',{detail:{value:kind?v:0}})); SFX.unlock(); if(kind && kind!=='pot')SFX.cashDrop(reduced?0:.42);else SFX.coinDrop(reduced?0:.42);
+      setTimeout(()=>{svg.classList.remove('gulp'); void svg.offsetWidth; svg.classList.add('gulp');sparkle(sp.x,sp.y);},reduced?0:620);
+      floatText(kind ? '+' + v + ' bucks saved' : 'Practice!', sp.x, sp.y);
       // refill: the tray coin goes dark for a beat, then pops back (bills do not refill: they were earned)
       if (!kind) { coin.classList.add('spent'); coin.disabled = true; setTimeout(() => { coin.classList.remove('spent'); coin.disabled = false; coin.classList.remove('refill'); void coin.offsetWidth; coin.classList.add('refill'); }, 1100); }
       update();
@@ -450,14 +453,14 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.
       const d = shuffle(pool).slice(0, 10); d.forEach(it => used.add(it.id)); return d;
     }
     const stamp = $('#nwStamp'), nextLbl = $('#nwNext');
-    const continueBtn=$('#nwContinue'),hearBtn=$('#nwHear');let waiting=false;const dots=$('#nwProgress');function progress(){if(!dots)return;dots.innerHTML=deck.map((_,i)=>'<span class="'+(i<idx?'finished':i===idx?'current':'')+'"></span>').join('');dots.setAttribute('aria-label',(idx+1)+' of '+deck.length+' cards');}function speak(text){if(!SFX.on||!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.rate=.85;speechSynthesis.speak(u);}hearBtn&&(hearBtn.onclick=()=>speak($('#nwName').textContent+'. '+(waiting?msg.textContent:'Is this a need, or a want?')));document.addEventListener('soundchange',()=>{if(!SFX.on&&'speechSynthesis'in window)speechSynthesis.cancel();});
+    const continueBtn=$('#nwContinue'),hearBtn=$('#nwHear');let waiting=false,advanceTimer;const dots=$('#nwProgress');function progress(){if(!dots)return;dots.innerHTML=deck.map((_,i)=>'<span class="'+(i<idx?'finished':i===idx?'current':'')+'"></span>').join('');dots.setAttribute('aria-label',(idx+1)+' of '+deck.length+' cards');}function speak(text){if(!SFX.on||!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.rate=.85;speechSynthesis.speak(u);}hearBtn&&(hearBtn.onclick=()=>speak($('#nwName').textContent+'. '+(waiting?msg.textContent:'Is this a need, or a want?')));document.addEventListener('soundchange',()=>{if(!SFX.on&&'speechSynthesis'in window)speechSynthesis.cancel();});
     function unlock() { waiting=false;if(continueBtn)continueBtn.hidden=true;progress();locked = false; bNeed.disabled = false; bWant.disabled = false; card.classList.remove('ok', 'bad', 'locked'); nextLbl.hidden = true; }
     function show() {
       const it = deck[idx]; unlock();say('');
       card.classList.remove('in', 'out'); void card.offsetWidth; card.classList.add('in');
       $('#nwEmoji').textContent = it.e; $('#nwName').textContent = it.n; $('#nwCount').textContent = `${idx + 1} / ${deck.length}`;
     }
-    function start() { if('speechSynthesis'in window)speechSynthesis.cancel();deck = draw10(); idx = 0; score = 0; streak = 0; $('#nwScore').textContent = 0; $('#nwStreak').textContent = 0; $('#nwTotal').textContent = deck.length; say(''); show(); }
+    function start() { clearTimeout(advanceTimer);if('speechSynthesis'in window)speechSynthesis.cancel();deck = draw10(); idx = 0; score = 0; streak = 0; $('#nwScore').textContent = 0; $('#nwStreak').textContent = 0; $('#nwTotal').textContent = deck.length; say(''); show(); }
     function answer(a) {
       if (locked) return; locked = true; const it = deck[idx];
       // Lock the buttons right away so a second tap does nothing, then stamp the card so the kid sees the answer landed.
@@ -467,9 +470,9 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.
       if (ok) { score++; streak++; SFX.ding(); say(`✅ ${it.a.toUpperCase()}! ${it.w}`); if (streak && streak % 5 === 0) { SFX.levelUp(); confetti(60); } }
       else { streak = 0; SFX.tap(); say(`Let’s learn: it’s a ${it.a.toUpperCase()}. ${it.w}`, true); }
       $('#nwScore').textContent = score; $('#nwStreak').textContent = streak;
-      waiting=true;nextLbl.hidden=true;if(continueBtn){continueBtn.hidden=false;continueBtn.textContent=idx===deck.length-1?'⭐ Finish this round':'👍 Next card';}
+      waiting=true;nextLbl.hidden=false;nextLbl.textContent='Next card coming up…';if(continueBtn)continueBtn.hidden=true;clearTimeout(advanceTimer);advanceTimer=setTimeout(advance,ok?1800:2600);
     }
-    if(continueBtn)continueBtn.onclick=()=>{if(!waiting)return;waiting=false;if('speechSynthesis'in window)speechSynthesis.cancel();idx++;if(idx>=deck.length){continueBtn.hidden=true;end();return;}card.classList.remove('in');card.classList.add('out');SFX.whoosh();show();};
+    function advance(){if(!waiting)return;clearTimeout(advanceTimer);waiting=false;if('speechSynthesis'in window)speechSynthesis.cancel();idx++;if(idx>=deck.length){continueBtn.hidden=true;end();return;}card.classList.remove('in');card.classList.add('out');SFX.whoosh();show();}if(continueBtn)continueBtn.onclick=advance;
 
     function end() {
       const perfect = score === deck.length;if(dots){dots.innerHTML=deck.map(()=>'<span class="finished"></span>').join('');dots.setAttribute('aria-label','Round complete');}
