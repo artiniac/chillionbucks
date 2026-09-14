@@ -1,9 +1,9 @@
 import {createPropertyBuilder,hasBlueprint} from './property-builder.js?v=roof5';
-import {townConstructionModel,townBlueprint} from './town-models.js?v=roof5';
+import {townConstructionModel,townBlueprint} from './town-models.js?v=paving6';
 import {townLandscape,expandNeighborhood,TOWN_BOUNDS} from './town-neighborhood.js?v=streets1';
 import {mountSavings} from './savings-ui.js?v=animals1';
 import * as T from './vendor/three.module.js';
-import {CATALOG,DEFINITIONS as D,makeModel,makePerson,mesh,orb,block,material,disposeModel} from './chilltopia-models.js?v=roof5';
+import {CATALOG,DEFINITIONS as D,makeModel,makePerson,mesh,orb,block,material,disposeModel} from './chilltopia-models.js?v=paving6';
 import {displayTank,clearTanks,tickTanks} from './reef-shop.js?v=expansion2';
 import {scannedMaterial,loadLighting,reflectiveWater} from './realism.js?v=expansion2';
 const $=s=>document.querySelector(s), clamp=(v,a,b)=>Math.min(b,Math.max(a,v)), rand=(a,b)=>a+Math.random()*(b-a);

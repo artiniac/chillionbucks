@@ -1,0 +1,1 @@
+Original Chillion Bucks circuit pavilion generated with Higgsfield 3D Jutsu. Project c86e46a5-78d8-4364-85b0-3c64cea346d1, revision 1. Includes garages, spectator seating, canopy, and timing suite. Exported GLB optimized into material groups at runtime.

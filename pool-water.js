@@ -40,19 +40,21 @@ export function poolWater(geometry,{sun=new T.Vector3(-22,32,14),height=.12,lago
   float facing=clamp(dot(n,view),0.0,1.0);
   float fresnel=.0204+.9796*pow(1.0-facing,5.0);
   float edge=lagoon>.5?(1.0-length((poolUv-.5)*2.0))*2.7:min(poolUv.y,1.0-poolUv.y)*2.1;
-  float depth=mix(.28,1.15,smoothstep(0.0,.30,edge));
+  float depth=mix(.22,1.55,smoothstep(0.0,.30,edge));
   vec3 refracted=refract(-view,n,1.0/1.333);
   float travel=depth/max(.25,-refracted.y);
   vec2 floorP=p+refracted.xz*travel;
-  vec2 tileP=floorP*9.0,grid=abs(fract(tileP)-.5);
+  vec2 tileP=floorP*5.0,grid=abs(fract(tileP)-.5);
   vec2 aa=max(fwidth(tileP),vec2(.008));
   float grout=max(smoothstep(.47-aa.x,.49+aa.x,grid.x),smoothstep(.47-aa.y,.49+aa.y,grid.y));
   float variation=hash2(floor(tileP)).x;
-  vec3 tile=mix(vec3(.34,.70,.69),vec3(.62,.85,.78),variation*.55);
+  vec3 tile=mix(vec3(.34,.70,.69),vec3(.62,.85,.78),variation*.20);
   tile=mix(tile,vec3(.28,.48,.44),grout*.45);
   float lightPattern=caustic(floorP*2.7+vec2(sin(floorP.y*3.1+time*.4),cos(floorP.x*2.8-time*.3))*.28);
   float shadow=mix(.35,1.0,getShadowMask());
-  tile*=shadow*(.80+lightPattern*.28);
+  // Fade subpixel floor detail to prevent distant sparkle and crawling.
+  float detail=1.0-smoothstep(.12,.7,length(fwidth(floorP*2.7)));
+  tile*=shadow*(.84+lightPattern*.22*detail);
   vec3 transmittance=exp(-vec3(.53,.105,.065)*travel);
   vec3 transmitted=tile*transmittance+vec3(.015,.29,.32)*(1.0-transmittance);
   vec2 reflectedUv=mirrorCoord.xy/mirrorCoord.w+slope*.018;

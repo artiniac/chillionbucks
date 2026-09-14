@@ -5,7 +5,7 @@ import {batchScene} from './town-streets.js';
 export function parkPromenade(){
  const root=new T.Group(),solid=new T.Group(),materials=new Map();
  const material=color=>{if(!materials.has(color))materials.set(color,new T.MeshStandardMaterial({color,roughness:.75}));return materials.get(color);};
- function box(color,x,y,z,w,h,d){const m=new T.Mesh(new T.BoxGeometry(w,h,d),material(color));m.position.set(x,y,z);solid.add(m);return m;}
+ function box(color,x,y,z,w,h,d){const m=new T.Mesh(new T.BoxGeometry(w,h,d),material(color));m.position.set(x,y,z);m.castShadow=h>.15;m.receiveShadow=true;solid.add(m);return m;}
  // Broad promenade with alternating paving bays and narrow stone borders.
  box('#d4cbb8',0,-.15,-48,16,.18,14);
  for(const x of [-7.8,7.8])box('#ac987a',x,-.035,-48,.16,.08,14);

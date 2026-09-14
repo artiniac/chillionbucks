@@ -15,3 +15,7 @@ console.log('Construction geometry verified for '+count+' properties.');
 const {expandNeighborhood}=await import('../town-neighborhood.js');
 const original={uid:'kept',kind:'tree',x:-12,z:8,paid:12};const state={worlds:{town:[original],reef:[{kind:'clown'}]},jobs:4};
 expandNeighborhood(state,(kind,x,z,s)=>({kind,x,z,s}));assert.equal(state.worlds.town[0],original);assert.equal(state.jobs,4);assert.deepEqual(state.worlds.reef,[{kind:'clown'}]);assert.ok(!state.worlds.town.some(i=>i.kind==='chatsboroHome'));const countAfter=state.worlds.town.length;expandNeighborhood(state,()=>{throw Error('must not repeat migration')});assert.equal(state.worlds.town.length,countAfter);console.log('Saved collection, occupied lots, and one-time migration verified.');
+
+let pavingCount=0;
+for(const id of ['chatsboroHome','allentownHome']){townModel(id).traverse(o=>{if(o.isMesh&&o.userData.groundSurface){pavingCount++;assert.equal(o.castShadow,false,'Thin paving must not cast flickering self shadows');assert.ok(o.material.bumpScale<=.002);}});}
+assert.ok(pavingCount>=2,'Both named homes expose stable paving');

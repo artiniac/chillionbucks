@@ -1,4 +1,5 @@
 import * as T from './vendor/three.module.js';
+import {scannedMaterial} from './realism.js?v=estates4';
 import {detailedPalm} from './living-models.js';
 import {mesh,orb,block,makePerson} from './chilltopia-models.js?v=estates4';
 const water=new T.MeshPhysicalMaterial({color:'#64cbdc',transparent:true,opacity:.48,roughness:.12,metalness:.02,side:T.DoubleSide,depthWrite:false});
@@ -20,7 +21,18 @@ export function attraction(type){if(type==='palm')return palm();const g=new T.Gr
  }else if(type==='jets'){
   block(g,'#cec8b2',0,.05,0,5,.1,2);const streams=[];for(let k=0;k<3;k++){const z=(k-1)*.55;for(const sign of [-1,1])pipe(g,[sign*2,.05,z],[sign*2,.45,z],.08,'#4f8984');const curve=new T.CatmullRomCurve3([new T.Vector3(-2,.4,z),new T.Vector3(0,2.6,z),new T.Vector3(2,.4,z)]);streams.push(mesh(g,new T.TubeGeometry(curve,28,.035,6,false),water));}g.userData.anim={type,streams};
  }else if(type==='pool'){
-  mesh(g,new T.CylinderGeometry(4.1,4.2,.35,48),'#d8d1bb',0,.1,0,1,1,.7);mesh(g,new T.CylinderGeometry(3.85,3.85,.08,48),new T.MeshPhysicalMaterial({color:'#278eaa',roughness:.15,metalness:.1,clearcoat:1}),0,.3,0,1,1,.7).name='pool-surface';const swimmers=[];for(let i=0;i<3;i++){const r=new T.Group();mesh(r,new T.TorusGeometry(.3,.1,8,18),['#dfb354','#ca7869','#7ab5a0'][i],0,.05,0).rotation.x=Math.PI/2;const person=makePerson();person.scale.setScalar(.4);r.add(person);g.add(r);swimmers.push(r);}g.userData.anim={type,swimmers};
+  // Separate stone coping, blue waterline tiles, and stainless access rails.
+  const stone=scannedMaterial('concrete_pavement',[3,2],'#eee4d1');
+  mesh(g,new T.CylinderGeometry(4.2,4.25,.35,80),stone,0,.1,0,1,1,.7);
+  const coping=new T.Mesh(new T.RingGeometry(3.85,4.2,96),stone);coping.rotation.x=-Math.PI/2;coping.scale.y=.7;coping.position.y=.37;coping.receiveShadow=true;g.add(coping);
+  const steel=new T.MeshStandardMaterial({color:'#d5e0e4',metalness:.9,roughness:.2});
+  const joints=new T.MeshStandardMaterial({color:'#b3aa98',roughness:.95});
+  for(let i=0;i<48;i++){const a=i*Math.PI*2/48;const seam=new T.Mesh(new T.BoxGeometry(.018,.007,.35),joints);seam.position.set(Math.cos(a)*4.02,.375,Math.sin(a)*4.02*.7);seam.rotation.y=Math.PI/2-a;g.add(seam);}
+  const waterline=new T.Mesh(new T.CylinderGeometry(3.86,3.86,.16,96,1,true),new T.MeshStandardMaterial({color:'#247f91',roughness:.3,side:T.DoubleSide}));waterline.scale.z=.7;waterline.position.y=.26;g.add(waterline);
+  for(const x of [-.35,.35]){const rail=new T.CatmullRomCurve3([new T.Vector3(x,.38,2.87),new T.Vector3(x,1.1,2.76),new T.Vector3(x,1.15,2.45),new T.Vector3(x,.25,2.23)]);mesh(g,new T.TubeGeometry(rail,24,.038,10,false),steel);}
+  for(const y of [.27,.47])block(g,steel,0,y,2.27,.7,.045,.17);
+  for(let i=0;i<3;i++){const step=mesh(g,new T.CylinderGeometry(.95+i*.22,.95+i*.22,.065,32),stone,-2.45,.31-i*.09,0,1,1,.75);step.castShadow=false;}
+  mesh(g,new T.CylinderGeometry(3.85,3.85,.08,48),new T.MeshPhysicalMaterial({color:'#278eaa',roughness:.15,metalness:.1,clearcoat:1}),0,.3,0,1,1,.7).name='pool-surface';const swimmers=[];for(let i=0;i<3;i++){const r=new T.Group();mesh(r,new T.TorusGeometry(.3,.1,8,18),['#dfb354','#ca7869','#7ab5a0'][i],0,.05,0).rotation.x=Math.PI/2;const person=makePerson();person.scale.setScalar(.4);r.add(person);g.add(r);swimmers.push(r);}g.userData.anim={type,swimmers};
  }else if(type==='icecream'||type==='burger'){
   block(g,'#ad8970',0,1.1,0,3.4,2.2,2.2);block(g,'#3d5c58',0,1.25,1.115,2.7,1.15,.04);block(g,'#ece0c5',0,.82,1.3,3.5,.13,.65);for(const x of [-1.7,1.7])pipe(g,[x,.1,1.5],[x,2.7,1.5],.05,'#7b8070');for(let i=0;i<8;i++)block(g,i%2?'#eee4c9':type==='icecream'?'#71b1aa':'#bb7158',-1.575+i*.45,2.5,.3,.45,.17,3.1);
   block(g,'#244c42',0,2.85,1.65,2.6,.48,.12);for(let i=0;i<3;i++)orb(g,'#f4d394',-.5+i*.5,2.85,1.74,.05);
