@@ -44,6 +44,27 @@ window.SFX = (() => {
     fanfare() { [523, 659, 784, 1046].forEach((f, i) => tone(f, .2, 'triangle', .07, i * .09)); },
     // coin drop: metallic clink that climbs with the combo
     clink(combo = 0) { const f = 1100 * Math.pow(1.05, Math.min(combo, 12)); tone(f, .07, 'sine', .08); tone(f * 1.5, .12, 'triangle', .05, .03); tone(f * 2.02, .2, 'sine', .025, .02); },
+    // Slot contact, a short fall, then several diminishing inharmonic metal impacts.
+    coinDrop(delay = 0) {
+      const f = 1550 + Math.random() * 450;
+      noise(.035,.022,3400,delay);tone(f*1.4,.045,'sine',.025,delay);
+      const fall=.16+Math.random()*.06;
+      [0,.075,.135,.18,.215].forEach((offset,i)=>{
+        const t=delay+fall+offset,amp=.075*Math.pow(.58,i),pitch=f*(.88+Math.random()*.24);
+        tone(pitch,.22-i*.025,'sine',amp,t);
+        tone(pitch*2.37,.12,'sine',amp*.33,t);
+        tone(pitch*3.91,.075,'sine',amp*.12,t);
+        tone(290+Math.random()*90,.085,'sine',amp*.25,t);
+        noise(.025,amp*.23,4500,t);
+      });
+    },
+    cashDrop(delay = 0) {
+      [0,.055,.12,.19].forEach((t,i)=>noise(.075,.035-i*.005,1300+Math.random()*1600,delay+t));
+      tone(190,.13,'sine',.055,delay+.23,85);
+      tone(660,.12,'sine',.025,delay+.32);tone(880,.16,'sine',.022,delay+.43);
+    },
+    flipper() { noise(.025,.028,1700);tone(130,.045,'triangle',.035); },
+    bumper(index=0) { tone([659,784,988][index%3],.16,'sine',.065);tone(160,.05,'triangle',.025); },
     slurp() { tone(700, .2, 'sine', .06, 0, 180); },
     whoosh() { noise(.18, .03, 900); },
     pop() { tone(400, .08, 'sine', .06, 0, 900); },

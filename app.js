@@ -285,18 +285,18 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.
       // combo: drops within 3 seconds of each other climb the ladder
       const now = performance.now(); combo = (now - lastDrop < 3000) ? Math.min(combo + 1, COMBO.length - 1) : 0; lastDrop = now;
       let v = 1;
-      if (kind) { v = Wallet.depositBill(kind);if(!v){renderBills();return;} saved = Wallet.get(); coin.remove(); renderBills(); if (v >= 1000) { SFX.cheer(); confetti(260); } else if (v >= 50) confetti(120); }
+      if (kind) { v = Wallet.depositBill(kind);if(!v){renderBills();return;} saved = Wallet.get(); coin.remove(); renderBills(); if (v >= 1000) { confetti(100); } else if (v >= 50) confetti(120); }
       else { try { localStorage.setItem('cb:coins', String((+localStorage.getItem('cb:coins') || 0) + 1)); } catch (e) {} }
-      document.dispatchEvent(new CustomEvent('piggy-saved',{detail:{value:kind?v:0}}));if(kind&&v>0)setTimeout(()=>SFX.cheer(),220);SFX.clink(kind ? Math.min(COMBO.length - 1, combo + (v >= 100 ? 4 : 2)) : combo); setTimeout(() => SFX.slurp(), 120);
+      document.dispatchEvent(new CustomEvent('piggy-saved',{detail:{value:kind?v:0}})); SFX.unlock(); if(kind && kind!=='pot')SFX.cashDrop(ghost ? .22 : 0);else SFX.coinDrop(ghost ? .22 : 0);
       svg.classList.remove('gulp'); void svg.offsetWidth; svg.classList.add('gulp');
       sparkle(sp.x, sp.y); floatText(kind ? '+' + v + ' bucks saved' : 'Practice!', sp.x, sp.y);
       // refill: the tray coin goes dark for a beat, then pops back (bills do not refill: they were earned)
       if (!kind) { coin.classList.add('spent'); coin.disabled = true; setTimeout(() => { coin.classList.remove('spent'); coin.disabled = false; coin.classList.remove('refill'); void coin.offsetWidth; coin.classList.add('refill'); }, 1100); }
       update();
-      if (!kind) { say('Practice coin saved! Earn spendable bucks by doing jobs in Chilltopia.'); return; }
+      if (!kind) { say(pick(['Clink, clink! Another coin for piggy! 🐷','Plink! Hear it land on the pile? 🪙','Happy piggy! Try another coin! 💛','In the slot... clink! 🐷'])); return; }
       if (saved < goal.c) {
-        if (saved % 10 === 0) { SFX.levelUp(); confetti(70, sp); setTimeout(showTempt, 700); say(`$${saved}! Level up! 🎉`); }
-        else if (saved % 5 === 0) { SFX.levelUp(); confetti(50, sp); say(`$${saved} saved! ${pick(CHEERS)}`); }
+        if (saved % 10 === 0) { confetti(70, sp); setTimeout(showTempt, 700); say(`$${saved}! Level up! 🎉`); }
+        else if (saved % 5 === 0) { confetti(50, sp); say(`$${saved} saved! ${pick(CHEERS)}`); }
         else say(combo > 0 ? COMBO[combo] : pick(['Ka-ching!', 'Yes!', 'Into the piggy!', 'Cha-ching!']));
       }
     }

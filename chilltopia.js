@@ -1,7 +1,7 @@
 import {createPropertyBuilder,hasBlueprint} from './property-builder.js?v=homes4';
 import {townConstructionModel,townBlueprint} from './town-models.js?v=homes4';
 import {townLandscape,expandNeighborhood,TOWN_BOUNDS} from './town-neighborhood.js?v=streets1';
-import {mountSavings} from './savings-ui.js';
+import {mountSavings} from './savings-ui.js?v=piggy3';
 import * as T from './vendor/three.module.js';
 import {CATALOG,DEFINITIONS as D,makeModel,makePerson,mesh,orb,block,material,disposeModel} from './chilltopia-models.js?v=homes4';
 import {displayTank,clearTanks,tickTanks} from './reef-shop.js?v=expansion2';
