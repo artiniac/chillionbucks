@@ -9,3 +9,5 @@ body.editing #game{height:46svh;min-height:280px;position:sticky;top:0;z-index:2
 body:not(.editing) #game{height:calc(100svh - var(--drive-header,105px))}@media(max-width:650px){header nav{gap:8px;justify-content:space-between}header nav a{font-size:11px}}
 
 @media(max-width:650px){.title{background:#f8ffe5dd;padding:9px 12px;border-radius:14px;top:12px}.title>span{letter-spacing:1px;font-size:7px}.title h1{font-size:28px}.title p{margin:5px 0}.views{top:122px}}
+
+.coach{position:absolute;left:50%;top:110px;transform:translateX(-50%);display:flex;gap:9px;align-items:center;flex-wrap:wrap;justify-content:center;background:#133d43ed;color:#fff;border:1px solid #ffffff40;border-radius:16px;padding:10px 14px;max-width:470px;width:calc(100% - 30px)}.coach strong{width:100%;text-align:center;font-size:14px}.coach label{font-size:12px}.coach select{font:inherit;font-size:12px;border-radius:8px;padding:5px;background:#f8f5df;color:#163c43}.editing .coach{display:none}@media(max-width:650px){.coach{top:140px;max-width:300px;padding:7px}.coach strong{font-size:12px}}
