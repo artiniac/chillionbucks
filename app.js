@@ -112,6 +112,8 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.
       tempt = $('#tempt'), goalRow = $('#goalRow'), builderLink = $('#piggyBuild');
     let goal = GOALS.find(g => g.id === Wallet.goal()) || GOALS.find(g => g.n === Wallet.goal()) || GOALS[0];
     let picked = !!localStorage.getItem('cb:goalPicked');
+    function readPracticeCoins(){try{const n=Number(localStorage.getItem('cb:coins'));return Number.isSafeInteger(n)&&n>0?n:0;}catch{return 0;}}
+    let practiceCoins=readPracticeCoins();
     let saved = Wallet.get(), done = saved >= goal.c, cur = null, combo = 0, lastDrop = 0, dragging = false;
 
     const say = (t, bad) => { msgEl.textContent = t; msgEl.classList.toggle('bad', !!bad); msgEl.classList.remove('pop'); void msgEl.offsetWidth; msgEl.classList.add('pop'); };
@@ -184,7 +186,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.
       x.font = `700 72px ${F}`; x.fillStyle = '#b45309'; x.fillText('$' + g.c.toLocaleString('en-US'), W / 2, 530);
       x.fillStyle = '#052e16'; x.font = `500 34px ${F}`; x.fillText(`for the ${g.n}`, W / 2, 590);
       const work = (() => { try { return JSON.parse(localStorage.getItem('cb:work') || '{}').total || 0; } catch (e) { return 0; } })(); const coins = +localStorage.getItem('cb:coins') || 0;
-      x.font = `600 26px ${F}`; x.fillStyle = '#374151'; x.fillText(`Earned by real work: ${work} job${work === 1 ? '' : 's'} finished and ${coins} coin${coins === 1 ? '' : 's'} saved, one at a time.`, W / 2, 660);
+      x.font = `600 26px ${F}`; x.fillStyle = '#374151'; x.fillText(`Game jobs finished: ${work}. Practice coins dropped: ${coins}.`, W / 2, 660);
       x.fillText(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), W / 2, 705);
       x.font = `700 28px ${F}`; x.fillStyle = '#052e16'; x.fillText('Signed: the Chillion Piggy 🐷    Grown-up: ____________________', W / 2, 770);
       // ribbon + the goal picture (or its emoji) in the corner
@@ -198,9 +200,10 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.
     $('#certClose').onclick = () => { $('#certSheet').hidden = true; };
     $('#certSheet').addEventListener('click', e => { if (e.target.id === 'certSheet') $('#certSheet').hidden = true; });
     function update() {
-      amtEl.textContent = '$' + saved;
+      amtEl.textContent = '$' + (saved + practiceCoins);
+      $('#piggyBreakdown').textContent = `Practice coins: $${practiceCoins} · Earned savings: $${saved}`;
       barEl.style.width = Math.min(100, saved / goal.c * 100) + '%';
-      labelEl.textContent = saved >= goal.c ? `${goal.e} ${goal.n}: GOT IT! 🎉` : `${goal.e} ${goal.n}: $${saved} of $${goal.c}`;
+      labelEl.textContent = 'Earned goal: ' + (saved >= goal.c ? `${goal.e} ${goal.n}: GOT IT! 🎉` : `${goal.e} ${goal.n}: $${saved} of $${goal.c}`);
       svg.style.setProperty('--fat', (1 + Math.min(.14, saved / Math.max(goal.c, 1) * .14)).toFixed(3));
       if (builderLink) builderLink.textContent = saved > 0 ? `🏗️ Spend your $${saved} in Chilltopia` : '🏝️ Open Chilltopia';
       renderGoalDone(); $$('.goal-card', goalRow).forEach((b, i) => b.classList.toggle('reached', saved >= GOALS[i].c));
@@ -289,10 +292,10 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.
       const now = performance.now(); combo = (now - lastDrop < 3000) ? Math.min(combo + 1, COMBO.length - 1) : 0; lastDrop = now;
       let v = 1;
       if (kind) { v = Wallet.depositBill(kind);if(!v){ghost?.remove();renderBills();return;} saved = Wallet.get(); coin.remove(); renderBills(); if (v >= 1000) { confetti(100); } else if (v >= 50) confetti(120); }
-      else { try { localStorage.setItem('cb:coins', String((+localStorage.getItem('cb:coins') || 0) + 1)); } catch (e) {} }
+      else { practiceCoins=Math.max(practiceCoins,readPracticeCoins())+1;try { localStorage.setItem('cb:coins', String(practiceCoins)); } catch (e) {} }
       document.dispatchEvent(new CustomEvent('piggy-saved',{detail:{value:kind?v:0}})); SFX.unlock(); if(kind && kind!=='pot')SFX.cashDrop(reduced?0:.42);else SFX.coinDrop(reduced?0:.42);
       setTimeout(()=>{svg.classList.remove('gulp'); void svg.offsetWidth; svg.classList.add('gulp');sparkle(sp.x,sp.y);},reduced?0:620);
-      floatText(kind ? '+' + v + ' bucks saved' : 'Practice!', sp.x, sp.y);
+      floatText(kind ? '+' + v + ' bucks saved' : '+1 coin saved', sp.x, sp.y);
       // refill: the tray coin goes dark for a beat, then pops back (bills do not refill: they were earned)
       if (!kind) { coin.classList.add('spent'); coin.disabled = true; setTimeout(() => { coin.classList.remove('spent'); coin.disabled = false; coin.classList.remove('refill'); void coin.offsetWidth; coin.classList.add('refill'); }, 1100); }
       update();
@@ -324,9 +327,9 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.
     }
     $('#temptSpend').onclick = () => { saved = Math.max(0, saved - cur.c); Wallet.set(saved); SFX.buzz(); tempt.classList.add('hidden'); say(`Yum! But now you’re $${cur.c} further from the ${goal.n}. ${goal.e}`, true); update(); };
     $('#temptKeep').onclick = () => { SFX.levelUp(); tempt.classList.add('hidden'); say('You kept your savings for your goal. 💚'); confetti(40); update(); };
-    $('#piggyReset').onclick = () => { if (saved > 0 && !confirm(`Start over? This empties the piggy ($${saved}) and your Builder wallet.`)) return; saved = 0; done = false; combo = 0; Wallet.set(0); tempt.classList.add('hidden'); update(); say('Drag a coin into the piggy!'); };
+    $('#piggyReset').onclick = () => { if ((saved > 0 || practiceCoins > 0) && !confirm(`Start over? This clears ${practiceCoins} practice coins and empties your earned savings ($${saved}) and Builder wallet.`)) return; practiceCoins=0;try{localStorage.setItem('cb:coins','0');}catch{} saved = 0; done = false; combo = 0; Wallet.set(0); tempt.classList.add('hidden'); update(); say('Drag a coin into the piggy!'); };
     document.addEventListener('wallet', e => { const v = e.detail && typeof e.detail.saved === 'number' ? e.detail.saved : Wallet.get(); if (v !== saved) { saved = v; done = saved >= goal.c; update(); } renderBills(); });
-    window.addEventListener('storage', ev => { if (ev.key === 'cb:wallet') location.reload(); });
+    window.addEventListener('storage', ev => { if (ev.key === 'cb:wallet') location.reload();if(ev.key==='cb:coins'){practiceCoins=readPracticeCoins();update();} });
 
     const gain = Wallet.interest();
     renderGoals(); renderBills(); update();

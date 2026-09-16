@@ -5,6 +5,7 @@ import {mergeGeometries} from './vendor/BufferGeometryUtils.js';
 import {skylineCoupe} from './skyline-model.js';
 export function makeCar({occupants=true}={}){
  const result=skylineCoupe();
+ result.body.visible=false;result.loaded=false;
  result.ready=new GLTFLoader().loadAsync('./assets/cars/skyline-r34.glb').then(async ({scene})=>{
   scene.updateMatrixWorld(true);const box=new T.Box3().setFromObject(scene),size=box.getSize(new T.Vector3()),center=box.getCenter(new T.Vector3()),scale=4.6/size.z;
   const transform=new T.Matrix4().makeScale(scale,scale,scale).multiply(new T.Matrix4().makeTranslation(-center.x,-box.min.y,-center.z));
@@ -21,7 +22,7 @@ export function makeCar({occupants=true}={}){
    const object=new T.Mesh(geometry,material);object.castShadow=true;object.receiveShadow=true;
    if(wheel==='body')replacement.add(object);else{const w=wheels.find(w=>w.name===wheel);geometry.translate(-w.pivot.position.x,-w.pivot.position.y,-w.pivot.position.z);w.spin.add(object);}
   }
-  const oldMaterials=new Set();result.body.traverse(o=>{if(o.isMesh){o.geometry.dispose();oldMaterials.add(o.material);}});for(const material of oldMaterials)if(material!==result.paint)material.dispose();result.body.clear();result.body.add(replacement);if(occupants)result.family=addFamilyRiders(result.body);result.wheels.splice(0,result.wheels.length,...wheels);scene.traverse(o=>{if(o.isMesh)o.geometry.dispose();});await result.family?.ready;return {meshes:buckets.size,wheels:wheels.length};
+  const oldMaterials=new Set();result.body.traverse(o=>{if(o.isMesh){o.geometry.dispose();oldMaterials.add(o.material);}});for(const material of oldMaterials)if(material!==result.paint)material.dispose();result.body.clear();result.body.add(replacement);if(occupants)result.family=addFamilyRiders(result.body);result.wheels.splice(0,result.wheels.length,...wheels);scene.traverse(o=>{if(o.isMesh)o.geometry.dispose();});await result.family?.ready;result.loaded=true;result.body.visible=true;return {meshes:buckets.size,wheels:wheels.length};
  });
  return result;
 }
