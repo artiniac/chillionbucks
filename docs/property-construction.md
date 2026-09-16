@@ -10,7 +10,7 @@ Public reference: https://www.realtor.com/rentals/details/20171-Allentown-Dr_Woo
 
 ## 20536 Chatsboro Drive
 
-The front listing image and the property-highlighted satellite map on Redfin were visually reviewed. The earlier model incorrectly spread the garage across the street frontage. The revised model places the long garage wing along the side of the lot, facing a recessed forecourt, with a rear cross wing and pool behind. Roof junctions, distances, and vegetation remain approximations; trees obscure some exterior boundaries. No verified interior floor plan was available.
+The front listing image and the property-highlighted satellite map on Redfin were visually reviewed. The earlier model incorrectly spread the garage across the street frontage. The revised model places the long garage wing along the side of the lot, facing a recessed forecourt, with a rear cross wing and pool behind. Roof junctions, distances, and vegetation remain approximations; trees obscure some exterior boundaries. No verified interior floor plan was available. The owner subsequently supplied a photograph confirming three garage openings with four-car capacity: single, double, and single. The garage wing, door proportions, recessed panels, brick piers, and dark horizontal trim were revised from that photo. The personal photo is not included in the published site.
 
 Public reference: https://www.redfin.com/CA/Woodland-Hills/20536-Chatsboro-Dr-91364/home/4238641
 Front photo/listing: https://www.coldwellbankerhomes.com/ca/woodland-hills/20536-chatsboro-dr/pid_65334193/

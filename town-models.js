@@ -124,18 +124,36 @@ function estate(g,id){const d=ESTATE_STYLES[id],spanish=['spanish','mission','ha
 }
 // Approximate exterior massing from listing photos and overhead references.
 // Chatsboro has no verified floor plan; the construction internals are teaching diagrams.
+// Three openings, four parking bays: single / double / single, from the owner's photo.
+export const CHATSBORO_GARAGE_BAYS=[{x:-1.64,width:1.02,cars:1},{x:0,width:2.04,cars:2},{x:1.64,width:1.02,cars:1}];
+function chatsboroGarageDoor(g,x,z,w){
+ const h=.83,y=.08+h/2;
+ const opening=box(g,'#262724',x,y,z,w,h,.055,'wood');opening.userData.constructionOpening=true;
+ // Recessed rectangular panels distinguish a broad double door from the single doors.
+ const columns=w>1.5?8:4;
+ for(let row=0;row<4;row++)for(let col=0;col<columns;col++){
+  const px=x-w/2+(col+.5)*w/columns,py=.08+(row+.5)*h/4;
+  box(g,'#383730',px,py,z+.034,w/columns-.03,h/4-.025,.018,'wood');
+  box(g,'#1e211e',px,py-.018,z+.045,w/columns-.065,h/4-.065,.008);
+ }
+ for(const side of [-1,1])box(g,'#755c47',x+side*(w/2+.025),y,z+.025,.05,h+.08,.09,'brick');
+ box(g,'#735844',x,h+.115,z+.025,w+.12,.11,.1,'brick');
+}
 function chatsboro(g){const cream='#ded7c5',roof='#777261',brick='#996d54';
  box(g,'#8a9a6a',0,-.04,0,7.6,.08,8.6);
  // Street is +Z. Satellite view shows a long side wing and a crosswise rear wing.
  const garageWing=new T.Group();
- box(garageWing,cream,0,1.18,0,3.5,2.36,2.4,'stucco');const gr=new T.Group();gable(gr,0,2.36,0,2.65,3.8,1.05,roof);gr.rotation.y=Math.PI/2;gr.userData.blueprintStage='roof';garageWing.add(gr);
- box(garageWing,brick,0,.62,1.23,3.5,1.24,.10,'brick');for(const x of [-.85,.85])garage(garageWing,x,1.31,1.4);
- for(const x of [-1.15,0,1.15]){box(garageWing,cream,x,2.66,1.04,.78,.7,.72,'stucco');gable(garageWing,x,3.01,1.04,.96,.95,.55,roof);window(garageWing,x,2.7,1.42,.48,.56,true);}
- garageWing.rotation.y=Math.PI/2;garageWing.position.set(-1.65,0,.5);g.add(garageWing);
+ box(garageWing,cream,0,1.18,0,4.85,2.36,2.4,'stucco');const gr=new T.Group();gable(gr,0,2.36,0,2.65,5.15,1.05,roof);gr.rotation.y=Math.PI/2;gr.userData.blueprintStage='roof';garageWing.add(gr);
+ box(garageWing,brick,0,.62,1.23,4.85,1.24,.10,'brick');for(const bay of CHATSBORO_GARAGE_BAYS)chatsboroGarageDoor(garageWing,bay.x,1.31,bay.width);
+ for(const x of [-2.3,-1.115,1.115,2.3])box(garageWing,brick,x,.61,1.29,.16,1.22,.16,'brick');
+ box(garageWing,'#494337',0,1.35,1.29,4.85,.075,.07,'wood');box(garageWing,'#494337',0,2.18,1.29,4.85,.075,.07,'wood');
+ for(const x of [-1.6,0,1.6]){box(garageWing,cream,x,2.66,1.04,.78,.7,.72,'stucco');gable(garageWing,x,3.01,1.04,.96,.95,.55,roof);window(garageWing,x,2.7,1.42,.48,.56,true);}
+ for(const x of [-2.34,-.8,.8,2.34])box(garageWing,'#494337',x,1.77,1.29,.065,.78,.065,'wood');
+ garageWing.rotation.y=Math.PI/2;garageWing.position.set(-1.65,0,1.64);g.add(garageWing);
  box(g,brick,.05,1.36,-1.75,4.85,2.72,2.25,'brick');const rearRoof=new T.Group();gable(rearRoof,0,2.72,0,2.5,5.12,1.1,roof);rearRoof.rotation.y=Math.PI/2;rearRoof.position.set(.05,0,-1.75);rearRoof.userData.blueprintStage='roof';g.add(rearRoof);
  for(const x of [.1,1.17])box(g,brick,x,.75,-.46,.41,1.5,.65,'brick');box(g,brick,.635,2.22,-.46,1.48,1.44,.65,'brick');gable(g,.635,2.94,-.46,1.73,.88,1.18,roof,brick,'brick');
  box(g,'#302b22',.635,.75,-.12,.65,1.46,.04,'wood').userData.constructionOpening=true;window(g,.635,2.28,-.1,.48,.78,true);
- cylinder(g,brick,-.45,.62,-.44,.51,1.24);cylinder(g,cream,-.45,2.44,-.44,.51,2.4);const cap=new T.Mesh(new T.ConeGeometry(.69,1.43,8),material(roof,'roof'));cap.position.set(-.45,4.32,-.44);cap.userData.constructionRole='roof';g.add(cap);window(g,-.45,2.6,.1,.32,.66,true);
+ cylinder(g,brick,-.45,.62,-1.04,.51,1.24);cylinder(g,cream,-.45,2.44,-1.04,.51,2.4);const cap=new T.Mesh(new T.ConeGeometry(.69,1.43,8),material(roof,'roof'));cap.position.set(-.45,4.32,-1.04);cap.userData.constructionRole='roof';g.add(cap);window(g,-.45,2.6,-.5,.32,.66,true);
  for(const x of [-1.9,-.95,.95,1.95]){const w=new T.Group();for(const y of [.83,2.02])window(w,0,y,0,.55,.72,true);w.position.set(x,0,-2.9);w.rotation.y=Math.PI;g.add(w);}
  for(const x of [1.7,2.2])window(g,x,1.7,-.59,.4,.75,true);
  box(g,brick,1.8,3.14,-1.85,.34,1.4,.48,'brick');box(g,'#615d51',1.8,3.88,-1.85,.46,.1,.6);
