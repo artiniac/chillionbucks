@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-import {makeModel,mesh,block,orb} from './chilltopia-models.js?v=garage4';
+import {makeModel,mesh,block,orb} from './chilltopia-models.js?v=allentown-video1';
 import {attraction,animateAttraction} from './park-attractions.js?v=estates4';
 import {makeCar} from './driving-car.js?v=ready1';
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches,canvases=[...document.querySelectorAll('[data-world],#heroWorld')];let renderer;try{renderer=new T.WebGLRenderer({alpha:true,antialias:true});}catch{for(const c of canvases){const ctx=c.getContext('2d');ctx.font='90px sans-serif';ctx.fillText(c.dataset.world==='drive'?'🏎️':'🐠',70,130);}}

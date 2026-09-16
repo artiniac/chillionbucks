@@ -29,3 +29,11 @@ LADBS homeowner guide: https://www.ladbs.org/docs/default-source/publications/mi
 ## Save compatibility
 
 Unversioned numeric construction steps retain the published legacy assembly order. New residential lessons store constructionVersion 2. An unfinished legacy lesson only switches when the player explicitly chooses Start the new construction lesson. Completing and replaying a home uses the new lesson. Existing lots, transforms, saved balances, and collections are not reset.
+
+
+## Owner walkthrough refinement, September 16
+Allentown's owner-supplied video was reviewed locally. Exterior additions include a dark slatted patio cover, rear glazed doors, separate paving slabs with lawn joints, a compact wood playhouse with blue slides, and a low flowering rear border. Pool placement was adjusted to leave space for the covered terrace. These remain game-scale approximations; the original video and extracted frames are not distributed.
+
+Home lessons now optionally divide structural assemblies into at most eight smaller placements per stage. `constructionPieces` stores progress within the existing `constructionStep`; `constructionDetail` stores the mode. Major stage IDs and indexes remain unchanged. Reloading resumes the next smaller piece. Turning the option off returns the current unfinished stage to assembly mode. Starting a completed home again clears the smaller-piece counter.
+
+Chatsboro's owner photograph also informed the tall arched leaded window, three faces of turret glazing, and roof finial. The older Realty.com listing now redirects to a public-record page with a street-view image rather than its former photo gallery. No verified Chatsboro floor plan was found.

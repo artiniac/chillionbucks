@@ -12,6 +12,15 @@ for(const d of TOWN_CATALOG.filter(d=>supportsHomeLesson(d.id))){
  assert.equal(townConstructionModel(d.id,0,2).children.length,0);
  const built=townConstructionModel(d.id,parts.length,2),full=townModel(d.id),a=new T.Box3().setFromObject(built),b=new T.Box3().setFromObject(full);assert.ok(a.min.distanceTo(b.min)<1e-6&&a.max.distanceTo(b.max)<1e-6);
  const v=o=>{let n=0;o.traverse(m=>{if(m.isMesh)n+=m.geometry.attributes.position.count;});return n;};assert.equal(v(built),v(full),'No teaching pipes or studs leak through final facade');
+ for(let i=0;i<parts.length;i++){const p=parts[i];if(!p.pieces.length)continue;
+  assert.ok(p.pieces.length<=8,'Bounded number of smaller placements');
+  assert.equal(p.pieces.reduce((sum,piece)=>sum+v(piece.model),0),v(p.model),'Smaller pieces exactly partition their stage');
+  const partial=townConstructionModel(d.id,i,2,1);
+  assert.ok(partial.children.some(c=>c.userData.lessonPart===p.pieces[0].id),'First smaller piece appears');
+  assert.ok(!partial.children.some(c=>c.userData.lessonPart===p.id),'Unfinished assembly is not shown in full');
+  if(p.pieces.length>1)assert.ok(!partial.children.some(c=>c.userData.lessonPart===p.pieces[1].id),'Next piece remains unbuilt');
+  const next=townConstructionModel(d.id,i+1,2,0);assert.ok(!next.children.some(c=>c.userData.lessonPart===p.pieces[0].id),'Smaller placements are replaced, never doubled');
+ }
  console.log(d.id+': '+parts.length+' construction assemblies');
 }
 // Legacy saves remain a distinct rendering path until the player chooses the new lesson.

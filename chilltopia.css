@@ -39,3 +39,5 @@ a.job-choice{display:block;text-decoration:none;}
 #game,.property-rulebook{overflow-anchor:none}
 @media(max-width:650px){#game.building-property{height:calc(100svh - 64px);min-height:650px}.building-property #viewport{bottom:326px}.building-property .view-controls{top:8px}.property-rulebook{max-height:310px}}
 @media(max-width:650px){#game.building-property .view-controls{top:8px!important;flex-direction:row}.property-rulebook h2{padding-right:64px}.property-rulebook .book-read{position:absolute;right:12px;top:47px;margin:0;padding:5px 7px}.book-piece-row{height:68px}.book-piece img{height:52px}.book-lesson{margin:4px 0}}
+
+.book-detail{display:flex;align-items:center;gap:7px;font:600 12px system-ui;margin:8px 0;color:#244b3d}.book-detail input{width:18px;height:18px;accent-color:#467346}.book-detail[hidden]{display:none}

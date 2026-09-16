@@ -1,6 +1,6 @@
 import * as T from './vendor/three.module.js';
 import {scannedMaterial} from './realism.js';
-import {createHomeLesson,homeLessonModel} from './home-construction.js?v=construction2';
+import {createHomeLesson,homeLessonModel} from './home-construction.js?v=detail1';
 import {BLUEPRINT_LAYOUT} from './town-blueprint-layout.js';
 export const ESTATE_STYLES={
  capeCodEstate:{name:'Westchester Cape Cod estate',wall:'#d9ddd5',roof:'#777a73',form:'capeCod'},
@@ -12,7 +12,7 @@ export const ESTATE_STYLES={
  frenchEstate:{name:'French country chateau',wall:'#d8c7a6',roof:'#727166',form:'french'},
  colonialEstate:{name:'Colonial revival estate',wall:'#d6d1bb',roof:'#625e55',form:'colonial'},
  contemporaryEstate:{name:'1980s hillside contemporary',wall:'#ddd2bf',roof:'#807666',form:'contemporary'},
- allentownHome:{name:'20171 Allentown Dr',wall:'#e4dfd1',roof:'#716b60',form:'ranch',note:'3,671 sq ft, built in 1961. Exterior massing follows the public floor plan and aerial photos: broad front, rear wing, bay windows, solar garage roof, and pool garden. Game scale is approximate.'},
+ allentownHome:{name:'20171 Allentown Dr',wall:'#e4dfd1',roof:'#716b60',form:'ranch',note:'3,671 sq ft, built in 1961. Exterior massing follows the public floor plan and aerial photos: broad front, rear wing, bay windows, solar garage roof, and pool garden. The owner video guides the rear glazing, slatted patio cover, grass-jointed paving, and backyard play area. Game scale is approximate.'},
  chatsboroHome:{name:'20536 Chatsboro Dr',wall:'#e1dac7',roof:'#877f62',form:'chatsboro',note:'6,362 sq ft, built in 1988. Exterior revised from the listing photo and satellite view: long side garage wing, recessed forecourt, rear cross wing, turret, and pool. No verified floor plan; dimensions and internal construction are illustrative.'}
 };
 export const TOWN_CATALOG=[
@@ -152,8 +152,15 @@ function chatsboro(g){const cream='#ded7c5',roof='#777261',brick='#996d54';
  garageWing.rotation.y=Math.PI/2;garageWing.position.set(-1.65,0,1.64);g.add(garageWing);
  box(g,brick,.05,1.36,-1.75,4.85,2.72,2.25,'brick');const rearRoof=new T.Group();gable(rearRoof,0,2.72,0,2.5,5.12,1.1,roof);rearRoof.rotation.y=Math.PI/2;rearRoof.position.set(.05,0,-1.75);rearRoof.userData.blueprintStage='roof';g.add(rearRoof);
  for(const x of [.1,1.17])box(g,brick,x,.75,-.46,.41,1.5,.65,'brick');box(g,brick,.635,2.22,-.46,1.48,1.44,.65,'brick');gable(g,.635,2.94,-.46,1.73,.88,1.18,roof,brick,'brick');
- box(g,'#302b22',.635,.75,-.12,.65,1.46,.04,'wood').userData.constructionOpening=true;window(g,.635,2.28,-.1,.48,.78,true);
- cylinder(g,brick,-.45,.62,-1.04,.51,1.24);cylinder(g,cream,-.45,2.44,-1.04,.51,2.4);const cap=new T.Mesh(new T.ConeGeometry(.69,1.43,8),material(roof,'roof'));cap.position.set(-.45,4.32,-1.04);cap.userData.constructionRole='roof';g.add(cap);window(g,-.45,2.6,-.5,.32,.66,true);
+ // The owner's photo shows a tall arched leaded window on the brick entrance gable.
+ const entryGlass=new T.Group(),shape=new T.Shape();shape.moveTo(-.47,0);shape.lineTo(.47,0);shape.lineTo(.47,1.12);shape.quadraticCurveTo(0,1.48,-.47,1.12);shape.closePath();
+ const pane=new T.Mesh(new T.ShapeGeometry(shape,24),material('#526a67','glass'));pane.userData.constructionOpening=true;entryGlass.add(pane);
+ for(const side of [-1,1])box(entryGlass,'#49483c',side*.49,.56,.025,.045,1.16,.045);
+ const edge=new T.QuadraticBezierCurve3(new T.Vector3(-.49,1.13,.025),new T.Vector3(0,1.5,.025),new T.Vector3(.49,1.13,.025));entryGlass.add(new T.Mesh(new T.TubeGeometry(edge,20,.024,6,false),material('#49483c')));
+ for(let row=0;row<7;row++)for(let col=0;col<5;col++)for(const sign of [-1,1]){const lead=box(entryGlass,'#a9a99c',-.36+col*.18,.12+row*.16,.032,.013,.23,.013);lead.rotation.z=sign*.75;}
+ entryGlass.position.set(.635,.18,-.105);entryGlass.traverse(o=>{if(o.isMesh)o.userData.constructionRole='windows';});g.add(entryGlass);
+ cylinder(g,brick,-.45,.62,-1.04,.51,1.24);cylinder(g,cream,-.45,2.44,-1.04,.51,2.4);const cap=new T.Mesh(new T.ConeGeometry(.69,1.43,8),material(roof,'roof'));cap.position.set(-.45,4.32,-1.04);cap.userData.constructionRole='roof';g.add(cap);const finial=cylinder(g,'#43483e',-.45,5.13,-1.04,.018,.24);finial.userData.constructionRole='roof';
+ for(const angle of [-Math.PI/4,0,Math.PI/4]){const bay=new T.Group();for(const y of [.67,2.6])window(bay,0,y,0,.26,.65,true);bay.position.set(-.45+Math.sin(angle)*.51,0,-1.04+Math.cos(angle)*.51);bay.rotation.y=angle;g.add(bay);}
  for(const x of [-1.9,-.95,.95,1.95]){const w=new T.Group();for(const y of [.83,2.02])window(w,0,y,0,.55,.72,true);w.position.set(x,0,-2.9);w.rotation.y=Math.PI;g.add(w);}
  for(const x of [1.7,2.2])window(g,x,1.7,-.59,.4,.75,true);
  box(g,brick,1.8,3.14,-1.85,.34,1.4,.48,'brick');box(g,'#615d51',1.8,3.88,-1.85,.46,.1,.6);
@@ -176,12 +183,43 @@ function allentown(g){const wall='#e2e0d8',roof='#656962';box(g,'#8eab70',0,-.04
  for(let i=0;i<5;i++)window(g,1.1+i*.43,.87,1.51,.35,.45,true);
  for(let row=0;row<2;row++)for(let i=0;i<6;i++){const panel=box(g,'#344555',-3.08+i*.47,1.54+row*.055,1.04-row*.43,.44,.018,.4);panel.rotation.x=.16;panel.userData.constructionRole='roof';}
  for(const x of [-1.1,.1]){const w=new T.Group();window(w,0,.8,0,1.05,.86,true);w.position.set(x,0,-.6);w.rotation.y=Math.PI;g.add(w);}
- const poolShape=new T.Shape();poolShape.moveTo(-1.7,-.75);poolShape.lineTo(.85,-.75);poolShape.quadraticCurveTo(1.5,-.6,1.45,.12);poolShape.lineTo(.72,.76);poolShape.lineTo(-1.25,.76);poolShape.quadraticCurveTo(-1.9,.5,-1.7,-.75);const poolGeo=new T.ShapeGeometry(poolShape,24);poolGeo.rotateX(-Math.PI/2);const coping=new T.Mesh(poolGeo.clone(),material('#c9c7b5','stone'));coping.position.set(-.7,.04,-1.8);coping.scale.set(1.12,1,1.2);g.add(coping);const water=new T.Mesh(poolGeo,material('#488e99','glass'));water.position.set(-.7,.07,-1.8);g.add(water);
- cylinder(g,'#c9c7b5',-2.6,.06,-1.8,.44,.07);cylinder(g,'#488e99',-2.6,.106,-1.8,.32,.025);
- for(let i=0;i<3;i++)box(g,'#aaccc5',-.7,.074+i*.01,-1.08-i*.14,.8,.013,.18);
+ const poolShape=new T.Shape();poolShape.moveTo(-1.7,-.75);poolShape.lineTo(.85,-.75);poolShape.quadraticCurveTo(1.5,-.6,1.45,.12);poolShape.lineTo(.72,.76);poolShape.lineTo(-1.25,.76);poolShape.quadraticCurveTo(-1.9,.5,-1.7,-.75);const poolGeo=new T.ShapeGeometry(poolShape,24);poolGeo.rotateX(-Math.PI/2);const coping=new T.Mesh(poolGeo.clone(),material('#c9c7b5','stone'));coping.position.set(-.9,.04,-2.1);coping.scale.set(1.12,1,1.2);g.add(coping);const water=new T.Mesh(poolGeo,material('#488e99','glass'));water.position.set(-.9,.07,-2.1);g.add(water);
+ cylinder(g,'#c9c7b5',-2.8,.06,-2.1,.44,.07);cylinder(g,'#488e99',-2.8,.106,-2.1,.32,.025);
+ for(let i=0;i<3;i++)box(g,'#aaccc5',-.9,.074+i*.01,-1.38-i*.14,.8,.013,.18);
  for(const x of [-3.55,3.55])for(let i=0;i<12;i++)hedge(g,x,-3.2+i*.55,.45);
  for(const x of [-1,1.25])for(let i=0;i<5;i++)hedge(g,x,1.8+i*.36,.23);
+ allentownBackyard(g);
  propertyDetails(g,'allentown');box(g,'#dcded2',0,.32,3.65,7.4,.62,.14,'stucco');garage(g,-2.4,3.74,2.05);label(g,'20171 ALLENTOWN',.5,.39,3.74,1.6);
+}
+// Exterior features observed in the owner's walkthrough, approximately scaled to the saved lot.
+function allentownBackyard(g){
+ const patio=new T.Group();
+ for(let i=0;i<3;i++)box(patio,'#c9c8bd',.84,.022,-.94-i*.53,.92,.04,.48,'stone');
+ // Grass joints remain open between the separate concrete slabs.
+ for(const x of [.4,1.29])for(const z of [-.69,-2.35])box(patio,'#444b4a',x,.63,z,.055,1.26,.055);
+ for(const x of [.4,1.29])box(patio,'#444b4a',x,1.27,-1.52,.075,.085,1.79);
+ for(const z of [-.67,-2.37])box(patio,'#444b4a',.845,1.27,z,.98,.085,.075);
+ for(let i=0;i<29;i++)box(patio,'#525956',.845,1.3,-.7-i*.058,.94,.045,.022);
+ for(const child of patio.children)child.userData.constructionRole=child.userData.groundSurface?'driveway':'details';g.add(patio);
+ // Glazed doors face the covered terrace along the inside of the bedroom wing.
+ for(const z of [-1.07,-1.95]){const doors=new T.Group();window(doors,0,.67,0,.76,1.13,true);doors.position.set(1.364,0,z);doors.rotation.y=-Math.PI/2;g.add(doors);}
+ const rear=new T.Group();window(rear,0,.67,0,1.1,1.12,true);rear.rotation.y=Math.PI;rear.position.set(-2.05,0,-1.155);g.add(rear);
+ // Rear lawn and sand play area, with the wood clubhouse and blue slides seen in the video.
+ const garden=new T.Group();box(garden,'#6c9756',.6,.007,-3.24,3.65,.012,.7);
+ const sand=new T.Mesh(new T.CircleGeometry(.65,32),material('#d8ccae'));sand.rotation.x=-Math.PI/2;sand.position.set(2.4,.028,-3.16);sand.scale.set(1,.68,1);garden.add(sand);
+ const play=new T.Group();
+ for(const x of [-.24,.24])for(const z of [-.18,.18])box(play,'#91613e',x,.3,z,.035,.6,.035,'wood');
+ box(play,'#af8154',0,.35,0,.53,.055,.43,'wood');
+ for(const x of [-.24,.24]){box(play,'#a77346',x,.57,0,.025,.36,.41,'wood');for(let j=0;j<5;j++)box(play,'#754e30',x,.57,-.16+j*.08,.033,.32,.014,'wood');}
+ gable(play,0,.79,0,.59,.51,.23,'#7c6048');
+ for(let j=0;j<4;j++)box(play,'#bd9162',0,.08+j*.075,.46-j*.06,.23,.04,.08,'wood');
+ const curve=new T.CatmullRomCurve3([new T.Vector3(.22,.36,.05),new T.Vector3(.4,.28,.19),new T.Vector3(.49,.08,.45),new T.Vector3(.61,.055,.5)]);
+ const slide=new T.Mesh(new T.TubeGeometry(curve,16,.075,8,false),material('#349da9'));play.add(slide);
+ const spiral=new T.CatmullRomCurve3(Array.from({length:19},(_,i)=>{const a=i/18*Math.PI*1.35;return new T.Vector3(-.37-Math.sin(a)*.12,.4-i/18*.33,-.03+Math.cos(a)*.12);}));play.add(new T.Mesh(new T.TubeGeometry(spiral,24,.09,8,false),material('#59b6c7')));
+ play.position.set(2.33,0,-3.17);garden.add(play);
+ // A low planted bank suggests the flowering rear slope without blocking the town camera.
+ for(let i=0;i<20;i++){const x=-3.15+i*.32;box(garden,'#887459',x,.06,-3.6,.32,.11,.17);for(let j=0;j<3;j++)sphere(garden,j%2?'#9a97b7':'#777e9e',x+(j-1)*.075,.13+Math.sin(i*2+j)*.025,-3.6,.085,.045,.065);}
+ garden.traverse(o=>{if(o.isMesh)o.userData.constructionRole='landscape';});g.add(garden);
 }
 function propertyDetails(g,kind){
  const ranch=kind==='allentown',trim=ranch?'#e7e5dc':'#b9af97';
@@ -257,4 +295,4 @@ export function townBlueprint(id,version=1){if(version===2&&supportsHomeLesson(i
  for(const stage of order)for(const zone of ['base','left','center','right']){let group=groups.get(stage+':'+zone);if(!group){if(!BLUEPRINT_LAYOUT[id]?.includes(stage+':'+zone))continue;group=new T.Group();}const model=compact(group),bounds=new T.Box3().setFromObject(model),center=bounds.getCenter(new T.Vector3());parts.push({id:stage+':'+zone,name:names[stage]+(zone==='base'?'':' · '+zone),model,center,size:bounds.getSize(new T.Vector3())});}
  blueprintCache.set(id,parts);return parts;
 }
-export function townConstructionModel(id,step,version=1){if(version===2&&supportsHomeLesson(id)){const parts=townBlueprint(id,2);if(step>=parts.length)return townModel(id);return homeLessonModel(parts,step); }const parts=townBlueprint(id);if(!parts)return townModel(id);const group=new T.Group();for(const part of parts.slice(0,Math.max(0,Math.min(parts.length,Math.floor(step)))))group.add(part.model.clone());return group;}
+export function townConstructionModel(id,step,version=1,pieceCount=0){if(version===2&&supportsHomeLesson(id)){const parts=townBlueprint(id,2);if(step>=parts.length)return townModel(id);return homeLessonModel(parts,step,pieceCount); }const parts=townBlueprint(id);if(!parts)return townModel(id);const group=new T.Group();for(const part of parts.slice(0,Math.max(0,Math.min(parts.length,Math.floor(step)))))group.add(part.model.clone());return group;}

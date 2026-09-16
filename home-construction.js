@@ -23,7 +23,14 @@ export function createHomeLesson(raw,compact,id){raw.updateMatrixWorld(true);con
  });
  if(!masses.length){const bounds=new T.Box3().setFromObject(buckets.finish);if(!bounds.isEmpty())masses.push(bounds);}
  const parts=[];
- function add(id,name,lesson,g,until=null){if(!g.children.length)return;const model=compact(g),bounds=new T.Box3().setFromObject(model);parts.push({id,name,lesson,model,until,center:bounds.getCenter(V()),size:bounds.getSize(V())});}
+ function add(id,name,lesson,g,until=null){if(!g.children.length)return;
+ const pieces=[];
+ if(/^(foundation|drains|supply|services|frame-|trusses-)/.test(id)){
+  // Preserve the published major stage order. Smaller placements have their own saved counter.
+  const batch=Math.max(1,Math.ceil(g.children.length/8));
+  for(let i=0;i<g.children.length;i+=batch){const group=new T.Group();for(const child of g.children.slice(i,i+batch)){const clone=child.clone();clone.geometry=child.geometry.clone();group.add(clone);}const model=compact(group),bounds=new T.Box3().setFromObject(model);pieces.push({id:id+'-piece-'+pieces.length,name:name+' • piece '+(pieces.length+1),model,center:bounds.getCenter(V()),size:bounds.getSize(V())});}
+ }
+ const model=compact(g),bounds=new T.Box3().setFromObject(model);parts.push({id,name,lesson,model,until,pieces,center:bounds.getCenter(V()),size:bounds.getSize(V())});}
  const footings=new T.Group(),drains=new T.Group(),supply=new T.Group(),slab=new T.Group(),services=new T.Group();
  masses.forEach((b,i)=>{const {min:a,max:z}=b,w=z.x-a.x,d=z.z-a.z,c=b.getCenter(V()),h=z.y,base=.09;
  // Concrete strip footings are visible before the slab conceals the below-floor work.
@@ -73,4 +80,4 @@ export function createHomeLesson(raw,compact,id){raw.updateMatrixWorld(true);con
  add('landscape','Landscaping and final walkthrough','Plant the garden, finish the outdoor spaces, and check the completed home together.',buckets.landscape);
  return parts;
 }
-export function homeLessonModel(parts,step){const g=new T.Group(),n=Math.max(0,Math.min(parts.length,Math.floor(step)));for(let i=0;i<n;i++){const p=parts[i],end=p.until?parts.findIndex(x=>x.id===p.until):-1;if(end>=0&&n>end)continue;const piece=p.model.clone();piece.userData.lessonPart=p.id;g.add(piece);}return g;}
+export function homeLessonModel(parts,step,pieceCount=0){const g=new T.Group(),n=Math.max(0,Math.min(parts.length,Math.floor(step)));for(let i=0;i<n;i++){const p=parts[i],end=p.until?parts.findIndex(x=>x.id===p.until):-1;if(end>=0&&n>end)continue;const piece=p.model.clone();piece.userData.lessonPart=p.id;g.add(piece);}const active=parts[n];if(active?.pieces)for(const p of active.pieces.slice(0,Math.max(0,Math.floor(pieceCount)||0))){const piece=p.model.clone();piece.userData.lessonPart=p.id;g.add(piece);}return g;}
