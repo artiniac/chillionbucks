@@ -30,3 +30,5 @@ a.job-choice{display:block;text-decoration:none;}
 @media(max-width:650px){.property-rulebook{left:8px;right:8px;top:auto;bottom:8px;width:auto;padding:10px 12px;max-height:240px;border-radius:14px}.property-rulebook h2{font-size:16px;margin:4px 0}.book-instruction{font-size:12px;min-height:0;margin:5px 0}.book-piece-row{float:left;width:58%;height:76px}.book-piece{display:flex;align-items:center;width:100%;margin:4px 0;padding:3px;font-size:11px}.book-piece img{width:80px;height:60px}.book-arrow,.book-example{display:none}.book-snap{width:38%;float:right;margin-top:14px;font-size:11px;padding:10px 6px}.property-rulebook details{clear:both;margin-top:4px}.property-drop-target{width:52px;height:52px}.building-property .view-controls{top:12px}}
 
 #game:has(#selection:not([hidden])) #quest{visibility:hidden}
+
+@media(max-width:650px){#drivePad{left:12px;right:auto;bottom:205px}#drivePad button{width:48px;height:48px}#game:has(#drivePad:not([hidden])) .view-controls{top:205px}}

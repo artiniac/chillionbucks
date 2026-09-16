@@ -454,6 +454,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.
     }
     const stamp = $('#nwStamp'), nextLbl = $('#nwNext');
     const continueBtn=$('#nwContinue'),hearBtn=$('#nwHear');let waiting=false,advanceTimer;const dots=$('#nwProgress');function progress(){if(!dots)return;dots.innerHTML=deck.map((_,i)=>'<span class="'+(i<idx?'finished':i===idx?'current':'')+'"></span>').join('');dots.setAttribute('aria-label',(idx+1)+' of '+deck.length+' cards');}function speak(text){if(!SFX.on||!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.rate=.85;speechSynthesis.speak(u);}hearBtn&&(hearBtn.onclick=()=>speak($('#nwName').textContent+'. '+(waiting?msg.textContent:'Is this a need, or a want?')));document.addEventListener('soundchange',()=>{if(!SFX.on&&'speechSynthesis'in window)speechSynthesis.cancel();});
+    document.addEventListener('cb:menu-open',()=>{if('speechSynthesis' in window)speechSynthesis.cancel();});
     function unlock() { waiting=false;if(continueBtn)continueBtn.hidden=true;progress();locked = false; bNeed.disabled = false; bWant.disabled = false; card.classList.remove('ok', 'bad', 'locked'); nextLbl.hidden = true; }
     function show() {
       const it = deck[idx]; unlock();say('');
@@ -472,7 +473,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.
       $('#nwScore').textContent = score; $('#nwStreak').textContent = streak;
       waiting=true;nextLbl.hidden=false;nextLbl.textContent='Next card coming up…';if(continueBtn)continueBtn.hidden=true;clearTimeout(advanceTimer);advanceTimer=setTimeout(advance,ok?1800:2600);
     }
-    function advance(){if(!waiting)return;clearTimeout(advanceTimer);waiting=false;if('speechSynthesis'in window)speechSynthesis.cancel();idx++;if(idx>=deck.length){continueBtn.hidden=true;end();return;}card.classList.remove('in');card.classList.add('out');SFX.whoosh();show();}if(continueBtn)continueBtn.onclick=advance;
+    function advance(){if(!waiting)return;if(document.hidden||document.documentElement.classList.contains('cb-menu-open')){advanceTimer=setTimeout(advance,300);return;}clearTimeout(advanceTimer);waiting=false;if('speechSynthesis'in window)speechSynthesis.cancel();idx++;if(idx>=deck.length){continueBtn.hidden=true;end();return;}card.classList.remove('in');card.classList.add('out');SFX.whoosh();show();}if(continueBtn)continueBtn.onclick=advance;
 
     function end() {
       const perfect = score === deck.length;if(dots){dots.innerHTML=deck.map(()=>'<span class="finished"></span>').join('');dots.setAttribute('aria-label','Round complete');}

@@ -1,9 +1,9 @@
 /* Chillion Bucks sound engine: tiny synthesized blips, no audio files. Shared by every page. */
 window.SFX = (() => {
-  let on = true;
+  let on = true, menuOpen = false;
   try { on = localStorage.getItem('cb:sound') !== 'off'; } catch (e) { /* storage blocked: default on */ }
   let actx = null, master = null, ambient = null, ambientMode = 'off', unlocked = false;
-  const ctx = () => { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if(!master){master=actx.createGain();master.gain.value=on?1:0;master.connect(actx.destination);}if (actx.state === 'suspended') actx.resume().catch(()=>{});return actx; };
+  const ctx = () => { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if(!master){master=actx.createGain();master.gain.value=on&&!menuOpen?1:0;master.connect(actx.destination);}if (actx.state === 'suspended') actx.resume().catch(()=>{});return actx; };
 
   function tone(freq, dur = .12, type = 'sine', gain = .07, when = 0, glideTo = null) {
     if (!on) return;
@@ -32,7 +32,7 @@ window.SFX = (() => {
   }
   const api = {
     get on() { return on; },
-    toggle() { on = !on; try { localStorage.setItem('cb:sound', on ? 'on' : 'off'); } catch (e) {} if(master)master.gain.setValueAtTime(on?1:0,actx.currentTime);if(on){api.unlock();api.ding();}document.dispatchEvent(new CustomEvent('soundchange'));return on; },
+    toggle() { on = !on; try { localStorage.setItem('cb:sound', on ? 'on' : 'off'); } catch (e) {} if(master)master.gain.setValueAtTime(on&&!menuOpen?1:0,actx.currentTime);if(on){api.unlock();api.ding();}document.dispatchEvent(new CustomEvent('soundchange'));return on; },
     unlock() { if(!on)return;try{unlocked=true;ctx();api.ambience(ambientMode);}catch{} },
     ambience(mode='off') { ambientMode=mode;if(!actx||!master)return;if(!ambient){const a=actx,buffer=a.createBuffer(1,a.sampleRate*3,a.sampleRate),data=buffer.getChannelData(0);let smooth=0;for(let i=0;i<data.length;i++){smooth=(smooth+Math.random()*.08-.04)/1.02;data[i]=smooth;}const source=a.createBufferSource();source.buffer=buffer;source.loop=true;const filter=a.createBiquadFilter();filter.type='lowpass';filter.frequency.value=750;const gain=a.createGain();gain.gain.value=0;source.connect(filter).connect(gain).connect(master);source.start();ambient=gain;}ambient.gain.setTargetAtTime(mode==='water'?.045:0,actx.currentTime,.2); },
     splash() { noise(.45,.065,1100);tone(380,.13,'sine',.03,0,130);tone(640,.16,'sine',.025,.1,240); },
@@ -77,5 +77,7 @@ window.SFX = (() => {
     bind(btn) { if (!btn) return; const paint = () => { btn.textContent = on ? '🔊' : '🔇'; btn.setAttribute('aria-pressed', on); }; btn.addEventListener('click', () => { api.toggle(); paint(); });document.addEventListener('soundchange',paint);paint(); },
   };
   document.addEventListener('pointerdown',()=>api.unlock(),{once:true,passive:true});document.addEventListener('keydown',()=>api.unlock(),{once:true});document.addEventListener('visibilitychange',()=>{if(!actx)return;if(document.hidden)actx.suspend();else if(unlocked&&on)actx.resume().catch(()=>{});});
+  document.addEventListener('cb:menu-open',()=>{menuOpen=true;if(master)master.gain.setValueAtTime(0,actx.currentTime);});
+  document.addEventListener('cb:menu-close',()=>{menuOpen=false;if(master)master.gain.setValueAtTime(on?1:0,actx.currentTime);});
   return api;
 })();

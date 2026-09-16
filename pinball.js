@@ -45,4 +45,6 @@ function draw(dt){
  for(const p of particles){p.life-=dt*2;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=180*dt;ctx.globalAlpha=Math.max(0,p.life);circle(p.x,p.y,3,'#ffe89e');}ctx.globalAlpha=1;particles=particles.filter(p=>p.life>0);
 }
 function resize(){const dpr=Math.min(devicePixelRatio||1,2);canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);}resize();window.addEventListener('resize',resize);
-function frame(now){const dt=last?Math.min((now-last)/1000,.05):0;last=now;if(!paused&&!document.hidden){accumulator+=dt;while(accumulator>=1/120){step(game,1/120,input);accumulator-=1/120;}events();}draw(paused?0:dt);requestAnimationFrame(frame);}paintScore();requestAnimationFrame(frame);
+function frame(now){const dt=last?Math.min((now-last)/1000,.05):0;last=now;if(!paused&&!document.hidden&&!document.documentElement.classList.contains('cb-menu-open')){accumulator+=dt;while(accumulator>=1/120){step(game,1/120,input);accumulator-=1/120;}events();}draw(paused?0:dt);requestAnimationFrame(frame);}paintScore();requestAnimationFrame(frame);
+
+document.addEventListener('cb:menu-open',()=>{release();last=0;accumulator=0;});
