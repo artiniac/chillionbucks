@@ -1,5 +1,6 @@
 import * as T from './vendor/three.module.js';
 import {scannedMaterial} from './realism.js';
+import {createHomeLesson,homeLessonModel} from './home-construction.js?v=construction2';
 import {BLUEPRINT_LAYOUT} from './town-blueprint-layout.js';
 export const ESTATE_STYLES={
  capeCodEstate:{name:'Westchester Cape Cod estate',wall:'#d9ddd5',roof:'#777a73',form:'capeCod'},
@@ -12,7 +13,7 @@ export const ESTATE_STYLES={
  colonialEstate:{name:'Colonial revival estate',wall:'#d6d1bb',roof:'#625e55',form:'colonial'},
  contemporaryEstate:{name:'1980s hillside contemporary',wall:'#ddd2bf',roof:'#807666',form:'contemporary'},
  allentownHome:{name:'20171 Allentown Dr',wall:'#e4dfd1',roof:'#716b60',form:'ranch',note:'3,671 sq ft, built in 1961. Exterior massing follows the public floor plan and aerial photos: broad front, rear wing, bay windows, solar garage roof, and pool garden. Game scale is approximate.'},
- chatsboroHome:{name:'20536 Chatsboro Dr',wall:'#e1dac7',roof:'#877f62',form:'chatsboro',note:'6,362 sq ft, built in 1988. Exterior inspired by the public listing photograph: brick, cream gables, steep roofs, turret, and garage wing. Game proportions are approximate.'}
+ chatsboroHome:{name:'20536 Chatsboro Dr',wall:'#e1dac7',roof:'#877f62',form:'chatsboro',note:'6,362 sq ft, built in 1988. Exterior revised from the listing photo and satellite view: long side garage wing, recessed forecourt, rear cross wing, turret, and pool. No verified floor plan; dimensions and internal construction are illustrative.'}
 };
 export const TOWN_CATALOG=[
 ...Object.entries(ESTATE_STYLES).map(([id,d])=>({id,name:d.name,category:id.endsWith('Home')?'Leo’s homes':'Mansions',r:3.2,solid:true,note:d.note||'Woodland Hills estate architecture, with landscaped grounds and detailed exterior materials.'})),
@@ -47,12 +48,12 @@ function material(color,type='plain'){const key=color+type;if(mats.has(key))retu
 function box(g,c,x,y,z,w,h,d,type='plain'){const geo=new T.BoxGeometry(w,h,d);if(['brick','stone','wood','roof','stucco'].includes(type)){const p=geo.attributes.position,n=geo.attributes.normal,uv=geo.attributes.uv,scale=type==='brick'?1.5:type==='roof'?1.2:1;for(let i=0;i<p.count;i++){const nx=Math.abs(n.getX(i)),ny=Math.abs(n.getY(i));uv.setXY(i,(nx>.5?p.getZ(i):p.getX(i))*scale,(ny>.5?p.getZ(i):p.getY(i))*scale);}}const m=new T.Mesh(geo,material(c,type));m.position.set(x,y,z);if(type==='stone'&&h<.15&&y<.15){m.userData.groundSurface=true;const key=c+'paving';if(!mats.has(key)){const paving=m.material.clone();paving.bumpScale=.002;paving.roughness=.94;paving.userData.shared=true;mats.set(key,paving);}m.material=mats.get(key);m.castShadow=false;}g.add(m);return m;}
 function cylinder(g,c,x,y,z,r,h,top=r){const m=new T.Mesh(new T.CylinderGeometry(top,r,h,16),material(c));m.position.set(x,y,z);g.add(m);return m;}
 function sphere(g,c,x,y,z,sx,sy=sx,sz=sx){const m=new T.Mesh(new T.SphereGeometry(1,12,8),material(c));m.position.set(x,y,z);m.scale.set(sx,sy,sz);g.add(m);return m;}
-function window(g,x,y,z,w=.55,h=.8,sash=false){
+function window(g,x,y,z,w=.55,h=.8,sash=false){const start=g.children.length;
  // Recessed dark backing, reflective glazing, and separate jambs remain legible close up.
  box(g,'#222c29',x,y,z,w+.075,h+.075,.025);box(g,'#647b78',x,y,z+.021,w,h,.012,'glass');
  for(const side of [-1,1]){box(g,'#d8d6cb',x+side*(w/2+.022),y,z+.055,.044,h+.08,.085);box(g,'#d8d6cb',x,y+side*(h/2+.018),z+.055,w+.08,.036,.085);}
  box(g,'#d1d0c4',x,y,z+.068,.021,h,.025);if(sash){box(g,'#d1d0c4',x,y,z+.068,w,.021,.025);for(const side of [-1,1])box(g,'#d1d0c4',x+side*w*.25,y,z+.068,.014,h,.019);}
- box(g,'#e2dece',x,y-h/2-.045,z+.06,w+.15,.06,.17);
+ box(g,'#e2dece',x,y-h/2-.045,z+.06,w+.15,.06,.17);for(const child of g.children.slice(start))child.userData.constructionRole='windows';
 }
 function hedge(g,x,z,w=1){
  // Irregular clipped foliage, with individual leaf silhouettes instead of rows of spheres.
@@ -61,7 +62,7 @@ function hedge(g,x,z,w=1){
 }
 function pool(g,x,z,w,d){box(g,'#c6c6b6',x,.045,z,w+.24,.1,d+.24,'stone');box(g,'#286f78',x,.104,z,w,.035,d,'glass');for(let i=0;i<6;i++)box(g,'#abd7d5',x-w*.45+i*w*.16,.124,z,.012,.002,d*.85);}
 function pergola(g,x,z,w,d){for(const a of [-1,1])for(const b of [-1,1])box(g,'#8d7658',x+a*w/2,1,z+b*d/2,.07,2,.07,'wood');for(let i=0;i<12;i++)box(g,'#9b8261',x-w/2+i*w/11,2,z,.065,.08,d+.2,'wood');}
-function hipRoof(g,x,y,z,w,d,h,color){const geo=new T.CylinderGeometry(.65,1,h,4,1);const m=new T.Mesh(geo,material(color,'roof'));m.rotation.y=Math.PI/4;m.scale.set(w/1.414,1,d/1.414);m.position.set(x,y,z);g.add(m);return m;}
+function hipRoof(g,x,y,z,w,d,h,color){const geo=new T.CylinderGeometry(.65,1,h,4,1);const m=new T.Mesh(geo,material(color,'roof'));m.rotation.y=Math.PI/4;m.scale.set(w/1.414,1,d/1.414);m.position.set(x,y,z);m.userData.constructionRole='roof';g.add(m);return m;}
 function arch(g,x,y,z,w,h,color){const shape=new T.Shape();shape.moveTo(-w/2,0);shape.lineTo(-w/2,h);shape.lineTo(w/2,h);shape.lineTo(w/2,0);shape.lineTo(w/2-.13,0);shape.lineTo(w/2-.13,h-w/2);shape.absarc(0,h-w/2,w/2-.13,0,Math.PI,false);shape.lineTo(-w/2+.13,0);shape.closePath();const geo=new T.ExtrudeGeometry(shape,{depth:.18,bevelEnabled:false,curveSegments:12});const m=new T.Mesh(geo,material(color,'stucco'));m.position.set(x,y,z);g.add(m);}
 function label(g,text,x,y,z,w=2){const c=document.createElement('canvas');c.width=512;c.height=128;const ctx=c.getContext('2d');ctx.fillStyle='#204a3d';ctx.fillRect(0,0,512,128);ctx.fillStyle='#efe8cb';ctx.font='bold 56px sans-serif';ctx.textAlign='center';ctx.fillText(text,256,85);const tex=new T.CanvasTexture(c);tex.colorSpace=T.SRGBColorSpace;const mat=new T.MeshStandardMaterial({map:tex,roughness:.8});mat.userData.shared=true;const m=new T.Mesh(new T.PlaneGeometry(w,w/4),mat);m.position.set(x,y,z);g.add(m);}
 function mansion(g,id){box(g,'#c2b9a1',0,.025,0,5.8,.08,4.8,'stone');
@@ -79,16 +80,16 @@ function mansion(g,id){box(g,'#c2b9a1',0,.025,0,5.8,.08,4.8,'stone');
  }
 }
 // Pitched, closed roofs and repeated details remain true geometry from every view.
-function clayRoof(g,x,y,z,w,d,h,color){
+function clayRoof(g,x,y,z,w,d,h,color){const start=g.children.length;
  const ridge=Math.max(.12,(w-d)*.5),v=[[-w/2,0,-d/2],[w/2,0,-d/2],[w/2,0,d/2],[-w/2,0,d/2],[-ridge,h,0],[ridge,h,0]],faces=[[0,4,5,1],[1,5,2],[2,5,4,3],[3,4,0]],positions=[],uv=[];
  for(const face of faces)for(let j=1;j<face.length-1;j++)for(const k of [face[0],face[j],face[j+1]]){const p=v[k];positions.push(...p);const side=faces.indexOf(face)%2;uv.push((side?p[2]:p[0])*5,(p[1]/h)*Math.hypot(d/2,h)*5);}
  const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(positions,3));geo.setAttribute('uv',new T.Float32BufferAttribute(uv,2));geo.computeVertexNormals();const m=new T.Mesh(geo,material(color,'clay'));m.position.set(x,y,z);g.add(m);
  for(let xx=-ridge;xx<=ridge;xx+=.18){const cap=cylinder(g,color,x+xx,y+h+.025,z,.065,.20);cap.rotation.z=Math.PI/2;}
- return m;
+ for(const child of g.children.slice(start))child.userData.constructionRole='roof';return m;
 }
-function gable(g,x,y,z,w,d,h,c,infill='#d9d2bf',infillType='stucco'){const sh=new T.Shape();sh.moveTo(-w/2,0);sh.lineTo(w/2,0);sh.lineTo(0,h);sh.closePath();const geo=new T.ExtrudeGeometry(sh,{depth:d,bevelEnabled:false});geo.translate(0,0,-d/2);const m=new T.Mesh(geo,material(infill,infillType));m.position.set(x,y,z);g.add(m);for(const side of [-1,1]){const slope=box(g,c,x+side*w/4,y+h/2,z,Math.hypot(w/2,h),.055,d+.08,'roof');slope.rotation.z=-side*Math.atan2(h,w/2);const fascia=box(g,'#c8c1ae',x+side*w/4,y+h/2-.035,z+d/2+.052,Math.hypot(w/2,h)+.03,.065,.055);fascia.rotation.z=slope.rotation.z;box(g,'#a8a28e',x+side*w/2,y-.035,z,.045,.065,d+.13);}return m;}
+function gable(g,x,y,z,w,d,h,c,infill='#d9d2bf',infillType='stucco'){const start=g.children.length;const sh=new T.Shape();sh.moveTo(-w/2,0);sh.lineTo(w/2,0);sh.lineTo(0,h);sh.closePath();const geo=new T.ExtrudeGeometry(sh,{depth:d,bevelEnabled:false});geo.translate(0,0,-d/2);const m=new T.Mesh(geo,material(infill,infillType));m.position.set(x,y,z);g.add(m);for(const side of [-1,1]){const slope=box(g,c,x+side*w/4,y+h/2,z,Math.hypot(w/2,h),.055,d+.08,'roof');slope.rotation.z=-side*Math.atan2(h,w/2);const fascia=box(g,'#c8c1ae',x+side*w/4,y+h/2-.035,z+d/2+.052,Math.hypot(w/2,h)+.03,.065,.055);fascia.rotation.z=slope.rotation.z;box(g,'#a8a28e',x+side*w/2,y-.035,z,.045,.065,d+.13);}for(const child of g.children.slice(start))child.userData.constructionRole='roof';return m;}
 function rail(g,x,y,z,w){for(let i=0;i<=12;i++)box(g,'#373b34',x-w/2+i*w/12,y,z,.022,.45,.022);box(g,'#373b34',x,y+.23,z,w,.035,.035);box(g,'#373b34',x,y-.2,z,w,.025,.025);}
-function garage(g,x,z,w=1.4){box(g,'#544c3c',x,.62,z,w,1.1,.06,'wood');for(let i=0;i<6;i++)box(g,'#9a8c70',x,.15+i*.18,z+.04,w,.016,.025);}
+function garage(g,x,z,w=1.4){box(g,'#544c3c',x,.62,z,w,1.1,.06,'wood').userData.constructionOpening=true;for(let i=0;i<6;i++)box(g,'#9a8c70',x,.15+i*.18,z+.04,w,.016,.025);}
 function estate(g,id){const d=ESTATE_STYLES[id],spanish=['spanish','mission','hacienda'].includes(d.form),ranch=d.form==='ranch'||d.form==='hacienda',h=ranch?1.45:2.75;
  box(g,'#8a9a6a',0,-.04,0,6.6,.1,5.7);box(g,'#d2c5ae',0,.02,1.45,5.9,.07,2.65,'stone');
  box(g,d.wall,0,h/2,-.65,4.7,h,2.5,'stucco');
@@ -121,33 +122,44 @@ function estate(g,id){const d=ESTATE_STYLES[id],spanish=['spanish','mission','ha
  for(const x of [-2.1,2.1])hedge(g,x,2.48,1.2);
  if(id.endsWith('Home'))label(g,id==='allentownHome'?'20171 ALLENTOWN':'20536 CHATSBORO',0,.29,2.78,2.3);
 }
-// Exterior massing traced from the public floor-plan and aerial, with no invented room dimensions.
+// Approximate exterior massing from listing photos and overhead references.
+// Chatsboro has no verified floor plan; the construction internals are teaching diagrams.
 function chatsboro(g){const cream='#ded7c5',roof='#777261',brick='#996d54';
- box(g,'#8a9a6a',0,-.04,0,7.6,.08,6.4);box(g,'#c2bbab',0,.02,1.9,7,.05,2.45,'stone');
- // An offset, two-level garage wing and taller entrance mass follow the front photograph.
- box(g,cream,-1.8,1.18,.15,3.5,2.36,2.8,'stucco');const garageRoof=new T.Group();gable(garageRoof,0,2.36,0,3.05,3.8,1.05,roof);garageRoof.userData.blueprintStage='roof';garageRoof.rotation.y=Math.PI/2;garageRoof.position.set(-1.8,0,.15);g.add(garageRoof);
- box(g,brick,-1.8,.62,1.57,3.5,1.24,.10,'brick');for(const x of [-2.65,-1.05])garage(g,x,1.66,1.4);for(const x of [-2.95,-1.8,-.65]){box(g,cream,x,2.66,1.38,.78,.7,.72,'stucco');gable(g,x,3.01,1.38,.96,.95,.55,roof);window(g,x,2.7,1.76,.48,.56,true);}
- box(g,brick,1.18,1.36,-.2,2.9,2.72,3.1,'brick');gable(g,1.18,2.72,-.2,3.18,3.35,1.42,roof);
- for(const x of [.825,1.895])box(g,brick,x,.75,1.14,.41,1.5,1.05,'brick');box(g,brick,1.36,2.22,1.14,1.48,1.44,1.05,'brick');gable(g,1.36,2.94,1.14,1.73,1.28,1.18,roof,brick,'brick');
- box(g,'#302b22',1.35,.75,1.39,.65,1.46,.04,'wood');for(const x of [1.16,1.54]){box(g,'#51452e',x,.75,1.418,.29,1.38,.025,'wood');window(g,x,1.05,1.445,.20,.61,true);}box(g,'#aa9362',1.35,.66,1.46,.024,.095,.028);window(g,1.35,2.28,1.69,.48,.78,true);
- cylinder(g,brick,-.2,.62,1.09,.51,1.24);cylinder(g,cream,-.2,2.44,1.09,.51,2.4);const cap=new T.Mesh(new T.ConeGeometry(.69,1.43,8),material(roof,'roof'));cap.position.set(-.2,4.32,1.09);g.add(cap);window(g,-.2,2.6,1.62,.32,.66,true);
- for(const x of [-3.2,-2.2,1,2]){const w=new T.Group();for(const y of [.83,2.02])window(w,0,y,0,.55,.72,true);w.position.set(x,0,-1.79);w.rotation.y=Math.PI;g.add(w);}
- for(const x of [2.67,-3.57]){const side=new T.Group();for(const z of [-.9,.1,.85])for(const y of [.83,1.95])window(side,z,y,0,.44,.66,true);side.position.x=x;side.rotation.y=x>0?Math.PI/2:-Math.PI/2;g.add(side);}
- box(g,brick,2.12,3.14,-1.05,.34,1.4,.48,'brick');box(g,'#615d51',2.12,3.88,-1.05,.46,.1,.6);
- for(let i=0;i<3;i++)box(g,'#d2c9b7',1.35,.045+i*.055,2.12-i*.16,1.2,.09,.48,'stone');
- propertyDetails(g,'chatsboro');pool(g,1.7,-2.64,2.25,.7);for(const x of [-3.6,3.6])for(let i=0;i<10;i++)hedge(g,x,-2.65+i*.57,.42);hedge(g,2.8,2.65,1.1);label(g,'20536 CHATSBORO',.15,.27,3.05,2.1);
+ box(g,'#8a9a6a',0,-.04,0,7.6,.08,8.6);
+ // Street is +Z. Satellite view shows a long side wing and a crosswise rear wing.
+ const garageWing=new T.Group();
+ box(garageWing,cream,0,1.18,0,3.5,2.36,2.4,'stucco');const gr=new T.Group();gable(gr,0,2.36,0,2.65,3.8,1.05,roof);gr.rotation.y=Math.PI/2;gr.userData.blueprintStage='roof';garageWing.add(gr);
+ box(garageWing,brick,0,.62,1.23,3.5,1.24,.10,'brick');for(const x of [-.85,.85])garage(garageWing,x,1.31,1.4);
+ for(const x of [-1.15,0,1.15]){box(garageWing,cream,x,2.66,1.04,.78,.7,.72,'stucco');gable(garageWing,x,3.01,1.04,.96,.95,.55,roof);window(garageWing,x,2.7,1.42,.48,.56,true);}
+ garageWing.rotation.y=Math.PI/2;garageWing.position.set(-1.65,0,.5);g.add(garageWing);
+ box(g,brick,.05,1.36,-1.75,4.85,2.72,2.25,'brick');const rearRoof=new T.Group();gable(rearRoof,0,2.72,0,2.5,5.12,1.1,roof);rearRoof.rotation.y=Math.PI/2;rearRoof.position.set(.05,0,-1.75);rearRoof.userData.blueprintStage='roof';g.add(rearRoof);
+ for(const x of [.1,1.17])box(g,brick,x,.75,-.46,.41,1.5,.65,'brick');box(g,brick,.635,2.22,-.46,1.48,1.44,.65,'brick');gable(g,.635,2.94,-.46,1.73,.88,1.18,roof,brick,'brick');
+ box(g,'#302b22',.635,.75,-.12,.65,1.46,.04,'wood').userData.constructionOpening=true;window(g,.635,2.28,-.1,.48,.78,true);
+ cylinder(g,brick,-.45,.62,-.44,.51,1.24);cylinder(g,cream,-.45,2.44,-.44,.51,2.4);const cap=new T.Mesh(new T.ConeGeometry(.69,1.43,8),material(roof,'roof'));cap.position.set(-.45,4.32,-.44);cap.userData.constructionRole='roof';g.add(cap);window(g,-.45,2.6,.1,.32,.66,true);
+ for(const x of [-1.9,-.95,.95,1.95]){const w=new T.Group();for(const y of [.83,2.02])window(w,0,y,0,.55,.72,true);w.position.set(x,0,-2.9);w.rotation.y=Math.PI;g.add(w);}
+ for(const x of [1.7,2.2])window(g,x,1.7,-.59,.4,.75,true);
+ box(g,brick,1.8,3.14,-1.85,.34,1.4,.48,'brick');box(g,'#615d51',1.8,3.88,-1.85,.46,.1,.6);
+ // Curved approach broadens into the garage forecourt, not a full-width concrete strip.
+ const drive=new T.Shape();drive.moveTo(-.4,-.05);drive.lineTo(-.4,1.8);drive.bezierCurveTo(-.2,2.7,.2,3.15,.2,4.2);drive.lineTo(2,4.2);drive.bezierCurveTo(1.8,3.15,2.15,2.35,2.1,1.25);drive.lineTo(1.85,-.05);drive.closePath();const dg=new T.ShapeGeometry(drive,20);dg.rotateX(-Math.PI/2);dg.scale(1,1,-1);for(let i=0;i<dg.index.count;i+=3){const a=dg.index.getX(i+1);dg.index.setX(i+1,dg.index.getX(i+2));dg.index.setX(i+2,a);}dg.computeVertexNormals();const paving=new T.Mesh(dg,material('#c2bbab','stone').clone());paving.material.bumpScale=.002;paving.material.userData.shared=true;paving.position.y=.025;paving.userData.groundSurface=true;paving.castShadow=false;g.add(paving);
+ for(let i=0;i<3;i++)box(g,'#d2c9b7',.635,.045+i*.055,.28-i*.13,1.2,.09,.36,'stone');
+ pool(g,.7,-3.55,2.0,.8);for(const x of [-3.6,3.6])for(let i=0;i<13;i++)hedge(g,x,-3.7+i*.6,.42);hedge(g,2.8,2.65,1.1);label(g,'20536 CHATSBORO',.15,.27,4.12,2.1);
+ // Fit the researched proportions to the existing saved town parcel, without moving streets.
+ g.updateMatrixWorld(true);const pieces=[];g.traverse(o=>{if(o.isMesh){for(let parent=o.parent;parent&&parent!==g;parent=parent.parent)if(parent.userData.blueprintStage==='roof')o.userData.constructionRole='roof';pieces.push(o);}});
+ for(const o of pieces){o.geometry.applyMatrix4(o.matrixWorld);o.geometry.scale(1,1,6.4/8.6);o.position.set(0,0,0);o.quaternion.identity();o.scale.set(1,1,1);o.parent.remove(o);}g.clear();g.add(...pieces);
 }
 function allentown(g){const wall='#e2e0d8',roof='#656962';box(g,'#8eab70',0,-.04,0,7.4,.08,7.4);box(g,'#bbbdb2',-2.4,.02,2.3,2.35,.05,2.6,'stone');box(g,'#c9c9ba',.15,.025,2.3,.85,.05,2.7,'stone');
  // Broad front bar with the rear bedroom wing forming an L.
  box(g,wall,-1.725,.67,.45,3.25,1.34,2.05,'stucco');box(g,wall,1.925,.67,.45,2.85,1.34,2.05,'stucco');box(g,wall,.2,.67,.1,.6,1.34,1.35,'stucco');box(g,wall,.2,1.24,1.12,.6,.2,.7,'stucco');box(g,wall,2.35,.67,-1.18,1.95,1.34,2.8,'stucco');
+ box(g,wall,-2.15,.67,-.82,2.4,1.34,.65,'stucco');const familyRoof=new T.Group();gable(familyRoof,0,1.34,0,2.7,2.35,.22,roof);familyRoof.rotation.y=Math.PI/2;familyRoof.position.set(-2.15,0,-.1);familyRoof.userData.blueprintStage='roof';g.add(familyRoof);
  const frontRoof=new T.Group();gable(frontRoof,0,1.34,0,2.35,7.05,.22,roof);frontRoof.userData.blueprintStage='roof';frontRoof.rotation.y=Math.PI/2;frontRoof.position.z=.45;g.add(frontRoof);const wing=new T.Group();gable(wing,0,1.34,0,2.18,3.15,.43,roof);wing.position.set(2.35,0,-1.2);g.add(wing);
- garage(g,-2.45,1.51,1.55);box(g,'#302f2b',.2,.61,.805,.48,1.16,.07);window(g,.2,.75,.85,.22,.54);box(g,'#c4bdad',.2,.045,1.18,.57,.08,.85,'stone');
+ garage(g,-2.45,1.51,1.55);box(g,'#302f2b',.2,.61,.805,.48,1.16,.07).userData.constructionOpening=true;window(g,.2,.75,.85,.22,.54);box(g,'#c4bdad',.2,.045,1.18,.57,.08,.85,'stone');
  // The two projecting bay windows and long shuttered window band are characteristic of the front.
  for(const x of [-1.28,-.55]){box(g,wall,x,.72,1.57,.56,1.04,.29,'stucco');window(g,x,.79,1.74,.46,.62,true);for(const side of [-1,1]){const w=new T.Group();window(w,0,.79,0,.2,.62,true);w.position.set(x+side*.3,0,1.61);w.rotation.y=side*Math.PI/3;g.add(w);}box(g,'#ededdf',x,1.29,1.6,.7,.08,.44);}
  for(let i=0;i<5;i++)window(g,1.1+i*.43,.87,1.51,.35,.45,true);
- for(let i=0;i<4;i++){const panel=box(g,'#344555',-2.95+i*.46,1.59,.98,.43,.018,.79);panel.rotation.x=.13;for(let j=0;j<3;j++)box(g,'#5b6b73',-3.1+i*.46+j*.145,1.66,.98,.008,.008,.7);}
+ for(let row=0;row<2;row++)for(let i=0;i<6;i++){const panel=box(g,'#344555',-3.08+i*.47,1.54+row*.055,1.04-row*.43,.44,.018,.4);panel.rotation.x=.16;panel.userData.constructionRole='roof';}
  for(const x of [-1.1,.1]){const w=new T.Group();window(w,0,.8,0,1.05,.86,true);w.position.set(x,0,-.6);w.rotation.y=Math.PI;g.add(w);}
  const poolShape=new T.Shape();poolShape.moveTo(-1.7,-.75);poolShape.lineTo(.85,-.75);poolShape.quadraticCurveTo(1.5,-.6,1.45,.12);poolShape.lineTo(.72,.76);poolShape.lineTo(-1.25,.76);poolShape.quadraticCurveTo(-1.9,.5,-1.7,-.75);const poolGeo=new T.ShapeGeometry(poolShape,24);poolGeo.rotateX(-Math.PI/2);const coping=new T.Mesh(poolGeo.clone(),material('#c9c7b5','stone'));coping.position.set(-.7,.04,-1.8);coping.scale.set(1.12,1,1.2);g.add(coping);const water=new T.Mesh(poolGeo,material('#488e99','glass'));water.position.set(-.7,.07,-1.8);g.add(water);
+ cylinder(g,'#c9c7b5',-2.6,.06,-1.8,.44,.07);cylinder(g,'#488e99',-2.6,.106,-1.8,.32,.025);
  for(let i=0;i<3;i++)box(g,'#aaccc5',-.7,.074+i*.01,-1.08-i*.14,.8,.013,.18);
  for(const x of [-3.55,3.55])for(let i=0;i<12;i++)hedge(g,x,-3.2+i*.55,.45);
  for(const x of [-1,1.25])for(let i=0;i<5;i++)hedge(g,x,1.8+i*.36,.23);
@@ -210,10 +222,11 @@ return g;}
 export function townModel(id){if(!defs[id])return null;if(!templates.has(id))templates.set(id,compact(rawTownModel(id)));return templates.get(id).clone();}
 
 
-const blueprintCache=new Map();
+const blueprintCache=new Map(),lessonCache=new Map();
+export function supportsHomeLesson(id){return !!ESTATE_STYLES[id]||['modernEstate','midcenturyEstate','georgianEstate','mediterraneanEstate'].includes(id);}
 export function hasBlueprint(id){return !!(defs[id]?.solid&&!defs[id]?.vehicle);}
 // Group the actual model's geometry into reusable construction assemblies. No image substitutes.
-export function townBlueprint(id){if(!hasBlueprint(id))return null;if(blueprintCache.has(id))return blueprintCache.get(id);const raw=rawTownModel(id),groups=new Map();raw.updateMatrixWorld(true);
+export function townBlueprint(id,version=1){if(version===2&&supportsHomeLesson(id)){if(!lessonCache.has(id))lessonCache.set(id,createHomeLesson(rawTownModel(id),compact,id));return lessonCache.get(id);}if(!hasBlueprint(id))return null;if(blueprintCache.has(id))return blueprintCache.get(id);const raw=rawTownModel(id),groups=new Map();raw.updateMatrixWorld(true);
  for(const child of [...raw.children]){const b=new T.Box3().setFromObject(child),size=b.getSize(new T.Vector3()),center=b.getCenter(new T.Vector3());let stage='details';
   if(b.max.y<.16)stage='foundation';
   else if(child.isGroup)stage='windows';
@@ -223,7 +236,7 @@ export function townBlueprint(id){if(!hasBlueprint(id))return null;if(blueprintC
   const zone=stage==='foundation'?'base':center.x<-.65?'left':center.x>.65?'right':'center';let key=stage+':'+zone;const layout=BLUEPRINT_LAYOUT[id];if(layout&&!layout.includes(key)){key=layout.find(k=>k===stage+':center')||layout.find(k=>k.startsWith(stage+':'))||layout.find(k=>k==='details:'+zone)||layout[0];}if(!groups.has(key))groups.set(key,new T.Group());groups.get(key).add(child);
  }
  const names={foundation:'Lot and paving',walls:'Building section',roof:'Roof and upper details',windows:'Windows and frames',details:'Entry and trim',garden:'Garden and hedges'},order=['foundation','walls','roof','windows','details','garden'],parts=[];
- for(const stage of order)for(const zone of ['base','left','center','right']){const group=groups.get(stage+':'+zone);if(!group)continue;const model=compact(group),bounds=new T.Box3().setFromObject(model),center=bounds.getCenter(new T.Vector3());parts.push({id:stage+':'+zone,name:names[stage]+(zone==='base'?'':' · '+zone),model,center,size:bounds.getSize(new T.Vector3())});}
+ for(const stage of order)for(const zone of ['base','left','center','right']){let group=groups.get(stage+':'+zone);if(!group){if(!BLUEPRINT_LAYOUT[id]?.includes(stage+':'+zone))continue;group=new T.Group();}const model=compact(group),bounds=new T.Box3().setFromObject(model),center=bounds.getCenter(new T.Vector3());parts.push({id:stage+':'+zone,name:names[stage]+(zone==='base'?'':' · '+zone),model,center,size:bounds.getSize(new T.Vector3())});}
  blueprintCache.set(id,parts);return parts;
 }
-export function townConstructionModel(id,step){const parts=townBlueprint(id);if(!parts)return townModel(id);const group=new T.Group();for(const part of parts.slice(0,Math.max(0,Math.min(parts.length,Math.floor(step)))))group.add(part.model.clone());return group;}
+export function townConstructionModel(id,step,version=1){if(version===2&&supportsHomeLesson(id)){const parts=townBlueprint(id,2);if(step>=parts.length)return townModel(id);return homeLessonModel(parts,step); }const parts=townBlueprint(id);if(!parts)return townModel(id);const group=new T.Group();for(const part of parts.slice(0,Math.max(0,Math.min(parts.length,Math.floor(step)))))group.add(part.model.clone());return group;}
