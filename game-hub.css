@@ -13,3 +13,10 @@
 /* Keep the mobile header small; the chooser holds the full game library. */
 @media(max-width:650px){body>header nav[aria-label="Choose your world"] a:not(.cb-games-link){display:none}body>header nav[aria-label="Choose your world"]{width:auto;min-width:0;flex-wrap:nowrap;gap:6px;padding:5px}body>header nav .cb-games-link{display:inline-flex;align-items:center;min-height:44px;padding:8px 12px;border-radius:12px;background:#e5f4d2;color:#173e34;font-weight:800}body>header.topbar nav:has(#townWorld){width:100%;justify-content:center}}
 @media(max-width:650px){body>header nav[aria-label="Choose your world"]{flex:0 1 auto;order:0}body>header.topbar nav:has(#townWorld){flex-basis:100%;order:3}}
+
+/* Original vector miniatures, with consistent lighting, scale, and silhouettes. */
+.cb-illustration{display:block;object-fit:contain;flex-shrink:0;width:80px;height:80px}
+#cbGameMenu .cb-game-icon{width:80px;height:80px}#cbGameMenu .cb-game-grid>a{min-height:118px;padding:12px;gap:15px}#cbGameMenu .cb-game-play .cb-illustration{width:20px;height:20px}#cbGameMenu .cb-menu-footer a{display:inline-flex;align-items:center;gap:8px}
+.cb-games-link,.cb-games-button{display:inline-flex;align-items:center;justify-content:center;gap:8px}.cb-games-link .cb-illustration,.cb-games-button .cb-illustration{width:22px;height:22px}.cb-recent>a{display:inline-flex;align-items:center;gap:10px;padding:8px 16px 8px 8px}.cb-recent .cb-illustration{width:44px;height:44px}
+.game-emoji.cb-illustrated .cb-illustration{width:54px;height:54px}.learning-art.cb-illustrated>.cb-illustration{width:170px;height:170px;filter:drop-shadow(0 12px 9px #29443822)}
+@media(max-width:540px){#cbGameMenu .cb-game-icon,#cbGameMenu .cb-game-icon .cb-illustration{width:70px;height:70px}#cbGameMenu .cb-game-grid>a{min-height:100px;gap:12px}#cbGameMenu .cb-game-grid b{font-size:16px}#cbGameMenu .cb-game-grid small{font-size:11px}.learning-art.cb-illustrated>.cb-illustration{width:110px;height:110px}}
