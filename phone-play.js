@@ -14,7 +14,7 @@
  const drawer=document.createElement('section');drawer.className='cb-phone-options';drawer.setAttribute('aria-label','Game options');
  const heading=document.createElement('h2');heading.textContent='Game options';drawer.append(heading);
  let selectors=[];
- if(file==='build.html'){document.body.append(drawer);selectors=['#collectionBtn','#workBtn','#helpBtn','#motionBtn','#grownupsBtn'];}
+ if(file==='build.html'){document.body.append(drawer);selectors=['#townProjects','#collectionBtn','#workBtn','#helpBtn','#motionBtn','#grownupsBtn'];}
  if(file==='driving.html'){document.getElementById('garage').prepend(drawer);selectors=['#familyView','#restart','.coach label','#coachMode','#build','#help'];}
  if(file==='waterpark.html'){document.querySelector('.park-tools').prepend(drawer);selectors=['#pause','#help'];}
  if(file==='blocks.html'){document.querySelector('.workshop').prepend(drawer);selectors=[];}
