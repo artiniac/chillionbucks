@@ -1,8 +1,12 @@
 import * as T from './vendor/three.module.js';
+import {CAR_CATALOG,isBuildableCar,carBlueprint,carModel} from './town-cars.js?v=phone1';
 import {scannedMaterial} from './realism.js';
 import {createHomeLesson,homeLessonModel} from './home-construction.js?v=detail1';
 import {BLUEPRINT_LAYOUT} from './town-blueprint-layout.js';
 export const ESTATE_STYLES={
+ riderwoodHome:{name:'9084 Riderwood Dr',note:'Exterior informed by the 1978 city site sketch and listing description. Rear dining changes appear in a 2023 permit. Finishes and unverified details remain approximate.'},
+ caritinaHome:{name:'4619 Caritina Dr',note:'Long parcel, front residence, central pool, rear accessory quarters, and carport follow the 2013 LADBS plot plan. Elevations and current finishes are approximate.'},
+ oakdaleHome:{name:'5105 Oakdale Ave',note:'New single-story residence with side three-car garage, rear pool, spa, and detached cabana, based on the 2022 city plot plan and newer listing photos. Game dimensions are approximate.'},
  capeCodEstate:{name:'Westchester Cape Cod estate',wall:'#d9ddd5',roof:'#777a73',form:'capeCod'},
  spanishEstate:{name:'Spanish courtyard estate',wall:'#e8ddc6',roof:'#a66040',form:'spanish'},
  missionEstate:{name:'California Mission mansion',wall:'#f2e8cf',roof:'#b3744c',form:'mission'},
@@ -13,10 +17,12 @@ export const ESTATE_STYLES={
  colonialEstate:{name:'Colonial revival estate',wall:'#d6d1bb',roof:'#625e55',form:'colonial'},
  contemporaryEstate:{name:'1980s hillside contemporary',wall:'#ddd2bf',roof:'#807666',form:'contemporary'},
  allentownHome:{name:'20171 Allentown Dr',wall:'#e4dfd1',roof:'#716b60',form:'ranch',note:'3,671 sq ft, built in 1961. Exterior massing follows the public floor plan and aerial photos: broad front, rear wing, bay windows, solar garage roof, and pool garden. The owner video guides the rear glazing, slatted patio cover, grass-jointed paving, and backyard play area. Game scale is approximate.'},
- chatsboroHome:{name:'20536 Chatsboro Dr',wall:'#e1dac7',roof:'#877f62',form:'chatsboro',note:'6,362 sq ft, built in 1988. Exterior revised from the listing photo and satellite view: long side garage wing, recessed forecourt, rear cross wing, turret, and pool. No verified floor plan; dimensions and internal construction are illustrative.'}
+ chatsboroHome:{name:'20536 Chatsboro Dr',wall:'#e1dac7',roof:'#877f62',form:'chatsboro',note:'6,362 sq ft, built in 1988. Exterior revised from the listing photo and satellite view: long side garage wing, recessed forecourt, rear cross wing, turret, and pool. The 1987 city permit site sketch also confirms the L-shaped building and curved approach. No verified interior floor plan; dimensions and internal construction are illustrative.'}
 };
 export const TOWN_CATALOG=[
+...CAR_CATALOG,
 ...Object.entries(ESTATE_STYLES).map(([id,d])=>({id,name:d.name,category:id.endsWith('Home')?'Leo’s homes':'Mansions',r:3.2,solid:true,note:d.note||'Woodland Hills estate architecture, with landscaped grounds and detailed exterior materials.'})),
+{id:'agbuSchool',name:'AGBU Manoogian-Demirdjian School',category:'Landmarks',r:6,solid:true,note:'6844 Oakdale Ave. A school campus inspired by AGBU MDS, with classrooms, a gym, and play courts. The campus layout is illustrative.'},
 {id:'warnerTowers',name:'Douglas Emmett: Warner Center Towers',category:'Landmarks',r:5.8,solid:true,note:'Five reflective glass towers and a landscaped plaza, inspired by the Warner Center campus.'},
 {id:'modernEstate',name:'Modern glass estate',category:'Mansions',r:2.8,solid:true,note:'Contemporary modern: floating roof planes, broad glazing, stone, and a pool terrace.'},
 {id:'midcenturyEstate',name:'Mid-century pavilion',category:'Mansions',r:2.7,solid:true,note:'Mid-century inspired: low horizontal rooms, a butterfly roof, warm wood, and indoor-outdoor living.'},
@@ -149,6 +155,7 @@ function chatsboro(g){const cream='#ded7c5',roof='#777261',brick='#996d54';
  box(garageWing,'#494337',0,1.35,1.29,4.85,.075,.07,'wood');box(garageWing,'#494337',0,2.18,1.29,4.85,.075,.07,'wood');
  for(const x of [-1.6,0,1.6]){box(garageWing,cream,x,2.66,1.04,.78,.7,.72,'stucco');gable(garageWing,x,3.01,1.04,.96,.95,.55,roof);window(garageWing,x,2.7,1.42,.48,.56,true);}
  for(const x of [-2.34,-.8,.8,2.34])box(garageWing,'#494337',x,1.77,1.29,.065,.78,.065,'wood');
+ for(const x of [-1.6,0,1.6]){window(garageWing,x,1.75,1.31,.52,.56,true);for(const sign of [-1,1]){const brace=box(garageWing,'#494337',x+sign*.21,3.20,1.53,.04,.45,.045,'wood');brace.rotation.z=sign*.58;}}
  garageWing.rotation.y=Math.PI/2;garageWing.position.set(-1.65,0,1.64);g.add(garageWing);
  box(g,brick,.05,1.36,-1.75,4.85,2.72,2.25,'brick');const rearRoof=new T.Group();gable(rearRoof,0,2.72,0,2.5,5.12,1.1,roof);rearRoof.rotation.y=Math.PI/2;rearRoof.position.set(.05,0,-1.75);rearRoof.userData.blueprintStage='roof';g.add(rearRoof);
  for(const x of [.1,1.17])box(g,brick,x,.75,-.46,.41,1.5,.65,'brick');box(g,brick,.635,2.22,-.46,1.48,1.44,.65,'brick');gable(g,.635,2.94,-.46,1.73,.88,1.18,roof,brick,'brick');
@@ -241,7 +248,7 @@ function propertyDetails(g,kind){
  for(let i=0;i<9;i++)box(g,'#9a9c8e',ranch?.15:0,.053,1.65+i*.17,ranch?.84:6.8,.005,.009);
 }
 function warner(g){box(g,'#b3b8a7',0,.04,0,11.8,.12,8.5,'stone');
- const glass=material('#9daea8','glass');glass.color.set('#d3dfdc');glass.metalness=.8;glass.roughness=.09;glass.envMapIntensity=2;
+ const glass=material('#9daea8','glass');glass.color.set('#789da9');glass.metalness=.85;glass.roughness=.11;glass.envMapIntensity=1.6;
  for(const [i,[x,z,h]] of [[-3.7,-1.8,8.4],[0,-2,10],[3.7,-1.5,8.8],[-2.35,2,5.8],[2.15,2,7.4]].entries()){
   const tower=new T.Group();tower.position.set(x,0,z);g.add(tower);
   // Chamfered corners and offset bays capture the campus's faceted silhouette.
@@ -252,8 +259,8 @@ function warner(g){box(g,'#b3b8a7',0,.04,0,11.8,.12,8.5,'stone');
    for(let k=0;k<=Math.ceil(len/.3);k++)box(facade,'#465553',-len/2+k*len/Math.ceil(len/.3),h/2,0,.018,h,.026);
    tower.add(facade);
   }
-  box(tower,'#68736b',0,.15,0,2.7,.3,2.5,'stone');box(tower,'#68746f',0,h+.025,0,2.45,.05,2.25);box(tower,'#b3bdb2',0,.9,1.32,1.35,.1,.65);}
- pool(g,0,1.2,1.35,2.5);for(const x of [-5.4,5.4])for(const z of [-3,0,3])hedge(g,x,z,.8);label(g,'WARNER CENTER',0,.55,4.28,4);}
+  box(tower,'#68736b',0,.15,0,2.7,.3,2.5,'stone');box(tower,'#68746f',0,h+.025,0,2.45,.05,2.25);box(tower,'#a28f84',0,.55,0,2.7,1.1,2.5,'stone');for(const x of [-.7,.7])window(tower,x,.55,1.27,.52,.84);const awning=box(tower,'#435a60',0,1.05,1.46,1.9,.055,.82,'glass');awning.rotation.x=.20;box(tower,'#aa998f',0,h+.18,0,1.3,.3,1.3,'stone');}
+ pool(g,0,1.2,1.35,2.5);for(const x of [-.9,.9])for(const z of [.1,1.1,2.1]){box(g,'#c7b8a6',x,.10,z,.28,.18,.8,'stone');cylinder(g,'#b3ccc3',0,.3,z,.025,.4);}for(const x of [-4.5,4.5]){cylinder(g,'#8e7f6d',x,.48,3,.42,.07);cylinder(g,'#77756b',x,.25,3,.04,.5);const shade=new T.Mesh(new T.ConeGeometry(.8,.18,24),material('#e7dec9'));shade.position.set(x,1.65,3);g.add(shade);cylinder(g,'#77756b',x,.85,3,.025,1.6);}for(const x of [-5.4,5.4])for(const z of [-3,0,3])hedge(g,x,z,.8);label(g,'WARNER CENTER',0,.55,4.28,4);}
 function city(g,id){const tall=id==='skyscraper',apt=id==='apartments',height=tall?7.5:apt?3.8:1.65;box(g,'#c9c6b5',0,.04,0,3.2,.1,3.1,'stone');box(g,tall?'#728a86':apt?'#c6b598':'#cbbf9f',0,height/2,-.25,2.6,height,2.3,tall?'plain':'stucco');
  if(tall){for(let y=.4;y<7.3;y+=.44)for(let x=-1;x<=1.01;x+=.5){window(g,x,y,.93,.4,.34);const side=new T.Group();window(side,x,y,.93,.4,.34);side.rotation.y=Math.PI/2;g.add(side);}box(g,'#647c72',0,7.6,-.25,2.9,.15,2.6);hedge(g,0,1.25,2.5);cylinder(g,'#bec6bb',0,8.1,-.3,.025,1);}
  else if(apt){for(const y of [.7,1.8,2.9])for(const x of [-.75,.75]){window(g,x,y,.94,.65,.78);box(g,'#d2cbb8',x,y-.45,1.2,1.05,.07,.5);for(let j=0;j<6;j++)box(g,'#63756e',x-.5+j*.2,y-.24,1.43,.018,.4,.018);box(g,'#63756e',x,y-.04,1.43,1,.035,.035);}hedge(g,0,-1.55,2.8);}
@@ -273,16 +280,63 @@ function civic(g,id){
  if(school){for(const x of [-3.1,3.1]){box(g,'#bdb099',x,.9,-2.8,1.8,1.8,2,'brick');hipRoof(g,x,1.95,-2.8,2,2.2,.32,'#7c8273');}box(g,'#779381',0,.13,-3.5,3.8,.04,2.5);for(const x of [-1.7,1.7])box(g,'#e9e1c6',x,.16,-3.5,.025,.015,2.2);}
  if(mall){for(const x of [-4,-2,2,4]){box(g,'#a69177',x,1.8,2.95,1.8,.14,1);label(g,x<0?'SHOP':'CAFE',x,1.65,3.03,1.3);}for(const x of [-4.8,4.8]){box(g,'#79905e',x,.25,3.7,1,.4,.6);}}
 }
-function rawTownModel(id){if(!defs[id])return null;const g=new T.Group();if(['school','mall','library','supermarket'].includes(id))civic(g,id);else if(id==='allentownHome')allentown(g);else if(id==='chatsboroHome')chatsboro(g);else if(ESTATE_STYLES[id])estate(g,id);else if(id==='warnerTowers')warner(g);else if(id.endsWith('Estate'))mansion(g,id);else if(['bank','restaurant','apartments','skyscraper','store'].includes(id))city(g,id);else if(defs[id].vehicle)vehicle(g,id);else if(defs[id].road)road(g,id);else if(id==='sidewalk'){box(g,'#c5c4b4',0,.012,0,1,.05,3,'stone');for(let i=0;i<5;i++)box(g,'#999c8e',0,.04,-1.2+i*.6,1,.005,.014);}else if(id==='townRow'){for(const [i,c] of ['#b48e76','#c4b294','#a17c66'].entries()){const h=new T.Group();box(h,c,0,1,0,1.1,2,1.65,'brick');for(const y of [.62,1.5])window(h,0,y,.85,.53,.55,true);hipRoof(h,0,2.2,0,1.24,1.8,.4,'#60675d');h.position.x=(i-1)*1.15;g.add(h);}}else if(id==='ranch'){box(g,'#c4bc9f',0,.65,0,3.6,1.3,2,'stucco');hipRoof(g,0,1.48,0,3.9,2.3,.38,'#82775e');for(const x of [-1.2,0,1.2])window(g,x,.7,1.03,.75,.65);hedge(g,0,1.4,2.7);}else{box(g,'#7e9860',0,.025,0,3.6,.08,3.6);box(g,'#c8c0a5',0,.08,0,.65,.025,3.6,'stone');for(const x of [-1.2,1.2])hedge(g,x,-1.1,1);if(id==='cityPark'){pool(g,0,0,1.1,1.1);for(const x of [-1.2,1.2]){box(g,'#9d855f',x,.4,.7,.6,.08,.28);box(g,'#61765f',x,.2,.7,.08,.4,.28);}}else{for(const x of [-1,1])box(g,'#8c7959',x,.9,0,.08,1.8,.08);box(g,'#8c7959',0,1.8,0,2.2,.08,.08);for(const x of [-.4,.4]){cylinder(g,'#788277',x,1.12,0,.016,1.3);box(g,'#d1a864',x,.5,0,.48,.07,.25);}hipRoof(g,1.1,1.2,1,1.1,1.1,.4,'#668769');}}
+// Plot-plan massing. Exterior details without a documented elevation remain illustrative.
+function referencedHome(g,id){
+ if(id==='oakdaleHome'){
+  box(g,'#849768',0,-.05,0,10.2,.10,12.0);box(g,'#d4cbb8',0,.016,-3.9,9.5,.04,3.5,'stone');
+  // 2022 plot plan: broad single-story body, notched front entry, side three-car garage.
+  const wings=[[-2.25,0,3.5,4.4],[1.1,-.2,3.2,5.0],[3.25,-.45,1.45,2.7],[-2.9,-2.0,1.5,2.6],[-.05,1.65,.9,1.15]];
+  for(const [x,z,w,d] of wings){box(g,'#e7dfcf',x,.8,z,w,1.6,d,'stucco');const roof=box(g,'#dcd5c6',x,1.64,z,w+.10,.12,d+.10,'stone');roof.userData.constructionRole='roof';}
+  box(g,'#c1b397',-2.9,.6,-1.99,1.55,1.2,2.5,'stone');const garageSide=new T.Group();garage(garageSide,0,0,2.22);garageSide.rotation.y=-Math.PI/2;garageSide.position.set(-3.71,0,-1.99);g.add(garageSide);
+  box(g,'#b3b3a5',-4.35,.03,-1.99,1.15,.06,2.7,'stone');box(g,'#cfc5b4',-.15,.031,3.58,.75,.045,3.6,'stone');
+  for(const [x,z,w] of [[-2.1,2.23,2.6],[1.15,2.33,2.5],[-1.5,-2.25,2.4],[1.3,-2.76,2.5]]){const glazed=new T.Group();for(let i=0;i<3;i++)window(glazed,x+(i-1)*w/3,.79,z,w/3-.035,1.25);g.add(glazed);}
+  box(g,'#504436',-.15,.68,2.18,.65,1.32,.08,'wood');
+  pool(g,1.45,-4.22,4.8,2.05);pool(g,2.6,-4.85,1.15,.75);box(g,'#bcb6a9',.1,.12,-4.6,1.3,.16,.8,'stone');box(g,'#e1d5bd',.1,.3,-4.8,1.1,.16,.18);box(g,'#6b5e49',.1,.24,-4.45,.55,.07,.35);
+  // Detached cabana at the back corner, matching the plan and rear listing photo.
+  box(g,'#ded6c7',-2.6,.65,-4.65,1.4,1.3,1.5,'stucco');window(g,-2.6,.68,-3.88,1.15,1.07);const cabRoof=box(g,'#e5ddcb',-2.6,1.34,-4.65,1.6,.12,1.7);cabRoof.userData.constructionRole='roof';
+  for(const x of [-4.6,4.55])for(const z of [-4.9,-2.8,.2,2.7,4.6])hedge(g,x,z,.65);for(const x of [-2.3,2.5])hedge(g,x,4.8,1.7);label(g,'5105 OAKDALE',0,.28,5.8,2.4);
+ }else if(id==='caritinaHome'){
+  // Long narrow parcel with main residence toward street, pool in middle, rear accessory quarters.
+  box(g,'#809764',0,-.05,0,4.4,.10,16.5);box(g,'#bcb6a9',1.75,.018,0,.55,.04,16.1,'stone');
+  box(g,'#ded4bf',-.2,.85,1.95,2.75,1.7,4.4,'stucco');gable(g,-.2,1.7,1.95,2.95,4.55,.72,'#7b7464');
+  const front=new T.Group();box(front,'#dfd4bf',0,1.35,0,2.1,2.7,1.9,'stucco');gable(front,0,2.7,0,2.3,2.1,.9,'#7b7464');for(const x of [-.58,.58])for(const y of [.75,2.02])window(front,x,y,1.01,.48,.75,true);front.position.set(.1,0,3.8);front.rotation.y=-Math.PI/4;g.add(front);
+  for(const z of [.4,1.5,2.6])for(const side of [-1,1]){const f=new T.Group();window(f,0,.86,0,.7,.9,true);f.rotation.y=side*Math.PI/2;f.position.set(-.2+side*1.4,0,z);g.add(f);}
+  box(g,'#d2c8b4',-.45,.034,5.95,2.3,.05,2,'stone');for(const x of [-1.05,-.25,.55])box(g,'#687658',x,.055,6.7,.3,.015,.4);box(g,'#d9cdb4',-.6,.7,-.95,1.5,1.4,1.15,'stucco');gable(g,-.6,1.4,-.95,1.7,1.4,.5,'#7b7464');
+  pool(g,.15,-3.2,1.35,2.25);box(g,'#d0c4af',-.85,.7,-5.05,1.1,1.4,1.0,'stucco');gable(g,-.85,1.4,-5.05,1.35,1.3,.5,'#7b7464');
+  box(g,'#daceb8',.35,.7,-6.75,2.4,1.4,2,'stucco');gable(g,.35,1.4,-6.75,2.6,2.2,.6,'#7b7464');for(const x of [-.4,.4,1.2])window(g,x,.78,-5.71,.5,.9,true);
+  for(const x of [-1.42,-.55])for(const z of [-5.7,-7.6])box(g,'#5e6255',x,.65,z,.05,1.3,.05);const carport=box(g,'#8c8878',-.98,1.35,-6.65,1.35,.09,2.1);carport.userData.constructionRole='roof';
+  for(const x of [-2,2])for(let z=-7.5;z<8;z+=.75)hedge(g,x,z,.42);for(const x of [-1.1,.2])hedge(g,x,7.3,.8);label(g,'4619 CARITINA',0,.3,8.1,2.7);
+ }else{
+  // Riderwood's original 1978 sketch shows an offset garage and a single-story main block.
+  box(g,'#879c69',0,-.04,0,6.8,.08,7.2);box(g,'#ddd0b9',.25,.76,-.6,4.3,1.52,3.3,'stucco');gable(g,.25,1.52,-.6,4.6,3.55,.88,'#6d7268');
+  box(g,'#d6c6ae',-1.8,.73,1.3,1.95,1.46,2.35,'stucco');gable(g,-1.8,1.46,1.3,2.2,2.6,.7,'#6d7268');garage(g,-1.8,2.52,1.6);box(g,'#c5c0b3',-1.8,.019,2.93,2.3,.038,1.15,'stone');
+  box(g,'#c7c3b3',-.05,.027,2.3,.65,.054,2.4,'stone');box(g,'#765946',-.05,.63,1.08,.65,1.18,.07,'wood');
+  const bay=new T.Group();window(bay,0,.82,0,.85,.91,true);for(const side of [-1,1]){const wing=new T.Group();window(wing,0,.82,0,.4,.91,true);wing.position.set(side*.59,0,-.12);wing.rotation.y=side*Math.PI/4;bay.add(wing);}bay.position.set(1.35,0,1.24);g.add(bay);gable(g,1.35,1.35,1.25,1.9,.75,.35,'#6d7268');
+  const rear=new T.Group();box(rear,'#c7c1ad',.3,.55,-2.66,3.8,1.1,.85,'stucco');for(let x=-1.2;x<2;x+=.6){const w=new T.Group();window(w,0,.63,0,.54,.9);w.rotation.y=Math.PI;w.position.set(x,0,-3.12);rear.add(w);}g.add(rear);box(g,'#d3c7b3',.3,1.13,-2.66,4,.09,1.05).userData.constructionRole='roof';
+  box(g,'#999781',0,.20,-3.46,6.1,.4,.16,'stone');for(const x of [-2.95,2.95])for(const z of [-2.6,-.9,.8,2.7])hedge(g,x,z,.5);label(g,'9084 RIDERWOOD',.35,.24,3.45,2.4);
+ }
+}
+function agbu(g){
+ box(g,'#aeb09b',0,.015,0,12,.08,11,'stone');
+ // Recognizable school campus, with classroom wings, courtyard, gym, and play courts.
+ for(const [x,z,w,d,h] of [[0,3.4,10,2.3,2.5],[-4.6,-.6,1.8,5.7,1.5],[4.2,-.6,2.6,5.7,2.1],[-.8,-3.8,5.5,1.9,1.4]]){box(g,'#dbd0b9',x,h/2,z,w,h,d,'stucco');box(g,'#c0aa8c',x,h+.045,z,w+.1,.09,d+.1).userData.constructionRole='roof';for(let y=.65;y<h;y+=1.15)for(let xx=x-w/2+.4;xx<x+w/2-.15;xx+=.75)window(g,xx,y,z+d/2+.025,.55,.62);}
+ box(g,'#506c57',0,.08,-.7,5.9,.04,3.7);for(const x of [-2.8,2.8])box(g,'#e5e0c9',x,.11,-.7,.03,.014,3.5);for(const z of [-2.4,1])box(g,'#e5e0c9',0,.11,z,5.6,.014,.03);box(g,'#e5e0c9',0,.11,-.7,.03,.014,3.5);
+ const circle=new T.Mesh(new T.RingGeometry(.54,.56,48),material('#ece8d6'));circle.rotation.x=-Math.PI/2;circle.position.set(0,.113,-.7);g.add(circle);
+ for(const x of [-2.9,2.9]){box(g,'#747e79',x,.75,-.7,.055,1.5,.055);box(g,'#eee9d6',x,1.48,-.7,.025,.48,.74);}
+ box(g,'#446053',0,1.14,4.61,2.5,1.9,.035,'glass');label(g,'AGBU MDS',0,2.28,4.65,3.2);label(g,'6844 OAKDALE',0,.27,5.3,2.5);for(const x of [-5.55,5.55])for(const z of [-4.5,-2,0,2,4.5])hedge(g,x,z,.6);
+ for(let i=0;i<4;i++){box(g,'#aab798',-3.9+i*2.5,.25,5.05,.9,.35,.55);hedge(g,-3.9+i*2.5,5.05,.7);}
+}
+
+function rawTownModel(id){if(isBuildableCar(id))return carModel(id);if(!defs[id])return null;const g=new T.Group();if(['riderwoodHome','caritinaHome','oakdaleHome'].includes(id))referencedHome(g,id);else if(id==='agbuSchool')agbu(g);else if(['school','mall','library','supermarket'].includes(id))civic(g,id);else if(id==='allentownHome')allentown(g);else if(id==='chatsboroHome')chatsboro(g);else if(ESTATE_STYLES[id])estate(g,id);else if(id==='warnerTowers')warner(g);else if(id.endsWith('Estate'))mansion(g,id);else if(['bank','restaurant','apartments','skyscraper','store'].includes(id))city(g,id);else if(defs[id].vehicle)vehicle(g,id);else if(defs[id].road)road(g,id);else if(id==='sidewalk'){box(g,'#c5c4b4',0,.012,0,1,.05,3,'stone');for(let i=0;i<5;i++)box(g,'#999c8e',0,.04,-1.2+i*.6,1,.005,.014);}else if(id==='townRow'){for(const [i,c] of ['#b48e76','#c4b294','#a17c66'].entries()){const h=new T.Group();box(h,c,0,1,0,1.1,2,1.65,'brick');for(const y of [.62,1.5])window(h,0,y,.85,.53,.55,true);hipRoof(h,0,2.2,0,1.24,1.8,.4,'#60675d');h.position.x=(i-1)*1.15;g.add(h);}}else if(id==='ranch'){box(g,'#c4bc9f',0,.65,0,3.6,1.3,2,'stucco');hipRoof(g,0,1.48,0,3.9,2.3,.38,'#82775e');for(const x of [-1.2,0,1.2])window(g,x,.7,1.03,.75,.65);hedge(g,0,1.4,2.7);}else{box(g,'#7e9860',0,.025,0,3.6,.08,3.6);box(g,'#c8c0a5',0,.08,0,.65,.025,3.6,'stone');for(const x of [-1.2,1.2])hedge(g,x,-1.1,1);if(id==='cityPark'){pool(g,0,0,1.1,1.1);for(const x of [-1.2,1.2]){box(g,'#9d855f',x,.4,.7,.6,.08,.28);box(g,'#61765f',x,.2,.7,.08,.4,.28);}}else{for(const x of [-1,1])box(g,'#8c7959',x,.9,0,.08,1.8,.08);box(g,'#8c7959',0,1.8,0,2.2,.08,.08);for(const x of [-.4,.4]){cylinder(g,'#788277',x,1.12,0,.016,1.3);box(g,'#d1a864',x,.5,0,.48,.07,.25);}hipRoof(g,1.1,1.2,1,1.1,1.1,.4,'#668769');}}
 return g;}
-export function townModel(id){if(!defs[id])return null;if(!templates.has(id))templates.set(id,compact(rawTownModel(id)));return templates.get(id).clone();}
+export function townModel(id){if(isBuildableCar(id))return carModel(id);if(!defs[id])return null;if(!templates.has(id))templates.set(id,compact(rawTownModel(id)));return templates.get(id).clone();}
 
 
 const blueprintCache=new Map(),lessonCache=new Map();
 export function supportsHomeLesson(id){return !!ESTATE_STYLES[id]||['modernEstate','midcenturyEstate','georgianEstate','mediterraneanEstate'].includes(id);}
-export function hasBlueprint(id){return !!(defs[id]?.solid&&!defs[id]?.vehicle);}
+export function hasBlueprint(id){return isBuildableCar(id)||!!(defs[id]?.solid&&!defs[id]?.vehicle);}
 // Group the actual model's geometry into reusable construction assemblies. No image substitutes.
-export function townBlueprint(id,version=1){if(version===2&&supportsHomeLesson(id)){if(!lessonCache.has(id))lessonCache.set(id,createHomeLesson(rawTownModel(id),compact,id));return lessonCache.get(id);}if(!hasBlueprint(id))return null;if(blueprintCache.has(id))return blueprintCache.get(id);const raw=rawTownModel(id),groups=new Map();raw.updateMatrixWorld(true);
+export function townBlueprint(id,version=1){if(isBuildableCar(id))return carBlueprint(id);if(version===2&&supportsHomeLesson(id)){if(!lessonCache.has(id))lessonCache.set(id,createHomeLesson(rawTownModel(id),compact,id));return lessonCache.get(id);}if(!hasBlueprint(id))return null;if(blueprintCache.has(id))return blueprintCache.get(id);const raw=rawTownModel(id),groups=new Map();raw.updateMatrixWorld(true);
  for(const child of [...raw.children]){const b=new T.Box3().setFromObject(child),size=b.getSize(new T.Vector3()),center=b.getCenter(new T.Vector3());let stage='details';
   if(b.max.y<.16)stage='foundation';
   else if(child.isGroup)stage='windows';
@@ -295,4 +349,4 @@ export function townBlueprint(id,version=1){if(version===2&&supportsHomeLesson(i
  for(const stage of order)for(const zone of ['base','left','center','right']){let group=groups.get(stage+':'+zone);if(!group){if(!BLUEPRINT_LAYOUT[id]?.includes(stage+':'+zone))continue;group=new T.Group();}const model=compact(group),bounds=new T.Box3().setFromObject(model),center=bounds.getCenter(new T.Vector3());parts.push({id:stage+':'+zone,name:names[stage]+(zone==='base'?'':' · '+zone),model,center,size:bounds.getSize(new T.Vector3())});}
  blueprintCache.set(id,parts);return parts;
 }
-export function townConstructionModel(id,step,version=1,pieceCount=0){if(version===2&&supportsHomeLesson(id)){const parts=townBlueprint(id,2);if(step>=parts.length)return townModel(id);return homeLessonModel(parts,step,pieceCount); }const parts=townBlueprint(id);if(!parts)return townModel(id);const group=new T.Group();for(const part of parts.slice(0,Math.max(0,Math.min(parts.length,Math.floor(step)))))group.add(part.model.clone());return group;}
+export function townConstructionModel(id,step,version=1,pieceCount=0){if(isBuildableCar(id))return carModel(id,Math.max(0,Math.floor(step)));if(version===2&&supportsHomeLesson(id)){const parts=townBlueprint(id,2);if(step>=parts.length)return townModel(id);return homeLessonModel(parts,step,pieceCount); }const parts=townBlueprint(id);if(!parts)return townModel(id);const group=new T.Group();for(const part of parts.slice(0,Math.max(0,Math.min(parts.length,Math.floor(step)))))group.add(part.model.clone());return group;}

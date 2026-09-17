@@ -1,4 +1,4 @@
-import {TOWN_CATALOG,townModel} from './town-models.js?v=allentown-video1';
+import {TOWN_CATALOG,townModel} from './town-models.js?v=phone1';
 import {reefExtra} from './reef-extras.js?v=expansion2';
 import * as T from './vendor/three.module.js';
 import {human} from './living-models.js';

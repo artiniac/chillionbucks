@@ -1,0 +1,141 @@
+/* Touch rules apply to play surfaces, not reading pages or form fields. */
+#game,.park,#parkViewport,#viewport,canvas,.card,.property-rulebook,button{ -webkit-tap-highlight-color:transparent; }
+#game,.park,.property-rulebook,.catalog,.drive-controls{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+#game img,.park img,.catalog img{pointer-events:none;-webkit-user-drag:none}
+#game,.park,#viewport,#parkViewport{touch-action:none;overscroll-behavior:none}
+button,a,input,select{touch-action:manipulation}
+.cb-play-tools{display:none}
+@media(max-width:800px),(max-height:520px) and (pointer:coarse){
+ body.cb-phone-game{height:100dvh;overflow:hidden;overscroll-behavior:none;display:flex;flex-direction:column;margin:0}
+ .cb-phone-game>header,.cb-phone-game>.topbar{height:48px!important;min-height:48px;padding:0 10px!important;gap:8px;flex-shrink:0}
+ .cb-phone-game header .brand{font-size:0;gap:0}.cb-phone-game header .brand>span:not(.brand-mark){display:none}.cb-phone-game header .brand-mark{width:28px;height:32px;font-size:25px}
+ .cb-phone-game header nav>*:not(.cb-games-link):not(.cb-games-button){display:none!important}
+ .cb-phone-game header nav{margin-right:auto;flex:0 0 auto}.cb-phone-game header .cb-games-link,.cb-phone-game header .cb-games-button{padding:5px 8px;gap:5px;min-height:40px;font-size:12px}
+ .cb-phone-game header .cb-illustration{width:25px;height:25px}.cb-phone-game header .wallet{margin-left:auto;padding:4px 8px}.cb-phone-game .wallet>span{display:none}.cb-phone-game .wallet strong{font-size:13px}
+ .cb-phone-game>footer,.cb-phone-game>.footer{display:none}
+ .cb-phone-game #game,.cb-phone-game .park{height:auto!important;min-height:0!important;max-height:none;flex:1;position:relative;overflow:hidden;margin:0;border-radius:0}
+ .cb-phone-game #viewport,.cb-phone-game #parkViewport{position:absolute;inset:0!important;height:100%!important}
+ .cb-phone-game .world-title,.cb-phone-game .title,.cb-phone-game .park-title,.cb-phone-game .scene-footer,.cb-phone-game .quest{display:none!important}
+ .cb-phone-game button{min-height:40px}.cb-phone-game #drivePad button,.cb-phone-game #walkPad button{width:42px;height:42px;margin:1px;border-radius:12px}
+ .cb-phone-game .view-controls{top:8px!important;right:8px;flex-direction:row;gap:3px}.cb-phone-game .view-controls button{width:36px;height:40px;font-size:20px}
+ .cb-phone-game .kid-shop{left:8px;top:8px;bottom:auto;padding:8px 12px;font-size:13px;max-width:150px}
+ .cb-phone-game .play-actions{left:8px;bottom:10px;right:auto;gap:4px;max-width:210px;flex-wrap:wrap}.cb-phone-game .play-actions button{padding:6px 9px;font-size:10px}.cb-phone-game .play-actions #workBtn{display:none}
+ .cb-phone-game #drivePad{right:8px;bottom:8px}.cb-phone-game #townVisits{top:58px;left:8px;right:auto;bottom:auto;max-width:170px}.cb-phone-game #townVisits select{font-size:12px;padding:7px;max-width:170px;min-height:38px}
+ .cb-phone-game .shop{display:none;position:fixed;left:0;right:0;bottom:0;height:205px;padding:8px;background:#fbfff3fa;border-radius:18px 18px 0 0;z-index:12;box-shadow:0 -8px 35px #19352820;overflow:hidden}
+ .cb-phone-game.shop-open .shop{display:block}.cb-phone-game.shop-open #game{margin-bottom:205px}.cb-phone-game .shop-heading{display:block;margin:0 0 5px}.cb-phone-game .shop-heading>div:first-child,.cb-phone-game .collection{display:none}
+ .cb-phone-game .shop-tabs{display:flex;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;margin:0;padding-right:40px;touch-action:pan-x;scrollbar-width:none}.cb-phone-game .shop-tabs button{flex-shrink:0;padding:6px 10px;font-size:11px;min-height:35px}
+ .cb-phone-game .catalog{display:flex;gap:8px;overflow-x:auto;touch-action:pan-x;scrollbar-width:none;padding:3px 0 4px}.cb-phone-game .card{width:112px;min-width:112px;padding:4px;border-radius:12px;touch-action:pan-x}.cb-phone-game .card img{height:65px}.cb-phone-game .card .card-name{font-size:10px;line-height:1.2;margin:3px}.cb-phone-game .card-price,.cb-phone-game .card .plus{display:none}
+ .shop-close{position:absolute;right:5px;top:6px;z-index:2;width:35px;background:#e1ecdb;border-radius:50%}.drag-cue{font-size:11px;text-align:center;color:#45604c;margin:2px}
+ .cb-phone-game #selection,.cb-phone-game #placement{top:auto;bottom:108px;left:8px;right:8px;max-width:none;padding:8px;border-radius:12px}.cb-phone-game #selection strong,.cb-phone-game #placement strong{font-size:13px;margin:0 0 6px}.cb-phone-game #selection button{font-size:11px;padding:5px 9px}.cb-phone-game #raiseItem,.cb-phone-game #lowerItem,.cb-phone-game #smallerItem,.cb-phone-game #biggerItem{display:none}
+ .cb-phone-game .property-rulebook{top:auto;bottom:0;left:0;right:0;width:auto;max-height:215px;padding:8px 12px;border-radius:16px 16px 0 0;overflow:auto;touch-action:pan-y}.cb-phone-game #game.building-property #viewport{bottom:215px!important;height:auto!important}.cb-phone-game .property-rulebook .book-lesson,.cb-phone-game .property-rulebook .book-reference,.cb-phone-game .property-rulebook details,.cb-phone-game .rulebook-top strong,.cb-phone-game .book-view{display:none}.cb-phone-game .property-rulebook h2{font-size:14px;margin:2px 40px 4px 0}.cb-phone-game .book-instruction{font-size:11px;margin:3px 0}.cb-phone-game .book-detail{font-size:10px;margin:3px 0}.cb-phone-game .book-piece-row{height:65px}.cb-phone-game .book-piece{margin:0;width:145px;padding:3px;touch-action:none}.cb-phone-game .book-piece img{height:43px}.cb-phone-game .book-piece span{font-size:10px}.cb-phone-game .book-snap{min-height:34px;padding:6px}.cb-phone-game .book-read{position:absolute;top:8px;right:48px;padding:4px;font-size:10px;min-height:28px}.cb-phone-game .book-close{min-height:28px}.cb-phone-game .property-rulebook progress{height:5px;margin:3px 0}
+ .cb-phone-game .hud{top:8px;right:8px;gap:4px}.cb-phone-game .hud span{font-size:10px;padding:5px 8px}.cb-phone-game #map{top:44px;right:8px;width:86px;height:62px}.cb-phone-game .star-adventure{top:auto;bottom:100px;right:8px;padding:5px 9px;width:110px}.cb-phone-game .star-adventure strong{font-size:18px}.cb-phone-game .star-adventure span{display:none}.cb-phone-game .star-adventure progress{height:4px}
+ .cb-phone-game .views{top:8px;left:8px;gap:4px}.cb-phone-game .views button{font-size:10px;padding:5px 7px}.cb-phone-game #familyView,.cb-phone-game #restart{display:none}.cb-phone-game .coach{top:56px;left:8px;transform:none;width:auto;max-width:155px;padding:6px 10px}.cb-phone-game .coach strong{font-size:12px}.cb-phone-game .coach label,.cb-phone-game .coach select{display:none}
+ .cb-phone-game .drive-controls{bottom:10px;left:50%;transform:translateX(-50%);gap:8px}.cb-phone-game .drive-controls .go{width:76px;height:56px;font-size:18px;padding:5px}.cb-phone-game .drive-controls .drift{width:64px;height:56px;font-size:17px;padding:4px}.cb-phone-game .drive-controls small,.cb-phone-game .drive-controls .build{display:none}.cb-phone-game .steer{bottom:16px;left:8px;right:8px}.cb-phone-game .steer button{width:46px;height:48px}
+ .cb-phone-game #message{bottom:172px;max-width:75%;padding:6px 12px;font-size:11px}.cb-phone-game #garage,.cb-phone-game #workshop{display:none;position:fixed;inset:48px 0 0;background:#f5f7ea;z-index:25;overflow:auto;touch-action:pan-y;padding:16px}.cb-phone-game.tools-open #garage{display:block}.cb-phone-game.tools-open #workshop:not([hidden]){display:block}
+ .cb-play-tools{display:block;position:fixed;right:57px;top:4px;z-index:32;width:40px;height:40px;padding:5px;background:#edf3e5;border:1px solid #c9d9bf;border-radius:12px;color:#244c3c;font-size:20px}
+ .cb-phone-game.tools-open #familyView,.cb-phone-game.tools-open #restart,.cb-phone-game.tools-open .coach label,.cb-phone-game.tools-open .coach select{display:inline-block}
+ .cb-phone-game .park-camera{top:8px;right:8px;left:auto;gap:3px;flex-wrap:wrap;max-width:180px}.cb-phone-game .park-camera button{font-size:11px;padding:5px;width:36px}.cb-phone-game #guestView{width:auto}.cb-phone-game #pause{display:none}.cb-phone-game #buildPark{top:8px;left:8px;bottom:auto;padding:8px;font-size:12px}.cb-phone-game #quickRide{bottom:12px;left:8px;padding:10px;font-size:13px}.cb-phone-game #walkPad{bottom:8px;right:8px}.cb-phone-game .park-hint{display:none}
+ .cb-phone-game .park-tools{display:none;position:fixed;inset:48px 0 0;z-index:25;overflow:auto;touch-action:pan-y;background:#f5f7ea;padding:12px}.cb-phone-game.tools-open .park-tools{display:block}.cb-phone-game #placementPreview{bottom:72px;max-width:85%;padding:8px}.cb-phone-game .park-camera #rotate{display:none}
+ .cb-phone-game #toast{bottom:225px;font-size:12px;padding:8px 12px}
+}
+@media(prefers-reduced-motion:reduce){.drag-hand{animation:none!important}}
+.drag-hand{display:inline-block;animation:drag-demo 1.8s infinite;color:#356b47;font-size:18px}@keyframes drag-demo{0%,100%{transform:translate(0,2px)}60%{transform:translate(18px,-6px)}}
+.town-drag-preview{position:fixed;width:90px;height:70px;object-fit:contain;pointer-events:none;z-index:60;filter:drop-shadow(0 6px 8px #0005);transform:translate(-50%,-65%)}
+.shop-close{cursor:pointer}.shop-close[hidden]{display:none}
+
+.garage-art{display:block;width:100%;max-height:210px;object-fit:cover;border-radius:16px;margin:10px 0}.garage-art[hidden]{display:none}
+@media(max-width:800px){.cb-phone-game .garage-art{display:none}.cb-phone-game .card{touch-action:pan-x}}
+@media(max-width:800px),(max-height:520px) and (pointer:coarse){
+ .cb-phone-game>header{flex-wrap:nowrap!important;align-items:center!important}
+ .cb-phone-game>header nav{order:0!important;flex:0 0 auto!important;width:auto!important;margin:0 auto 0 0!important;padding:0!important;min-height:0!important}
+ .cb-phone-game .kid-shop{min-height:40px;max-width:155px;padding:6px 10px;font-size:12px}
+ .cb-phone-game .property-rulebook{min-height:180px;max-height:195px}
+ .cb-phone-game .rulebook-top{height:0}.cb-phone-game .book-close{position:absolute;top:8px;right:8px}
+ .cb-phone-game #game.building-property #viewport{bottom:195px!important}
+ .cb-phone-game .book-read{right:47px}.cb-phone-game .property-rulebook h2{margin:2px 110px 5px 0;min-height:30px}
+ .cb-phone-game .book-instruction{min-height:28px}.cb-phone-game .book-snap{margin-top:5px}
+ .cb-phone-game .shop-tabs{padding-right:35px}.cb-phone-game #catalog{min-height:105px}
+}
+.town-drop-demo{position:fixed;z-index:20;pointer-events:none;width:75px;height:60px;animation:show-drop 3s ease-in-out infinite;filter:drop-shadow(0 3px 4px #183f3660)}
+.town-drop-demo img{width:75px;height:55px;object-fit:contain}.town-drop-demo svg{position:absolute;width:30px;height:36px;left:35px;top:30px}
+.town-drop-demo[hidden]{display:none}@keyframes show-drop{0%,15%{transform:translate(0,0);opacity:.2}25%{opacity:.95}75%,90%{transform:translate(var(--dx),var(--dy));opacity:1}100%{transform:translate(var(--dx),var(--dy));opacity:0}}
+@media(prefers-reduced-motion:reduce){.town-drop-demo{animation:none;transform:translate(var(--dx),var(--dy));opacity:.65}}
+
+.cb-phone-options{display:none}
+@media(max-width:800px),(max-height:520px) and (pointer:coarse){
+ .cb-phone-game.tools-open .cb-phone-options{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px 0;margin-bottom:15px;color:#174432}
+ .cb-phone-options h2{width:100%;margin:0 0 8px;font-size:20px}.cb-phone-options button,.cb-phone-options select{border:1px solid #b3c7ad;border-radius:10px;padding:8px 12px;background:#e3eddb;color:#174432;font-size:13px;min-height:42px}
+ .cb-phone-game.tools-open>.cb-phone-options{position:fixed;inset:48px 0 0;background:#f5f7ea;z-index:25;align-content:start;padding:20px;overflow:auto;touch-action:pan-y}
+ .cb-phone-game .cb-phone-options .collection{display:block}.cb-phone-game .cb-phone-options #helpBtn{font-size:20px}
+ .cb-phone-game .cb-phone-options label{font-size:13px}
+ .cb-phone-game.phone-route-edit .park-tools{display:block;inset:auto 0 0;height:165px;padding:8px;overflow:auto}
+ .cb-phone-game.phone-route-edit .park-tools>*:not(#routeEditor){display:none!important}
+ .cb-phone-game.phone-route-edit #routeEditor>p:first-child{display:none}
+ .cb-phone-game.phone-route-edit .park{margin-bottom:165px}
+ .cb-phone-game.phone-route-edit #routeEditor .tool-row{gap:4px}.cb-phone-game.phone-route-edit #routeEditor button{font-size:11px;padding:6px}
+ .cb-phone-game .studio{flex:1;min-height:0;height:auto;position:relative;touch-action:none;user-select:none;-webkit-user-select:none}
+ .cb-phone-game .studio-title{display:none}.cb-phone-game .studio-tools{top:8px;left:8px;gap:4px}.cb-phone-game .studio-tools button{padding:6px 8px;font-size:11px;min-height:40px}
+ .cb-phone-game .studio-camera{top:56px;right:8px;flex-direction:row;gap:3px}.cb-phone-game .studio-camera button{min-width:32px;width:32px;height:38px;min-height:38px;padding:4px;font-size:17px}.cb-phone-game #topView{width:65px;font-size:11px}
+ .cb-phone-game .studio-hint{padding:6px;font-size:10px;bottom:64px}.cb-phone-game .snap-confirm{bottom:10px}.cb-phone-game .snap-confirm button{min-height:40px;font-size:11px;padding:6px 10px}
+ .cb-phone-game .snap-nudge{left:8px;right:auto;bottom:105px;grid-template-columns:repeat(3,36px);gap:3px}.cb-phone-game .snap-nudge button{width:36px;height:36px;min-height:36px;font-size:18px}
+ .cb-phone-game .workshop{display:none;position:fixed;inset:48px 0 0;z-index:25;overflow:auto;touch-action:pan-y;background:#f5f7ea;padding:12px}
+ .cb-phone-game.tools-open .workshop{display:block}.cb-phone-game .workshop-top>div{display:none}
+ .cb-phone-game .guided .guided-piece{height:88px;width:calc(100% - 16px);left:8px;bottom:8px;grid-template-columns:90px 1fr;gap:3px;padding:4px 8px}.cb-phone-game .guided-piece canvas{width:90px;height:63px}.cb-phone-game .guided .studio-hint{bottom:103px}
+ .cb-phone-pinball{height:100dvh;overflow:hidden;display:flex;flex-direction:column;overscroll-behavior:none}
+ .cb-phone-pinball header{width:100%;height:48px;min-height:48px;padding:4px 10px}.cb-phone-pinball header .brand span,.cb-phone-pinball header nav>a:not(.cb-games-link){display:none}.cb-phone-pinball header .brand{font-size:26px}.cb-phone-pinball nav{gap:10px}
+ .cb-phone-pinball main{display:flex;flex-direction:column;flex:1;min-height:0;width:100%;max-width:460px;margin:0 auto;padding:0 6px 5px;gap:3px}
+ .cb-phone-pinball .intro{padding:0}.cb-phone-pinball .intro>*:not(.modes){display:none}.cb-phone-pinball .modes{margin:0;justify-content:center}.cb-phone-pinball .modes button{padding:6px 10px;font-size:11px;min-height:36px}
+ .cb-phone-pinball .machine{display:flex;flex-direction:column;flex:1;min-height:0;padding:5px;border-radius:12px}.cb-phone-pinball .scoreboard{padding:4px}.cb-phone-pinball .scoreboard output{font-size:18px}
+ .cb-phone-pinball .table{display:flex;justify-content:center;flex:1;min-height:0}.cb-phone-pinball .table canvas{height:100%;width:auto;max-width:100%;min-height:0;object-fit:contain}
+ .cb-phone-pinball .controls{padding-top:5px;gap:5px}.cb-phone-pinball .controls button{min-height:46px;font-size:12px}.cb-phone-pinball .under{min-height:30px;padding:2px}.cb-phone-pinball .under p{font-size:10px}.cb-phone-pinball .under button{padding:6px}
+ .cb-phone-pinball #startCard{top:28%;padding:10px}.cb-phone-pinball #startCard>span{display:none}
+}
+@media(max-height:520px) and (max-width:950px){
+ .cb-phone-game .shop{width:230px;left:auto;top:48px;height:auto;border-radius:15px 0 0 15px}.cb-phone-game.shop-open #game{margin-bottom:0;margin-right:230px}
+ .cb-phone-game .catalog{flex-wrap:wrap;overflow-y:auto;height:calc(100% - 48px);touch-action:pan-y}.cb-phone-game .card{width:98px;min-width:98px}
+ .cb-phone-game .property-rulebook{left:auto;width:245px;top:0;bottom:0;max-height:none;min-height:0;border-radius:0;overflow:auto}.cb-phone-game #game.building-property #viewport{right:245px!important;bottom:0!important;width:auto!important;height:100%!important}
+ .cb-phone-game .book-instruction{min-height:0}.cb-phone-game .property-rulebook h2{margin-right:65px}.cb-phone-game .book-read{top:auto;bottom:8px;right:50px}
+ .cb-phone-game .star-adventure{bottom:74px}.cb-phone-game .coach{top:8px;left:145px}.cb-phone-game #map{width:65px;height:47px}.cb-phone-game #message{bottom:75px}
+ .cb-phone-game .guided .guided-piece{width:200px;height:95px;left:8px;grid-template-columns:70px 1fr}.cb-phone-game .guided-piece canvas{width:70px;height:49px}.cb-phone-game .guided .studio-hint{left:auto;right:8px;transform:none;bottom:14px;width:180px}
+}
+
+@media(max-width:800px),(max-height:520px) and (pointer:coarse){.cb-phone-game header .cb-play-tools{position:static;flex:0 0 40px;margin:0}.cb-phone-game header{gap:5px!important}.cb-phone-game header #sound,.cb-phone-game header .sound-switch{flex-shrink:0;width:40px;height:40px;padding:5px}.cb-phone-game #drivePad{left:auto;transform:none;right:8px}.cb-phone-game #drivePad[hidden]{display:none!important}}
+
+@media(max-width:800px),(max-height:520px) and (pointer:coarse){.cb-phone-game.shop-open .play-actions,.cb-phone-game.shop-open #drivePad,.cb-phone-game.shop-open #townVisits{display:none!important}.cb-phone-game.shop-open #placement{bottom:8px}.cb-phone-game .card{min-height:100px}.cb-phone-game .property-rulebook:has(.book-snap[hidden]){min-height:110px;max-height:110px}}
+
+@media(max-width:800px),(max-height:520px) and (pointer:coarse){
+ .cb-phone-game .hud{display:flex;flex-direction:row;max-width:none;right:8px;left:auto}.cb-phone-game .hud span{white-space:nowrap}
+ .cb-phone-game .star-adventure{left:auto;right:8px;bottom:88px;width:128px}.cb-phone-game .star-adventure strong{font-size:17px;white-space:nowrap;letter-spacing:0}
+ .cb-phone-game .drive-controls .go{min-width:76px;max-width:76px}.cb-phone-game .drive-controls .drift{min-width:74px;max-width:74px;font-size:13px}
+ .cb-phone-game.editing #workshop:not([hidden]){display:block;inset:auto 0 0;height:245px;padding:10px;overflow:auto}.cb-phone-game.editing #game{margin-bottom:245px}.cb-phone-game.editing #workshop .section-heading h2{font-size:16px;margin:0}.cb-phone-game.editing #workshop .eyebrow,.cb-phone-game.editing #workshop>p{display:none}.cb-phone-game.editing #workshop .section-heading{gap:8px;margin-bottom:6px}.cb-phone-game.editing #workshop #done{min-height:40px;padding:7px;font-size:12px}
+ .cb-phone-game.editing #workshop .selection{gap:5px;margin:5px 0}.cb-phone-game.editing #workshop .selection button,.cb-phone-game.editing #workshop select{padding:5px}.cb-phone-game.editing #workshop .piece-cards{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px;touch-action:pan-x}.cb-phone-game.editing #workshop .piece-cards button{flex:0 0 105px;padding:7px;font-size:12px}.cb-phone-game.editing #workshop .piece-cards button span{font-size:22px}
+ .cb-phone-game.tools-open:has(.studio) .workshop{top:auto;height:245px;padding:8px}.cb-phone-game.tools-open:has(.studio) .studio{margin-bottom:245px}.cb-phone-game .workshop .cb-phone-options{display:none!important}.cb-phone-game .workshop .palette{margin:7px 0;gap:5px;flex-wrap:nowrap;overflow-x:auto}.cb-phone-game .workshop .palette button{min-height:28px;min-width:28px;width:28px;height:28px}.cb-phone-game .workshop .part-tabs{margin:5px 0;overflow-x:auto;gap:5px}.cb-phone-game .workshop .part-tabs button{min-height:32px;font-size:11px;padding:6px}.cb-phone-game .part-card canvas{height:60px}.cb-phone-game .workshop .part-card{min-width:105px;padding:4px}.cb-phone-game .part-shelf{grid-template-columns:repeat(6,105px);gap:6px}.cb-phone-game .part-card strong{font-size:12px}.cb-phone-game .part-card small{display:none}
+}
+@media(max-height:520px) and (max-width:950px){.cb-phone-game.editing #workshop:not([hidden]),.cb-phone-game.tools-open:has(.studio) .workshop{inset:48px 0 0 auto;width:265px;height:auto}.cb-phone-game.editing #game,.cb-phone-game.tools-open:has(.studio) .studio{margin-bottom:0;margin-right:265px}.cb-phone-game .star-adventure{bottom:70px}}
+
+#game #viewport canvas,#blockViewport canvas,#parkViewport canvas,.game .piggy-stage{touch-action:none;user-select:none;-webkit-user-select:none}
+@media(max-width:800px),(max-height:520px) and (pointer:coarse){
+ .cb-phone-game .park-camera{display:flex;flex-direction:row;width:148px;max-width:148px;gap:3px}
+ .cb-phone-game .park-camera #guestView{width:148px;min-width:0;min-height:40px;padding:5px;font-size:12px;border-width:2px;border-radius:12px;box-shadow:0 2px 0 #2e6b17}
+ .cb-phone-game .park-camera button:not(#guestView){width:36px;min-width:36px;height:38px;min-height:38px;padding:4px;font-size:17px}
+ .cb-phone-game #buildPark,.cb-phone-game #quickRide{min-height:42px;max-width:150px;padding:6px 9px;font-size:12px;border-width:2px;border-radius:12px;box-shadow:0 2px 0 #397421}.cb-phone-game #quickRide{right:auto}
+ .cb-phone-game #walkPad{left:auto;right:8px;bottom:8px}.cb-phone-game.phone-route-edit #routeEditor{padding:5px;margin:0}.cb-phone-game.phone-route-edit #routeEditor label{flex-basis:auto}
+ .cb-phone-game .star-adventure progress{width:100%}.cb-phone-game .star-adventure{display:grid}
+ .cb-phone-game .drive-controls{right:auto}.cb-phone-game .drive-controls .drift{gap:3px}
+}
+
+.game,#ocean{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#ocean #view canvas{touch-action:none}
+@media(max-width:800px),(max-height:520px) and (pointer:coarse){
+ .cb-phone-game.phone-route-edit .park-tools{height:200px}.cb-phone-game.phone-route-edit .park{margin-bottom:200px}.cb-phone-game.phone-route-edit #routeEditor .tool-row{display:grid;grid-template-columns:repeat(3,1fr);margin:0;gap:4px}.cb-phone-game.phone-route-edit #routeEditor button{min-height:34px}.cb-phone-game.phone-route-edit #routeEditor select{padding:4px;min-height:34px;max-width:105px}.cb-phone-game.phone-route-edit #routeEditor label{font-size:0}.cb-phone-game.phone-route-edit #routeFeedback{font-size:10px;margin:4px}
+ .cb-phone-seafood{height:100dvh;overflow:hidden;display:flex;flex-direction:column;overscroll-behavior:none}.cb-phone-seafood header{height:48px;min-height:48px;padding:4px 10px;flex-wrap:nowrap}.cb-phone-seafood header button{padding:5px;min-height:40px;width:40px}.cb-phone-seafood>footer{display:none}.cb-phone-seafood #ocean{flex:1;min-height:0;max-height:none;height:auto}.cb-phone-seafood .heading{display:none}.cb-phone-seafood #basket{top:8px;padding:6px 10px;font-size:16px;border-radius:12px}.cb-phone-seafood #pause{left:8px;right:auto;top:8px;min-height:38px;padding:6px 9px;font-size:11px}.cb-phone-seafood .instructions{bottom:10px;left:8px;right:8px}.cb-phone-seafood #clawButton{min-height:50px;min-width:0;width:auto;max-width:90%;font-size:15px;padding:8px 14px}.cb-phone-seafood .instructions p{font-size:11px;padding:6px 10px;margin-bottom:8px}.cb-phone-seafood .claw-pad{left:8px;right:auto;bottom:112px}.cb-phone-seafood .claw-pad button{min-width:36px;min-height:36px;padding:4px}.cb-phone-seafood .claw-pad div{gap:25px}
+}
+@media(max-width:800px),(max-height:520px) and (pointer:coarse){
+ .cb-phone-game .studio-camera{z-index:4}.cb-phone-game .guided .snap-confirm{display:none}.cb-phone-game .guided-piece canvas{grid-row:1/3}.cb-phone-game .guided-piece strong,.cb-phone-game .guided-piece span{grid-column:2;font-size:11px;line-height:1.25;margin:0}.cb-phone-game .guided-piece span{font-size:10px}
+}
+
+@media(max-height:520px) and (max-width:950px){.cb-phone-game .card{touch-action:pan-y}.cb-phone-game .studio-camera{top:8px;right:8px}}
+@media(max-width:800px),(max-height:520px) and (pointer:coarse){
+ body.cb-phone-game,body.cb-phone-pinball,body.cb-phone-seafood{box-sizing:border-box;padding-bottom:env(safe-area-inset-bottom);padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+ .cb-phone-game .shop{padding-bottom:max(8px,env(safe-area-inset-bottom))}
+}
+@media(max-height:520px) and (max-width:950px){.cb-phone-game #game.building-property .view-controls{right:253px;left:auto}}

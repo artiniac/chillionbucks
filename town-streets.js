@@ -2,6 +2,10 @@ import * as T from './vendor/three.module.js';
 import {mergeGeometries} from './vendor/BufferGeometryUtils.js';
 // Street geometry is separate from the saved collection. No building is moved or replaced.
 export const STREETS=[{x:0,z:-27,w:97,d:3.2},{x:0,z:23,w:97,d:3.2},{x:-47,z:-2,w:3.2,d:53},{x:47,z:-2,w:3.2,d:53},{x:-18,z:-2,w:3,d:53},{x:18,z:-2,w:3,d:53},{x:0,z:-4,w:39,d:3},{x:0,z:3,w:39,d:3},{x:0,z:14.5,w:39,d:3}];
+// New districts surround the original streets so saved homes do not move.
+for(const z of [-99,-75,-51,47,71,95])STREETS.push({x:0,z,w:248,d:3.2});
+for(const x of [-119,-95,-71,71,95,119])STREETS.push({x,z:-2,w:3.2,d:198});
+for(const x of [-47,47]){STREETS.push({x,z:-63.5,w:3.2,d:73});STREETS.push({x,z:59,w:3.2,d:72});}
 export function intersections(){const out=[];for(const a of STREETS.filter(r=>r.w>r.d))for(const b of STREETS.filter(r=>r.d>r.w))if(Math.abs(b.x-a.x)<=a.w/2&&Math.abs(a.z-b.z)<=b.d/2)out.push({x:b.x,z:a.z});return out;}
 export function nearStreet(x,z,pad=0){return STREETS.some(r=>Math.abs(x-r.x)<r.w/2+pad&&Math.abs(z-r.z)<r.d/2+pad);}
 export function streetScene(){const g=new T.Group(),mats=new Map(),crossings=intersections();
