@@ -1,3 +1,4 @@
+import {detailedCarParts,loadDetailedCar} from './town-car-assets.js?v=garage2';
 import * as T from './vendor/three.module.js';
 export const CAR_CATALOG=[
  {id:'f430',name:'Ferrari F430',color:'#c52b28',engine:'V8',mid:true,round:true},
@@ -58,4 +59,11 @@ export function carBlueprint(id){if(cache.has(id))return cache.get(id);const d=C
 
  for(const p of parts)p.model=batch(p.model);cache.set(id,parts);return parts;
 }
-export function carModel(id,step=Infinity){const g=new T.Group();for(const p of carBlueprint(id)?.slice(0,step)||[])g.add(p.model.clone());return g;}
+export function carModel(id,step=Infinity){const g=new T.Group(),detailed=detailedCarParts(id);for(const p of carBlueprint(id)?.slice(0,step)||[]){const part=p.model.clone();if(detailed&&step>=10&&!detailed[p.id])part.visible=false;g.add(part);}return g;}
+export const carReady=id=>!!detailedCarParts(id);
+
+export async function prepareCar(id){
+ const detailed=await loadDetailedCar(id),parts=carBlueprint(id);
+ for(const part of parts){if(detailed[part.id]){part.model=detailed[part.id];const b=new T.Box3().setFromObject(part.model);part.center=b.getCenter(new T.Vector3());part.size=b.getSize(new T.Vector3());}}
+ return parts;
+}

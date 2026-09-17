@@ -1,6 +1,6 @@
 import * as T from './vendor/three.module.js';
 import {streetScene,nearStreet} from './town-streets.js?v=phone1';
-import {block,mesh} from './chilltopia-models.js?v=phone1';
+import {block,mesh} from './chilltopia-models.js?v=garage2';
 import {naturalTree} from './natural-tree.js?v=expansion2';
 import {scannedMaterial,worldUV} from './realism.js?v=expansion2';
 import {TOWN_BOUNDS} from './town-plots.js?v=phone1';
