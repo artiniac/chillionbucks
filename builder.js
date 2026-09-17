@@ -600,10 +600,10 @@
       x.save(); x.translate(cx, cy); if (it.rot || mm.spin) x.rotate(((it.rot || 0) + mm.spin) * Math.PI / 180); if (it.flip !== (mm.dir < 0)) x.scale(-1, 1);
       if (def.img) { try { const im = await loadImg(def.img); const ar = im.naturalHeight / im.naturalWidth || 1; x.drawImage(im, -w / 2, -w * ar / 2, w, w * ar); } catch (e) {} }
       else if (def.svg) { try { const s = def.svg('snap' + it.uid, it); const vb = s.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/); const ar = vb ? +vb[2] / +vb[1] : 1; const im = await loadImg(svgUrl(s.replace('<svg ', `<svg width="${vb ? vb[1] : 200}" height="${vb ? vb[2] : 200}" `))); x.drawImage(im, -w / 2, -w * ar / 2, w, w * ar); } catch (e) {} }
-      else { x.font = `${w * .85}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(def.e, 0, w * .04); }
+      else { try { const im = await window.FlatIcons.image(def.e); x.drawImage(im, -w / 2, -w / 2, w, w); } catch (e) {} }
       x.restore();
     }
-    x.font = `700 ${Math.round(W / 38)}px Fredoka, Nunito, sans-serif`; x.fillStyle = 'rgba(5,46,22,.75)'; x.textAlign = 'right'; x.textBaseline = 'bottom'; x.fillText('chillionbucks.com 😎', W - 16, H - 12);
+    x.font = `700 ${Math.round(W / 38)}px Fredoka, Nunito, sans-serif`; x.fillStyle = 'rgba(5,46,22,.75)'; x.textAlign = 'right'; x.textBaseline = 'bottom'; x.fillText('chillionbucks.com', W - 16, H - 12);
     return c.toDataURL(mime, q);
   }
   $('#snapBtn').onclick = async () => { SFX.tap(); toast('Saving your picture… 📸'); try { $('#snapImg').src = await snapshot(); $('#snapSheet').hidden = false; SFX.levelUp(); confetti(70); } catch (e) { toast('Could not make the picture. Try again.'); } };

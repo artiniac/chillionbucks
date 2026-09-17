@@ -1,0 +1,1498 @@
+{
+  "🎁": {
+    "id": "i-1F381",
+    "label": "wrapped gift"
+  },
+  "🛴": {
+    "id": "i-1F6F4",
+    "label": "kick scooter"
+  },
+  "🚲": {
+    "id": "i-1F6B2",
+    "label": "bicycle"
+  },
+  "🍭": {
+    "id": "i-1F36D",
+    "label": "lollipop"
+  },
+  "🍦": {
+    "id": "i-1F366",
+    "label": "soft ice cream"
+  },
+  "🎈": {
+    "id": "i-1F388",
+    "label": "balloon"
+  },
+  "🧃": {
+    "id": "i-1F9C3",
+    "label": "beverage box"
+  },
+  "🍩": {
+    "id": "i-1F369",
+    "label": "doughnut"
+  },
+  "🔥": {
+    "id": "i-1F525",
+    "label": "fire"
+  },
+  "😎": {
+    "id": "i-1F60E",
+    "label": "smiling face with sunglasses"
+  },
+  "👨‍👩‍👧": {
+    "id": "i-1F468-200D-1F469-200D-1F467",
+    "label": "family: man, woman, girl"
+  },
+  "🎉": {
+    "id": "i-1F389",
+    "label": "party popper"
+  },
+  "🏅": {
+    "id": "i-1F3C5",
+    "label": "sports medal"
+  },
+  "🛒": {
+    "id": "i-1F6D2",
+    "label": "shopping cart"
+  },
+  "🎯": {
+    "id": "i-1F3AF",
+    "label": "bullseye"
+  },
+  "➕": {
+    "id": "i-2795",
+    "label": "plus"
+  },
+  "🐷": {
+    "id": "i-1F437",
+    "label": "pig face"
+  },
+  "🏗️": {
+    "id": "i-1F3D7",
+    "label": "building construction"
+  },
+  "🏝️": {
+    "id": "i-1F3DD",
+    "label": "desert island"
+  },
+  "👉": {
+    "id": "i-1F449",
+    "label": "backhand index pointing right"
+  },
+  "🪙": {
+    "id": "i-1FA99",
+    "label": "coin"
+  },
+  "💛": {
+    "id": "i-1F49B",
+    "label": "yellow heart"
+  },
+  "✨": {
+    "id": "i-2728",
+    "label": "sparkles"
+  },
+  "⭐": {
+    "id": "i-2B50",
+    "label": "star"
+  },
+  "💚": {
+    "id": "i-1F49A",
+    "label": "green heart"
+  },
+  "🌱": {
+    "id": "i-1F331",
+    "label": "seedling"
+  },
+  "💵": {
+    "id": "i-1F4B5",
+    "label": "dollar banknote"
+  },
+  "🍎": {
+    "id": "i-1F34E",
+    "label": "red apple"
+  },
+  "💧": {
+    "id": "i-1F4A7",
+    "label": "droplet"
+  },
+  "🏠": {
+    "id": "i-1F3E0",
+    "label": "house"
+  },
+  "🧥": {
+    "id": "i-1F9E5",
+    "label": "coat"
+  },
+  "🪥": {
+    "id": "i-1FAA5",
+    "label": "toothbrush"
+  },
+  "👟": {
+    "id": "i-1F45F",
+    "label": "running shoe"
+  },
+  "💊": {
+    "id": "i-1F48A",
+    "label": "pill"
+  },
+  "📚": {
+    "id": "i-1F4DA",
+    "label": "books"
+  },
+  "🥦": {
+    "id": "i-1F966",
+    "label": "broccoli"
+  },
+  "🛏️": {
+    "id": "i-1F6CF",
+    "label": "bed"
+  },
+  "🧼": {
+    "id": "i-1F9FC",
+    "label": "soap"
+  },
+  "🥛": {
+    "id": "i-1F95B",
+    "label": "glass of milk"
+  },
+  "🍞": {
+    "id": "i-1F35E",
+    "label": "bread"
+  },
+  "🧦": {
+    "id": "i-1F9E6",
+    "label": "socks"
+  },
+  "👕": {
+    "id": "i-1F455",
+    "label": "t-shirt"
+  },
+  "🩹": {
+    "id": "i-1FA79",
+    "label": "adhesive bandage"
+  },
+  "🍌": {
+    "id": "i-1F34C",
+    "label": "banana"
+  },
+  "🥚": {
+    "id": "i-1F95A",
+    "label": "egg"
+  },
+  "🍚": {
+    "id": "i-1F35A",
+    "label": "cooked rice"
+  },
+  "🧴": {
+    "id": "i-1F9F4",
+    "label": "lotion bottle"
+  },
+  "🪮": {
+    "id": "i-1FAAE",
+    "label": "hair pick"
+  },
+  "🚌": {
+    "id": "i-1F68C",
+    "label": "bus"
+  },
+  "👓": {
+    "id": "i-1F453",
+    "label": "glasses"
+  },
+  "🧑‍⚕️": {
+    "id": "i-1F9D1-200D-2695",
+    "label": "health worker"
+  },
+  "🦷": {
+    "id": "i-1F9B7",
+    "label": "tooth"
+  },
+  "🧣": {
+    "id": "i-1F9E3",
+    "label": "scarf"
+  },
+  "🚰": {
+    "id": "i-1F6B0",
+    "label": "potable water"
+  },
+  "🧻": {
+    "id": "i-1F9FB",
+    "label": "roll of paper"
+  },
+  "🍲": {
+    "id": "i-1F372",
+    "label": "pot of food"
+  },
+  "🎒": {
+    "id": "i-1F392",
+    "label": "backpack"
+  },
+  "✏️": {
+    "id": "i-270F",
+    "label": "pencil"
+  },
+  "🧢": {
+    "id": "i-1F9E2",
+    "label": "billed cap"
+  },
+  "🪑": {
+    "id": "i-1FA91",
+    "label": "chair"
+  },
+  "🔑": {
+    "id": "i-1F511",
+    "label": "key"
+  },
+  "🚿": {
+    "id": "i-1F6BF",
+    "label": "shower"
+  },
+  "🧀": {
+    "id": "i-1F9C0",
+    "label": "cheese wedge"
+  },
+  "🥕": {
+    "id": "i-1F955",
+    "label": "carrot"
+  },
+  "🩺": {
+    "id": "i-1FA7A",
+    "label": "stethoscope"
+  },
+  "💡": {
+    "id": "i-1F4A1",
+    "label": "light bulb"
+  },
+  "🧤": {
+    "id": "i-1F9E4",
+    "label": "gloves"
+  },
+  "🥤": {
+    "id": "i-1F964",
+    "label": "cup with straw"
+  },
+  "🏫": {
+    "id": "i-1F3EB",
+    "label": "school"
+  },
+  "🚑": {
+    "id": "i-1F691",
+    "label": "ambulance"
+  },
+  "🍽️": {
+    "id": "i-1F37D",
+    "label": "fork and knife with plate"
+  },
+  "🩲": {
+    "id": "i-1FA72",
+    "label": "briefs"
+  },
+  "🧸": {
+    "id": "i-1F9F8",
+    "label": "teddy bear"
+  },
+  "🎮": {
+    "id": "i-1F3AE",
+    "label": "video game"
+  },
+  "🚀": {
+    "id": "i-1F680",
+    "label": "rocket"
+  },
+  "🍕": {
+    "id": "i-1F355",
+    "label": "pizza"
+  },
+  "🐶": {
+    "id": "i-1F436",
+    "label": "dog face"
+  },
+  "🎂": {
+    "id": "i-1F382",
+    "label": "birthday cake"
+  },
+  "🎧": {
+    "id": "i-1F3A7",
+    "label": "headphone"
+  },
+  "🍫": {
+    "id": "i-1F36B",
+    "label": "chocolate bar"
+  },
+  "🎢": {
+    "id": "i-1F3A2",
+    "label": "roller coaster"
+  },
+  "👑": {
+    "id": "i-1F451",
+    "label": "crown"
+  },
+  "🧁": {
+    "id": "i-1F9C1",
+    "label": "cupcake"
+  },
+  "🏰": {
+    "id": "i-1F3F0",
+    "label": "castle"
+  },
+  "🛹": {
+    "id": "i-1F6F9",
+    "label": "skateboard"
+  },
+  "🎸": {
+    "id": "i-1F3B8",
+    "label": "guitar"
+  },
+  "📱": {
+    "id": "i-1F4F1",
+    "label": "mobile phone"
+  },
+  "🕶️": {
+    "id": "i-1F576",
+    "label": "sunglasses"
+  },
+  "🪁": {
+    "id": "i-1FA81",
+    "label": "kite"
+  },
+  "🎪": {
+    "id": "i-1F3AA",
+    "label": "circus tent"
+  },
+  "🍿": {
+    "id": "i-1F37F",
+    "label": "popcorn"
+  },
+  "🦖": {
+    "id": "i-1F996",
+    "label": "T-Rex"
+  },
+  "🎨": {
+    "id": "i-1F3A8",
+    "label": "artist palette"
+  },
+  "🏎️": {
+    "id": "i-1F3CE",
+    "label": "racing car"
+  },
+  "🎠": {
+    "id": "i-1F3A0",
+    "label": "carousel horse"
+  },
+  "🍬": {
+    "id": "i-1F36C",
+    "label": "candy"
+  },
+  "🐻": {
+    "id": "i-1F43B",
+    "label": "bear"
+  },
+  "🎬": {
+    "id": "i-1F3AC",
+    "label": "clapper board"
+  },
+  "🍔": {
+    "id": "i-1F354",
+    "label": "hamburger"
+  },
+  "🐠": {
+    "id": "i-1F420",
+    "label": "tropical fish"
+  },
+  "🎹": {
+    "id": "i-1F3B9",
+    "label": "musical keyboard"
+  },
+  "🏄": {
+    "id": "i-1F3C4",
+    "label": "person surfing"
+  },
+  "🧩": {
+    "id": "i-1F9E9",
+    "label": "puzzle piece"
+  },
+  "🍨": {
+    "id": "i-1F368",
+    "label": "ice cream"
+  },
+  "🪀": {
+    "id": "i-1FA80",
+    "label": "yo-yo"
+  },
+  "🚁": {
+    "id": "i-1F681",
+    "label": "helicopter"
+  },
+  "🌮": {
+    "id": "i-1F32E",
+    "label": "taco"
+  },
+  "🍪": {
+    "id": "i-1F36A",
+    "label": "cookie"
+  },
+  "🎤": {
+    "id": "i-1F3A4",
+    "label": "microphone"
+  },
+  "🛶": {
+    "id": "i-1F6F6",
+    "label": "canoe"
+  },
+  "🧑‍🚀": {
+    "id": "i-1F9D1-200D-1F680",
+    "label": "astronaut"
+  },
+  "🏀": {
+    "id": "i-1F3C0",
+    "label": "basketball"
+  },
+  "🪆": {
+    "id": "i-1FA86",
+    "label": "nesting dolls"
+  },
+  "🎿": {
+    "id": "i-1F3BF",
+    "label": "skis"
+  },
+  "🎲": {
+    "id": "i-1F3B2",
+    "label": "game die"
+  },
+  "🐈": {
+    "id": "i-1F408",
+    "label": "cat"
+  },
+  "✅": {
+    "id": "i-2705",
+    "label": "check mark button"
+  },
+  "🏆": {
+    "id": "i-1F3C6",
+    "label": "trophy"
+  },
+  "🌟": {
+    "id": "i-1F31F",
+    "label": "glowing star"
+  },
+  "💪": {
+    "id": "i-1F4AA",
+    "label": "flexed biceps"
+  },
+  "❌": {
+    "id": "i-274C",
+    "label": "cross mark"
+  },
+  "🙂": {
+    "id": "i-1F642",
+    "label": "slightly smiling face"
+  },
+  "😌": {
+    "id": "i-1F60C",
+    "label": "relieved face"
+  },
+  "🏖️": {
+    "id": "i-1F3D6",
+    "label": "beach with umbrella"
+  },
+  "🌴": {
+    "id": "i-1F334",
+    "label": "palm tree"
+  },
+  "▶": {
+    "id": "i-25B6",
+    "label": "play button"
+  },
+  "💝": {
+    "id": "i-1F49D",
+    "label": "heart with ribbon"
+  },
+  "📋": {
+    "id": "i-1F4CB",
+    "label": "clipboard"
+  },
+  "🐱": {
+    "id": "i-1F431",
+    "label": "cat face"
+  },
+  "🦁": {
+    "id": "i-1F981",
+    "label": "lion"
+  },
+  "🦒": {
+    "id": "i-1F992",
+    "label": "giraffe"
+  },
+  "🦏": {
+    "id": "i-1F98F",
+    "label": "rhinoceros"
+  },
+  "🌊": {
+    "id": "i-1F30A",
+    "label": "water wave"
+  },
+  "🧱": {
+    "id": "i-1F9F1",
+    "label": "brick"
+  },
+  "🔊": {
+    "id": "i-1F50A",
+    "label": "speaker high volume"
+  },
+  "💼": {
+    "id": "i-1F4BC",
+    "label": "briefcase"
+  },
+  "↔": {
+    "id": "i-2194",
+    "label": "left-right arrow"
+  },
+  "🏡": {
+    "id": "i-1F3E1",
+    "label": "house with garden"
+  },
+  "🌉": {
+    "id": "i-1F309",
+    "label": "bridge at night"
+  },
+  "📷": {
+    "id": "i-1F4F7",
+    "label": "camera"
+  },
+  "🌳": {
+    "id": "i-1F333",
+    "label": "deciduous tree"
+  },
+  "🛍️": {
+    "id": "i-1F6CD",
+    "label": "shopping bags"
+  },
+  "📖": {
+    "id": "i-1F4D6",
+    "label": "open book"
+  },
+  "◀": {
+    "id": "i-25C0",
+    "label": "reverse button"
+  },
+  "↗": {
+    "id": "i-2197",
+    "label": "up-right arrow"
+  },
+  "🛋️": {
+    "id": "i-1F6CB",
+    "label": "couch and lamp"
+  },
+  "🌲": {
+    "id": "i-1F332",
+    "label": "evergreen tree"
+  },
+  "🏙️": {
+    "id": "i-1F3D9",
+    "label": "cityscape"
+  },
+  "🐴": {
+    "id": "i-1F434",
+    "label": "horse face"
+  },
+  "🦄": {
+    "id": "i-1F984",
+    "label": "unicorn"
+  },
+  "🐎": {
+    "id": "i-1F40E",
+    "label": "horse"
+  },
+  "🙌": {
+    "id": "i-1F64C",
+    "label": "raising hands"
+  },
+  "😆": {
+    "id": "i-1F606",
+    "label": "grinning squinting face"
+  },
+  "🌭": {
+    "id": "i-1F32D",
+    "label": "hot dog"
+  },
+  "🎟️": {
+    "id": "i-1F39F",
+    "label": "admission tickets"
+  },
+  "🐾": {
+    "id": "i-1F43E",
+    "label": "paw prints"
+  },
+  "🌍": {
+    "id": "i-1F30D",
+    "label": "globe showing Europe-Africa"
+  },
+  "💎": {
+    "id": "i-1F48E",
+    "label": "gem stone"
+  },
+  "🍹": {
+    "id": "i-1F379",
+    "label": "tropical drink"
+  },
+  "🥥": {
+    "id": "i-1F965",
+    "label": "coconut"
+  },
+  "🍍": {
+    "id": "i-1F34D",
+    "label": "pineapple"
+  },
+  "🤸": {
+    "id": "i-1F938",
+    "label": "person cartwheeling"
+  },
+  "🐙": {
+    "id": "i-1F419",
+    "label": "octopus"
+  },
+  "😱": {
+    "id": "i-1F631",
+    "label": "face screaming in fear"
+  },
+  "🧒": {
+    "id": "i-1F9D2",
+    "label": "child"
+  },
+  "👧": {
+    "id": "i-1F467",
+    "label": "girl"
+  },
+  "⚡": {
+    "id": "i-26A1",
+    "label": "high voltage"
+  },
+  "❤️": {
+    "id": "i-2764",
+    "label": "red heart"
+  },
+  "💀": {
+    "id": "i-1F480",
+    "label": "skull"
+  },
+  "💰": {
+    "id": "i-1F4B0",
+    "label": "money bag"
+  },
+  "🌀": {
+    "id": "i-1F300",
+    "label": "cyclone"
+  },
+  "💻": {
+    "id": "i-1F4BB",
+    "label": "laptop"
+  },
+  "🔷": {
+    "id": "i-1F537",
+    "label": "large blue diamond"
+  },
+  "🏊": {
+    "id": "i-1F3CA",
+    "label": "person swimming"
+  },
+  "🚗": {
+    "id": "i-1F697",
+    "label": "automobile"
+  },
+  "🦸": {
+    "id": "i-1F9B8",
+    "label": "superhero"
+  },
+  "🧊": {
+    "id": "i-1F9CA",
+    "label": "ice"
+  },
+  "🐘": {
+    "id": "i-1F418",
+    "label": "elephant"
+  },
+  "🐵": {
+    "id": "i-1F435",
+    "label": "monkey face"
+  },
+  "🦜": {
+    "id": "i-1F99C",
+    "label": "parrot"
+  },
+  "🐧": {
+    "id": "i-1F427",
+    "label": "penguin"
+  },
+  "🐼": {
+    "id": "i-1F43C",
+    "label": "panda"
+  },
+  "🐨": {
+    "id": "i-1F428",
+    "label": "koala"
+  },
+  "🦩": {
+    "id": "i-1F9A9",
+    "label": "flamingo"
+  },
+  "🐊": {
+    "id": "i-1F40A",
+    "label": "crocodile"
+  },
+  "🦕": {
+    "id": "i-1F995",
+    "label": "sauropod"
+  },
+  "🐉": {
+    "id": "i-1F409",
+    "label": "dragon"
+  },
+  "🦋": {
+    "id": "i-1F98B",
+    "label": "butterfly"
+  },
+  "🐝": {
+    "id": "i-1F41D",
+    "label": "honeybee"
+  },
+  "🐸": {
+    "id": "i-1F438",
+    "label": "frog"
+  },
+  "🦓": {
+    "id": "i-1F993",
+    "label": "zebra"
+  },
+  "🦛": {
+    "id": "i-1F99B",
+    "label": "hippopotamus"
+  },
+  "🦍": {
+    "id": "i-1F98D",
+    "label": "gorilla"
+  },
+  "🐯": {
+    "id": "i-1F42F",
+    "label": "tiger face"
+  },
+  "🐍": {
+    "id": "i-1F40D",
+    "label": "snake"
+  },
+  "🏢": {
+    "id": "i-1F3E2",
+    "label": "office building"
+  },
+  "🏥": {
+    "id": "i-1F3E5",
+    "label": "hospital"
+  },
+  "🏪": {
+    "id": "i-1F3EA",
+    "label": "convenience store"
+  },
+  "🏟️": {
+    "id": "i-1F3DF",
+    "label": "stadium"
+  },
+  "🗽": {
+    "id": "i-1F5FD",
+    "label": "Statue of Liberty"
+  },
+  "🗼": {
+    "id": "i-1F5FC",
+    "label": "Tokyo tower"
+  },
+  "⛩️": {
+    "id": "i-26E9",
+    "label": "shinto shrine"
+  },
+  "🚧": {
+    "id": "i-1F6A7",
+    "label": "construction"
+  },
+  "📮": {
+    "id": "i-1F4EE",
+    "label": "postbox"
+  },
+  "🕰️": {
+    "id": "i-1F570",
+    "label": "mantelpiece clock"
+  },
+  "🛡️": {
+    "id": "i-1F6E1",
+    "label": "shield"
+  },
+  "🗡️": {
+    "id": "i-1F5E1",
+    "label": "dagger"
+  },
+  "🔮": {
+    "id": "i-1F52E",
+    "label": "crystal ball"
+  },
+  "📜": {
+    "id": "i-1F4DC",
+    "label": "scroll"
+  },
+  "🛸": {
+    "id": "i-1F6F8",
+    "label": "flying saucer"
+  },
+  "🤖": {
+    "id": "i-1F916",
+    "label": "robot"
+  },
+  "🛰️": {
+    "id": "i-1F6F0",
+    "label": "satellite"
+  },
+  "👽": {
+    "id": "i-1F47D",
+    "label": "alien"
+  },
+  "🪐": {
+    "id": "i-1FA90",
+    "label": "ringed planet"
+  },
+  "🌠": {
+    "id": "i-1F320",
+    "label": "shooting star"
+  },
+  "🌕": {
+    "id": "i-1F315",
+    "label": "full moon"
+  },
+  "🧲": {
+    "id": "i-1F9F2",
+    "label": "magnet"
+  },
+  "🔭": {
+    "id": "i-1F52D",
+    "label": "telescope"
+  },
+  "⛵": {
+    "id": "i-26F5",
+    "label": "sailboat"
+  },
+  "🚤": {
+    "id": "i-1F6A4",
+    "label": "speedboat"
+  },
+  "🚢": {
+    "id": "i-1F6A2",
+    "label": "ship"
+  },
+  "🐚": {
+    "id": "i-1F41A",
+    "label": "spiral shell"
+  },
+  "⚓": {
+    "id": "i-2693",
+    "label": "anchor"
+  },
+  "🐬": {
+    "id": "i-1F42C",
+    "label": "dolphin"
+  },
+  "🦈": {
+    "id": "i-1F988",
+    "label": "shark"
+  },
+  "🐳": {
+    "id": "i-1F433",
+    "label": "spouting whale"
+  },
+  "🐢": {
+    "id": "i-1F422",
+    "label": "turtle"
+  },
+  "🐟": {
+    "id": "i-1F41F",
+    "label": "fish"
+  },
+  "🦀": {
+    "id": "i-1F980",
+    "label": "crab"
+  },
+  "🦭": {
+    "id": "i-1F9AD",
+    "label": "seal"
+  },
+  "🧜": {
+    "id": "i-1F9DC",
+    "label": "merperson"
+  },
+  "🦑": {
+    "id": "i-1F991",
+    "label": "squid"
+  },
+  "🦞": {
+    "id": "i-1F99E",
+    "label": "lobster"
+  },
+  "🐡": {
+    "id": "i-1F421",
+    "label": "blowfish"
+  },
+  "🌵": {
+    "id": "i-1F335",
+    "label": "cactus"
+  },
+  "🌸": {
+    "id": "i-1F338",
+    "label": "cherry blossom"
+  },
+  "🌻": {
+    "id": "i-1F33B",
+    "label": "sunflower"
+  },
+  "🌺": {
+    "id": "i-1F33A",
+    "label": "hibiscus"
+  },
+  "🌷": {
+    "id": "i-1F337",
+    "label": "tulip"
+  },
+  "🍄": {
+    "id": "i-1F344",
+    "label": "mushroom"
+  },
+  "🌈": {
+    "id": "i-1F308",
+    "label": "rainbow"
+  },
+  "☀️": {
+    "id": "i-2600",
+    "label": "sun"
+  },
+  "☁️": {
+    "id": "i-2601",
+    "label": "cloud"
+  },
+  "🌙": {
+    "id": "i-1F319",
+    "label": "crescent moon"
+  },
+  "🌋": {
+    "id": "i-1F30B",
+    "label": "volcano"
+  },
+  "🏔️": {
+    "id": "i-1F3D4",
+    "label": "snow-capped mountain"
+  },
+  "🪨": {
+    "id": "i-1FAA8",
+    "label": "rock"
+  },
+  "⛺": {
+    "id": "i-26FA",
+    "label": "tent"
+  },
+  "❄️": {
+    "id": "i-2744",
+    "label": "snowflake"
+  },
+  "⛄": {
+    "id": "i-26C4",
+    "label": "snowman without snow"
+  },
+  "🍃": {
+    "id": "i-1F343",
+    "label": "leaf fluttering in wind"
+  },
+  "🌿": {
+    "id": "i-1F33F",
+    "label": "herb"
+  },
+  "🦌": {
+    "id": "i-1F98C",
+    "label": "deer"
+  },
+  "🦊": {
+    "id": "i-1F98A",
+    "label": "fox"
+  },
+  "🦉": {
+    "id": "i-1F989",
+    "label": "owl"
+  },
+  "📺": {
+    "id": "i-1F4FA",
+    "label": "television"
+  },
+  "🥁": {
+    "id": "i-1F941",
+    "label": "drum"
+  },
+  "🖼️": {
+    "id": "i-1F5BC",
+    "label": "framed picture"
+  },
+  "🪴": {
+    "id": "i-1FAB4",
+    "label": "potted plant"
+  },
+  "🛁": {
+    "id": "i-1F6C1",
+    "label": "bathtub"
+  },
+  "🎳": {
+    "id": "i-1F3B3",
+    "label": "bowling"
+  },
+  "⚽": {
+    "id": "i-26BD",
+    "label": "soccer ball"
+  },
+  "🛋": {
+    "id": "i-1F6CB",
+    "label": "couch and lamp"
+  },
+  "⏰": {
+    "id": "i-23F0",
+    "label": "alarm clock"
+  },
+  "🖥️": {
+    "id": "i-1F5A5",
+    "label": "desktop computer"
+  },
+  "🚚": {
+    "id": "i-1F69A",
+    "label": "delivery truck"
+  },
+  "🚒": {
+    "id": "i-1F692",
+    "label": "fire engine"
+  },
+  "🚓": {
+    "id": "i-1F693",
+    "label": "police car"
+  },
+  "🚍": {
+    "id": "i-1F68D",
+    "label": "oncoming bus"
+  },
+  "🚂": {
+    "id": "i-1F682",
+    "label": "locomotive"
+  },
+  "✈️": {
+    "id": "i-2708",
+    "label": "airplane"
+  },
+  "🛵": {
+    "id": "i-1F6F5",
+    "label": "motor scooter"
+  },
+  "🚜": {
+    "id": "i-1F69C",
+    "label": "tractor"
+  },
+  "🚕": {
+    "id": "i-1F695",
+    "label": "taxi"
+  },
+  "🚝": {
+    "id": "i-1F69D",
+    "label": "monorail"
+  },
+  "🚊": {
+    "id": "i-1F68A",
+    "label": "tram"
+  },
+  "👦": {
+    "id": "i-1F466",
+    "label": "boy"
+  },
+  "👶": {
+    "id": "i-1F476",
+    "label": "baby"
+  },
+  "👩": {
+    "id": "i-1F469",
+    "label": "woman"
+  },
+  "👨": {
+    "id": "i-1F468",
+    "label": "man"
+  },
+  "👵": {
+    "id": "i-1F475",
+    "label": "old woman"
+  },
+  "👴": {
+    "id": "i-1F474",
+    "label": "old man"
+  },
+  "🧑‍🏫": {
+    "id": "i-1F9D1-200D-1F3EB",
+    "label": "teacher"
+  },
+  "🧑‍🚒": {
+    "id": "i-1F9D1-200D-1F692",
+    "label": "firefighter"
+  },
+  "👮": {
+    "id": "i-1F46E",
+    "label": "police officer"
+  },
+  "🧑‍🍳": {
+    "id": "i-1F9D1-200D-1F373",
+    "label": "cook"
+  },
+  "👷": {
+    "id": "i-1F477",
+    "label": "construction worker"
+  },
+  "🧑‍🌾": {
+    "id": "i-1F9D1-200D-1F33E",
+    "label": "farmer"
+  },
+  "🧑‍🔬": {
+    "id": "i-1F9D1-200D-1F52C",
+    "label": "scientist"
+  },
+  "🧑‍🎨": {
+    "id": "i-1F9D1-200D-1F3A8",
+    "label": "artist"
+  },
+  "🤴": {
+    "id": "i-1F934",
+    "label": "prince"
+  },
+  "👸": {
+    "id": "i-1F478",
+    "label": "princess"
+  },
+  "🧙": {
+    "id": "i-1F9D9",
+    "label": "mage"
+  },
+  "🧚": {
+    "id": "i-1F9DA",
+    "label": "fairy"
+  },
+  "💃": {
+    "id": "i-1F483",
+    "label": "woman dancing"
+  },
+  "👨‍👩‍👧‍👦": {
+    "id": "i-1F468-200D-1F469-200D-1F467-200D-1F466",
+    "label": "family: man, woman, girl, boy"
+  },
+  "🛟": {
+    "id": "i-1F6DF",
+    "label": "ring buoy"
+  },
+  "🧑‍✈️": {
+    "id": "i-1F9D1-200D-2708",
+    "label": "pilot"
+  },
+  "🧑‍🔧": {
+    "id": "i-1F9D1-200D-1F527",
+    "label": "mechanic"
+  },
+  "🧑‍🎤": {
+    "id": "i-1F9D1-200D-1F3A4",
+    "label": "singer"
+  },
+  "🅿️": {
+    "id": "i-1F17F",
+    "label": "P button"
+  },
+  "📐": {
+    "id": "i-1F4D0",
+    "label": "triangular ruler"
+  },
+  "🏘️": {
+    "id": "i-1F3D8",
+    "label": "houses"
+  },
+  "⏸": {
+    "id": "i-23F8",
+    "label": "pause button"
+  },
+  "🚶": {
+    "id": "i-1F6B6",
+    "label": "person walking"
+  },
+  "👆": {
+    "id": "i-1F446",
+    "label": "backhand index pointing up"
+  },
+  "🔄": {
+    "id": "i-1F504",
+    "label": "counterclockwise arrows button"
+  },
+  "🧹": {
+    "id": "i-1F9F9",
+    "label": "broom"
+  },
+  "📸": {
+    "id": "i-1F4F8",
+    "label": "camera with flash"
+  },
+  "🗑️": {
+    "id": "i-1F5D1",
+    "label": "wastebasket"
+  },
+  "🏴‍☠️": {
+    "id": "i-1F3F4-200D-2620",
+    "label": "pirate flag"
+  },
+  "👩‍🍳": {
+    "id": "i-1F469-200D-1F373",
+    "label": "woman cook"
+  },
+  "🩳": {
+    "id": "i-1FA73",
+    "label": "shorts"
+  },
+  "⚖️": {
+    "id": "i-2696",
+    "label": "balance scale"
+  },
+  "🎩": {
+    "id": "i-1F3A9",
+    "label": "top hat"
+  },
+  "🪖": {
+    "id": "i-1FA96",
+    "label": "military helmet"
+  },
+  "⚔️": {
+    "id": "i-2694",
+    "label": "crossed swords"
+  },
+  "🎀": {
+    "id": "i-1F380",
+    "label": "ribbon"
+  },
+  "🤍": {
+    "id": "i-1F90D",
+    "label": "white heart"
+  },
+  "🎭": {
+    "id": "i-1F3AD",
+    "label": "performing arts"
+  },
+  "🦇": {
+    "id": "i-1F987",
+    "label": "bat"
+  },
+  "🥽": {
+    "id": "i-1F97D",
+    "label": "goggles"
+  },
+  "🔤": {
+    "id": "i-1F524",
+    "label": "input latin letters"
+  },
+  "👀": {
+    "id": "i-1F440",
+    "label": "eyes"
+  },
+  "😉": {
+    "id": "i-1F609",
+    "label": "winking face"
+  },
+  "😁": {
+    "id": "i-1F601",
+    "label": "beaming face with smiling eyes"
+  },
+  "😮": {
+    "id": "i-1F62E",
+    "label": "face with open mouth"
+  },
+  "😛": {
+    "id": "i-1F61B",
+    "label": "face with tongue"
+  },
+  "↩️": {
+    "id": "i-21A9",
+    "label": "right arrow curving left"
+  },
+  "🔇": {
+    "id": "i-1F507",
+    "label": "muted speaker"
+  },
+  "🫧": {
+    "id": "i-1FAE7",
+    "label": "bubbles"
+  },
+  "📦": {
+    "id": "i-1F4E6",
+    "label": "package"
+  },
+  "♻": {
+    "id": "i-267B",
+    "label": "recycling symbol"
+  },
+  "👇": {
+    "id": "i-1F447",
+    "label": "backhand index pointing down"
+  },
+  "🔍": {
+    "id": "i-1F50D",
+    "label": "magnifying glass tilted left"
+  },
+  "➖": {
+    "id": "i-2796",
+    "label": "minus"
+  },
+  "↔️": {
+    "id": "i-2194",
+    "label": "left-right arrow"
+  },
+  "⬆️": {
+    "id": "i-2B06",
+    "label": "up arrow"
+  },
+  "⬇️": {
+    "id": "i-2B07",
+    "label": "down arrow"
+  },
+  "💸": {
+    "id": "i-1F4B8",
+    "label": "money with wings"
+  },
+  "🧽": {
+    "id": "i-1F9FD",
+    "label": "sponge"
+  },
+  "🏁": {
+    "id": "i-1F3C1",
+    "label": "chequered flag"
+  },
+  "🌼": {
+    "id": "i-1F33C",
+    "label": "blossom"
+  },
+  "👨‍👦": {
+    "id": "i-1F468-200D-1F466",
+    "label": "family: man, boy"
+  },
+  "⬆": {
+    "id": "i-2B06",
+    "label": "up arrow"
+  },
+  "👍": {
+    "id": "i-1F44D",
+    "label": "thumbs up"
+  },
+  "💨": {
+    "id": "i-1F4A8",
+    "label": "dashing away"
+  },
+  "🛠️": {
+    "id": "i-1F6E0",
+    "label": "hammer and wrench"
+  },
+  "🚙": {
+    "id": "i-1F699",
+    "label": "sport utility vehicle"
+  },
+  "🚘": {
+    "id": "i-1F698",
+    "label": "oncoming automobile"
+  },
+  "🦅": {
+    "id": "i-1F985",
+    "label": "eagle"
+  },
+  "⛰️": {
+    "id": "i-26F0",
+    "label": "mountain"
+  },
+  "⤵": {
+    "id": "i-2935",
+    "label": "right arrow curving down"
+  },
+  "🟡": {
+    "id": "i-1F7E1",
+    "label": "yellow circle"
+  },
+  "🔵": {
+    "id": "i-1F535",
+    "label": "blue circle"
+  },
+  "🟢": {
+    "id": "i-1F7E2",
+    "label": "green circle"
+  },
+  "👨‍👩‍👦": {
+    "id": "i-1F468-200D-1F469-200D-1F466",
+    "label": "family: man, woman, boy"
+  },
+  "🤔": {
+    "id": "i-1F914",
+    "label": "thinking face"
+  },
+  "🍂": {
+    "id": "i-1F342",
+    "label": "fallen leaf"
+  },
+  "🍁": {
+    "id": "i-1F341",
+    "label": "maple leaf"
+  },
+  "🖌️": {
+    "id": "i-1F58C",
+    "label": "paintbrush"
+  },
+  "🦴": {
+    "id": "i-1F9B4",
+    "label": "bone"
+  },
+  "🐰": {
+    "id": "i-1F430",
+    "label": "rabbit face"
+  },
+  "🐔": {
+    "id": "i-1F414",
+    "label": "chicken"
+  },
+  "🌽": {
+    "id": "i-1F33D",
+    "label": "ear of corn"
+  },
+  "🍟": {
+    "id": "i-1F35F",
+    "label": "french fries"
+  },
+  "🍋": {
+    "id": "i-1F34B",
+    "label": "lemon"
+  },
+  "🐣": {
+    "id": "i-1F423",
+    "label": "hatching chick"
+  },
+  "🧺": {
+    "id": "i-1F9FA",
+    "label": "basket"
+  },
+  "🖐️": {
+    "id": "i-1F590",
+    "label": "hand with fingers splayed"
+  },
+  "👣": {
+    "id": "i-1F463",
+    "label": "footprints"
+  },
+  "〰": {
+    "id": "i-3030",
+    "label": "wavy dash"
+  },
+  "🍧": {
+    "id": "i-1F367",
+    "label": "shaved ice"
+  },
+  "😊": {
+    "id": "i-1F60A",
+    "label": "smiling face with smiling eyes"
+  }
+}

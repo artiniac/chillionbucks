@@ -188,7 +188,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.
       const work = (() => { try { return JSON.parse(localStorage.getItem('cb:work') || '{}').total || 0; } catch (e) { return 0; } })(); const coins = +localStorage.getItem('cb:coins') || 0;
       x.font = `600 26px ${F}`; x.fillStyle = '#374151'; x.fillText(`Game jobs finished: ${work}. Practice coins dropped: ${coins}.`, W / 2, 660);
       x.fillText(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), W / 2, 705);
-      x.font = `700 28px ${F}`; x.fillStyle = '#052e16'; x.fillText('Signed: the Chillion Piggy 🐷    Grown-up: ____________________', W / 2, 770);
+      x.font = `700 28px ${F}`; x.fillStyle = '#052e16'; x.fillText('Signed: the Chillion Piggy    Grown-up: ____________________', W / 2, 770);
       // ribbon + the goal picture (or its emoji) in the corner
       x.fillStyle = '#facc15'; x.beginPath(); x.arc(130, 130, 56, 0, Math.PI * 2); x.fill(); x.strokeStyle = '#052e16'; x.lineWidth = 6; x.stroke(); x.fillStyle = '#052e16'; x.font = `700 46px ${F}`; x.fillText('★', 130, 147);
       x.font = `120px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`; x.fillText(g.e, W - 170, 330);
