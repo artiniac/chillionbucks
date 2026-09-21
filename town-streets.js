@@ -1,6 +1,7 @@
 import * as T from './vendor/three.module.js';
 import {mergeGeometries} from './vendor/BufferGeometryUtils.js';
-// Street geometry is separate from the saved collection. No building is moved or replaced.
+// Pavement clearance and rendered sidewalks share this width.
+export const SIDEWALK_WIDTH=.825;
 export const STREETS=[{x:0,z:-27,w:97,d:3.2},{x:0,z:23,w:97,d:3.2},{x:-47,z:-2,w:3.2,d:53},{x:47,z:-2,w:3.2,d:53},{x:-18,z:-2,w:3,d:53},{x:18,z:-2,w:3,d:53},{x:0,z:-4,w:39,d:3},{x:0,z:3,w:39,d:3},{x:0,z:14.5,w:39,d:3}];
 // New districts surround the original streets so saved homes do not move.
 for(const z of [-99,-75,-51,47,71,95])STREETS.push({x:0,z,w:248,d:3.2});
@@ -14,7 +15,7 @@ export function streetScene(){const g=new T.Group(),mats=new Map(),crossings=int
  function post(x,z){const m=new T.Mesh(new T.CylinderGeometry(.025,.045,1.65,8),mat('#45525a'));m.position.set(x,.81,z);g.add(m);box('#45525a',x+.14,1.64,z,.32,.045,.05);box('#eee6bc',x+.28,1.61,z,.13,.055,.10);}
  const junction=(x,z,pad=2.2)=>crossings.some(p=>Math.abs(p.x-x)<pad&&Math.abs(p.z-z)<pad);
  // Full sidewalk slabs form continuous junctions beneath the asphalt grid.
- for(const r of STREETS)box('#c9c9b9',r.x,-.04,r.z,r.w+1.65,.10,r.d+1.65);
+ for(const r of STREETS)box('#c9c9b9',r.x,-.04,r.z,r.w+SIDEWALK_WIDTH*2,.10,r.d+SIDEWALK_WIDTH*2);
  for(const r of STREETS){const horizontal=r.w>r.d;box('#343e43',r.x,.018,r.z,r.w,.016,r.d);
  const length=horizontal?r.w:r.d,width=horizontal?r.d:r.w;
  for(let t=-length/2+.2;t<length/2;t+=.6){const x=horizontal?r.x+t:r.x,z=horizontal?r.z:r.z+t;if(junction(x,z))continue;

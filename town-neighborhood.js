@@ -1,9 +1,9 @@
 import * as T from './vendor/three.module.js';
-import {streetScene,nearStreet} from './town-streets.js?v=phone1';
+import {streetScene,nearStreet} from './town-streets.js?v=lots2';
 import {block,mesh} from './chilltopia-models.js?v=garage2';
 import {naturalTree} from './natural-tree.js?v=expansion2';
 import {scannedMaterial,worldUV} from './realism.js?v=expansion2';
-import {TOWN_BOUNDS} from './town-plots.js?v=phone1';
+import {TOWN_BOUNDS} from './town-plots.js?v=lots2';
 export {TOWN_BOUNDS};
 export const ESTATE_STARTERS=[
  ['chatsboroHome',-12,8],['allentownHome',-4,8],['spanishEstate',4,8],['santaBarbaraEstate',12,8],
@@ -19,7 +19,7 @@ export function townLandscape(items=[]){const g=new T.Group();const grass=scanne
  mesh(g,worldUV(new T.PlaneGeometry(264,224).rotateX(-Math.PI/2),.22),grass,0,-.09,0);g.add(streetScene());
  const occupied=(x,z,r=1)=>items.some(it=>{const size=it.kind==='warnerTowers'?6:it.kind.endsWith('Home')?4:it.kind.endsWith('Estate')?3.5:2;return Math.hypot(it.x-x,it.z-z)<size+r;});
  // Driveways meet the front street of each established residential row.
- for(const [kind,x,z] of ESTATE_STARTERS){if(kind==='warnerTowers')continue;block(g,paving,x,-.025,z<0?-5.55:12.9,1.55,.07,z<0?1.25:1.5);}
+ for(const [kind,x,z] of ESTATE_STARTERS){if(kind==='warnerTowers'||!items.some(it=>it.kind===kind&&Math.abs(it.x-x)<.01&&Math.abs(it.z-z)<.01))continue;block(g,paving,x,-.025,z<0?-5.55:12.9,1.55,.07,z<0?1.25:1.5);}
  // Planted buffers and pedestrian furniture make the neighborhood edges feel finished.
  for(const z of [-19,19]){block(g,'#719052',0,-.025,z,31,.07,2);for(let i=0;i<10;i++){const x=-15+i*3.3;if(occupied(x,z,.25))continue;const tree=naturalTree();tree.position.set(x,0,z);tree.scale.setScalar(1.15+(i%3)*.15);g.add(tree);}}
  for(const x of [-41,41])for(let z=-20;z<23;z+=7){if(occupied(x,z,1))continue;const tree=naturalTree();tree.position.set(x,0,z);tree.scale.setScalar(1.6);g.add(tree);block(g,'#c8c7b1',x,.005,z,2.4,.12,2.4);}
