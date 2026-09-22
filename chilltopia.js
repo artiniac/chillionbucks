@@ -184,7 +184,7 @@ $('#engineWorkshopBtn').onclick=async()=>{
  if(job){toast('Finish or leave your job first.');return;}
  openingEngine=true;$('#engineWorkshopBtn').disabled=true;
  propertyBuilder.close(false);cancelPlacement();deselect();keys.clear();autoRoute=[];follow=false;showShop(false);
- try{const {openEngineWorkshop}=await import('./engine-workshop.js?v=1');openEngineWorkshop({projectId:townProjects?.current().id,onClose:()=>{keys.clear();resize();}});}
+ try{const {openEngineWorkshop}=await import('./engine-workshop.js?v=2');openEngineWorkshop({projectId:townProjects?.current().id,onClose:()=>{keys.clear();resize();}});}
  catch(e){toast(e.message||'The engine workshop could not load. Please try again.');}
  finally{openingEngine=false;$('#engineWorkshopBtn').disabled=false;}
 };
