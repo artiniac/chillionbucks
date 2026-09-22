@@ -14,3 +14,13 @@ body:not(.editing) #game{height:calc(100svh - var(--drive-header,105px))}@media(
 @media(max-width:650px){.star-adventure{top:170px;left:4%;right:4%;width:auto;display:flex;align-items:center;justify-content:space-between;padding:7px 12px}.star-adventure span{display:none}.star-adventure progress{width:45%}.coach{top:219px;width:92%;max-width:none}.coach select{min-height:36px}}
 
 #viewport #loading{position:absolute;inset:0;z-index:50;margin:0;display:grid;place-items:center;background:#e7efe9f5;padding:24px;text-align:center;backdrop-filter:blur(8px)}.car-loading-card{width:min(360px,100%);padding:28px;background:#fffdf4;border:1px solid #cbd8c4;border-radius:26px;box-shadow:0 18px 50px #24463b18}.car-loading-card img{display:block;margin:0 auto 18px}.car-loading-card h2{font-size:24px;line-height:1.15;margin:0 0 12px}.car-loading-card p{font-size:14px;line-height:1.5}.car-loading-card progress{width:100%;height:10px;accent-color:#428561}.car-loading-card button{margin-top:14px}.car-loading-card [hidden]{display:none}#game[aria-busy=true]>.drive-controls,#game[aria-busy=true]>.views{visibility:hidden}
+
+.car-finishes{display:flex;gap:8px;flex-wrap:wrap}.car-finishes button{border:2px solid #b5c7ba;background:#f8fbef;color:#153e42;border-radius:12px;padding:10px 16px;font-weight:800;cursor:pointer}.car-finishes button[aria-pressed="true"]{border-color:#193f42;background:#e8f9d4;box-shadow:inset 0 -3px #a4c58c}.car-finishes button[data-finish="artin"]::before{content:"";display:inline-block;width:12px;height:12px;background:#b90920;border-radius:50%;margin-right:8px}.paint{flex-wrap:wrap}
+
+body.interior-camera #game .title,body.interior-camera #game .coach,body.interior-camera #game #map,body.interior-camera #game .star-adventure,body.interior-camera #game .hud,body.interior-camera #game #message{display:none}body.interior-camera #game .views{top:18px}body.interior-camera #game .views button{font-size:12px;padding:10px 12px}
+@media(max-width:600px) and (orientation:portrait){
+ body.interior-camera #game{background:radial-gradient(ellipse at center,#233a3d,#0b171d)}
+ body.interior-camera #game #viewport{inset:50% 0 auto!important;height:min(100vw,calc(100% - 150px))!important;transform:translateY(-50%);border-top:1px solid #516061;border-bottom:1px solid #516061}
+}
+
+body.interior-camera #familyView{display:none!important}

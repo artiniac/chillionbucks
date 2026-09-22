@@ -21,3 +21,7 @@ The F430, Aventador, and E30 meshes were generated through Higgsfield from separ
 | BMW E30 M3 | bff90134-e293-4629-ac95-3fb3188d2a21 | 868c6e96-fc4f-47f9-8af6-211703a83755 |
 
 Reference model: gpt_image_2_5. Geometry model: sam_3_3d. Meshy was inspected but could not be submitted through the connector or CLI, so no Meshy generation is claimed. Images are resized WebP previews. GLBs have embedded textures and no external runtime service dependencies. Runtime generates smooth normals and partitions exterior triangles into body, wheel, window, and lamp teaching stages by position. This partitioning is approximate, not a component-accurate engineering disassembly. Completed cars hide the simplified internal assemblies to prevent them protruding through the reconstructed exteriors.
+
+## Artin's red Skyline variation, September 21, 2026
+
+Runtime material variation informed by eight owner-supplied photographs: solid red bodywork, modeled silver ten-spoke wheels, original dark trim, and a NAZLAW rear plate. Paint and colored-part texture maps are removed for this option, so film stripes and sponsor graphics do not tint the red finish. Original materials remain selectable as Silver + blue stripes. The source C-West body kit, wing, and other geometry remain from the credited mesh, so this is not an exact reconstruction of Artin's body kit, vented hood, or exhaust. Reference photographs are retained privately in the owner's asset archive, not published with the game.

@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import * as T from '../vendor/three.module.js';
+import {skylineFinish} from '../skyline-finish.js';
+global.document={createElement:()=>({getContext:()=>({fillRect(){},strokeRect(){},fillText(){}})})};
+const paint=new T.MeshStandardMaterial(),body=new T.MeshPhysicalMaterial({color:'#aaaacc',metalness:.7,roughness:.3,map:new T.Texture()}),trim=new T.MeshStandardMaterial({map:new T.Texture()}),glass=new T.MeshStandardMaterial({transparent:true,opacity:.13}),wheel=new T.MeshStandardMaterial({color:'#eeeeee'});
+body.name='rNissan_Paint_Material1';trim.name='rNissan_Coloured_Material1';wheel.name='rNissan_3DWheel1A_Material1.013';glass.name='Window';
+const oldMap=body.map,oldTrim=trim.map,oldWheel=wheel.color.clone(),group=new T.Group();
+const spin=new T.Group(),pivot=new T.Group();pivot.position.x=.8;const oldRim=new T.Mesh(new T.BoxGeometry(),wheel);spin.add(oldRim);const set=skylineFinish([body,trim,glass,wheel],paint,group,[{spin,pivot}]);
+set('artin');assert.equal(oldRim.visible,false);assert.equal(spin.children[1].visible,true);assert.ok(spin.children[1].geometry.attributes.position.count>1000);assert.equal(body.map,null);assert.equal(trim.map,null);assert.equal(body.color.getHexString(),'b90920');assert.equal(glass.opacity,.13);assert.equal(group.children[0].visible,true);
+set('brian');assert.equal(oldRim.visible,true);assert.equal(spin.children[1].visible,false);assert.equal(body.map,oldMap);assert.equal(trim.map,oldTrim);assert.ok(wheel.color.equals(oldWheel));assert.equal(body.color.getHexString(),'c3d2df');assert.equal(group.children[0].visible,false);
+set('artin','#123456');assert.equal(body.color.getHexString(),'123456');assert.equal(trim.color.getHexString(),'123456');assert.equal(body.map,null);
+paint.color.set('#ff0000');assert.equal(body.color.getHexString(),'ff0000');assert.equal(trim.color.getHexString(),'ff0000');
+console.log('PASS: red body and trim without stripes, shared custom paint, original silver restoration, wheel restoration, plate visibility, and untouched glass.');

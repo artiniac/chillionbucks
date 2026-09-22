@@ -1,26 +1,35 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {Motor} from '../motor-sound.js';
-const voices=[];
+import {Motor,SKYLINE_RECORDINGS} from '../motor-sound.js';
 const param=()=>({value:0,setTargetAtTime(v){assert.ok(Number.isFinite(v));this.value=v;},cancelScheduledValues(){}});
-const node=()=>({gain:param(),threshold:param(),ratio:param(),connect(){return this;},disconnect(){},start(){this.started=true;},stop(){this.stopped=true;}});
-class Context{constructor(){this.currentTime=0;this.destination=node();}createGain(){return node();}createDynamicsCompressor(){return node();}createBufferSource(){const n=node();voices.push(n);return n;}async decodeAudioData(data){assert.ok(data.byteLength>100);return {bytes:data.byteLength};}async resume(){}}
-global.window={AudioContext:Context,SFX:{on:true}};global.document={hidden:false};global.fetch=async url=>({ok:true,arrayBuffer:async()=>{const b=fs.readFileSync(url);return b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength);}});
-const m=new Motor();m.start();
-m.update(3,false,true,0,{throttle:1});assert.equal(m.armed,true,'Loading must not consume throttle trigger');
-await m.loading;assert.equal(m.pulls.length,4);assert.ok(m.releaseBuffer);
-assert.ok(m.pulls.every(b=>b.bytes>24000*2*5),'Each pull retains more than five seconds');
-m.update(3,false,true,0,{throttle:1});assert.equal(voices.length,1);assert.equal(voices[0].loop,false);
-for(let i=0;i<1000;i++){m.a.currentTime+=.016;m.update(i%25,false,true,i*.016,{throttle:.7});}
-assert.equal(voices.length,1,'Holding throttle and shifting must not restart clips');
-voices[0].onended();m.update(20,false,true,17,{throttle:1});assert.equal(voices.length,1,'Natural clip end must not cause repeat');
-m.update(20,false,true,18,{throttle:0});m.update(20,false,true,19,{throttle:1});assert.equal(voices.length,2);assert.notEqual(voices[0].buffer,voices[1].buffer,'Next acceleration uses another full recording');
-m.update(20,false,true,20,{throttle:0});assert.ok(!voices[1].stopped,'Automatic throttle lift must preserve recorded shifts');assert.equal(voices.length,2,'No duplicate release layered onto real shift');
-m.update(20,false,true,20.1,{throttle:1});assert.equal(voices.length,2,'Throttle recovery must not interrupt the playing pull');
-voices[1].onended();m.update(20,false,true,20.2,{throttle:1});assert.equal(voices.length,3);assert.equal(voices[2].buffer,m.pulls[2]);
-m.update(20,false,true,20.3,{throttle:0});voices[2].onended();m.update(20,false,true,20.4,{throttle:1});assert.equal(voices.length,4);assert.equal(voices[3].buffer,m.pulls[3],'All four supplied videos participate');
-m.update(10,false,true,21,{throttle:1});window.SFX.on=false;m.update(10,false,true,22,{throttle:1});assert.equal(m.master.gain.value,0);assert.equal(m.pull,null);
-window.SFX.on=true;document.hidden=true;m.update(10,false,true,23,{throttle:1});assert.equal(m.master.gain.value,0);
-document.hidden=false;m.update(10,false,false,24,{throttle:1});assert.equal(m.master.gain.value,0);
-m.quiet();assert.equal(m.master.gain.value,0);
-console.log('PASS: full recordings, loading race, throttle triggers, no held-throttle repeats, all four pulls, uninterrupted recorded shifts, mute, pause, and hidden tab.');
+const node=()=>({gain:param(),threshold:param(),ratio:param(),connect(){return this;}});
+class Media{
+ constructor(){this.paused=true;this.ended=false;this.dataset={};this.events={};this.currentTime=0;this.plays=0;}
+ set src(v){this.url=v;this.currentTime=0;this.ended=false;this.paused=true;}
+ get src(){return this.url;}
+ setAttribute(){}addEventListener(k,fn){this.events[k]=fn;}
+ async play(){this.paused=false;this.plays++;}pause(){this.paused=true;}
+ end(){this.ended=true;this.paused=true;this.events.ended();}
+ fail(){this.paused=true;this.events.error();}
+}
+class Context{constructor(){this.currentTime=0;this.destination=node();}createGain(){return node();}createDynamicsCompressor(){return node();}createMediaElementSource(){return node();}async resume(){}}
+global.window={AudioContext:Context,SFX:{on:true}};global.document={hidden:false,createElement:()=>new Media(),body:{append(){}}};
+global.fetch=async url=>({ok:true,blob:async()=>new Blob([fs.readFileSync(new URL(url))])});
+const settle=async()=>{for(let i=0;i<6;i++)await Promise.resolve();};
+assert.equal(SKYLINE_RECORDINGS.length,6);for(const {file} of SKYLINE_RECORDINGS)assert.ok(fs.statSync(new URL('../assets/audio/skyline/'+file,import.meta.url)).size>200000);
+const m=new Motor();m.start();await settle();m.update(4,false,true,0,{throttle:1});
+assert.equal(m.media.dataset.recording,'drive-gh014025.mp3');assert.equal(m.media.loop,false);
+for(let i=0;i<1000;i++)m.update(i%25,i%2===0,true,i*.016,{throttle:i%2});
+assert.equal(m.media.plays,1,'Shifts, throttle changes, and laps must not restart playback');
+const heard=[m.media.dataset.recording];
+for(let i=0;i<6;i++){await m.loading;m.media.end();await settle();heard.push(m.media.dataset.recording);assert.equal(m.media.paused,false,'Next file starts without a throttle or lap trigger');}
+assert.equal(new Set(heard).size,6,'All six supplied recordings participate');assert.equal(heard[6],heard[0]);
+m.media.currentTime=43.2;m.quiet();assert.equal(m.media.paused,true);m.start();await settle();assert.equal(m.media.currentTime,43.2,'Pause resumes instead of repeating the start');
+window.SFX.on=false;m.update(20,false,true);assert.equal(m.media.paused,true);assert.equal(m.master.gain.value,0);
+window.SFX.on=true;m.start();await settle();document.hidden=true;m.update(20,false,true);assert.equal(m.media.paused,true);
+document.hidden=false;m.start();await settle();m.update(10,false,false);assert.equal(m.media.paused,true);
+m.start();await settle();const before=m.index;m.media.fail();await settle();assert.notEqual(m.index,before,'Bad audio file advances to another recording');
+// A pause while play() is still resolving cannot leak sound back into a hidden tab.
+m.media.pause();m.start();m.quiet();await settle();assert.equal(m.media.paused,true);
+await m.loading;m.quiet();m.preloadAbort?.abort();if(m.prefetched)URL.revokeObjectURL(m.prefetched.url);if(m.currentBlob)URL.revokeObjectURL(m.currentBlob);
+console.log('PASS: six full files, automatic transitions, full playlist rotation, uninterrupted shifts, pause/resume, mute, hidden tab, load failure, and asynchronous pause.');

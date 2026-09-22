@@ -1,6 +1,6 @@
 import * as T from './vendor/three.module.js';
-export {makeCar} from './skyline-import.js?v=ready1';
-export {Motor} from './motor-sound.js?v=fullpulls5';
+export {makeCar} from './skyline-import.js?v=red1';
+export {Motor} from './motor-sound.js?v=playlist1';
 
 export function driftStep(state,{held,running,turn,steer=0,dt}){
  const direction=Math.abs(steer)>.15?Math.sign(steer):Math.sign(turn),sliding=held&&running&&(Math.abs(turn)>.025||Math.abs(steer)>.15);

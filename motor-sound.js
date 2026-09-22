@@ -1,50 +1,76 @@
-// Full owner-supplied pulls, triggered by acceleration, never repeated on a timer.
+// Complete owner recordings, streamed at their original speed. No lap or
+// throttle trigger can cut a recorded shift or leave the playlist waiting.
+export const SKYLINE_RECORDINGS = [
+ {file:'drive-gh014025.mp3',name:'GH014025 full drive',gain:.470},
+ {file:'pull-a.wav',name:'IMG_3066 full pull',gain:.428},
+ {file:'drive-img0647.mp3',name:'IMG_0647 full drive',gain:.674},
+ {file:'pull-b.wav',name:'IMG_3067 full pull',gain:.550},
+ {file:'pull-c.wav',name:'IMG_7599 full pull',gain:1},
+ {file:'pull-d.wav',name:'IMG_0113 full pull',gain:1},
+];
 export class Motor {
- constructor(){this.a=null;this.previousLoad=0;this.lastRelease=-10;this.nextPull=0;this.pull=null;this.armed=true;this.releaseBuffer=null;this.pulls=[];}
- start(){if(!window.SFX?.on)return;try{if(!this.a)this.build();this.a.resume().catch(()=>{});}catch{}}
+ constructor(){this.a=null;this.active=false;this.index=0;this.failed=new Set();this.blocked=false;this.pending=false;this.prefetched=null;this.currentBlob=null;}
  build(){
   const a=this.a=new(window.AudioContext||window.webkitAudioContext)();
   this.master=a.createGain();this.master.gain.value=0;
-  const limiter=a.createDynamicsCompressor();limiter.threshold.value=-16;limiter.ratio.value=4;
-  this.master.connect(limiter).connect(a.destination);
-  this.loading=Promise.all(['pull-a','pull-b','pull-c','pull-d','release'].map(async name=>{
-   const response=await fetch(new URL('./assets/audio/skyline/'+name+'.wav',import.meta.url));
-   if(!response.ok)throw Error('Audio unavailable');
-   const buffer=await a.decodeAudioData(await response.arrayBuffer());
-   if(name==='release')this.releaseBuffer=buffer;else this.pulls['abcd'.indexOf(name.slice(-1))]=buffer;
-  })).catch(()=>{});
+  this.level=a.createGain();
+  const limiter=a.createDynamicsCompressor();limiter.threshold.value=-12;limiter.ratio.value=3;
+  this.level.connect(this.master).connect(limiter).connect(a.destination);
+  const media=this.media=document.createElement('audio');media.preload='auto';media.loop=false;media.hidden=true;media.setAttribute('playsinline','');media.dataset.skylineAudio='true';document.body.append(media);
+  a.createMediaElementSource(media).connect(this.level);
+  media.addEventListener('ended',()=>{if(this.active)this.advance();});
+  media.addEventListener('error',()=>{this.failed.add(this.index);if(this.active)this.advance();});
+  this.loadTrack(0);
  }
- play(buffer,volume){
-  const source=this.a.createBufferSource(),gain=this.a.createGain();
-  source.buffer=buffer;source.loop=false;gain.gain.value=0;
-  source.connect(gain).connect(this.master);gain.gain.setTargetAtTime(volume,this.a.currentTime,.035);
-  const voice={source,gain};source.onended=()=>{source.disconnect();gain.disconnect();if(this.pull===voice)this.pull=null;};
-  source.start();return voice;
+ url(index){return new URL('./assets/audio/skyline/'+SKYLINE_RECORDINGS[index].file,import.meta.url).href;}
+ loadTrack(index){
+  this.index=index;const track=SKYLINE_RECORDINGS[index];
+  if(this.currentBlob)URL.revokeObjectURL(this.currentBlob);
+  this.currentBlob=this.prefetched?.index===index?this.prefetched.url:null;
+  if(this.prefetched&&!this.currentBlob)URL.revokeObjectURL(this.prefetched.url);
+  this.prefetched=null;
+  this.media.src=this.currentBlob||this.url(index);this.media.dataset.recording=track.file;
+  this.level.gain.value=track.gain;
+  this.preloadNext();
  }
- stopPull(){if(!this.pull)return;const voice=this.pull;this.pull=null;
-  voice.gain.gain.setTargetAtTime(0,this.a.currentTime,.045);voice.source.stop(this.a.currentTime+.25);
+ preloadNext(){
+  this.preloadAbort?.abort();const controller=this.preloadAbort=new AbortController();
+  const index=(this.index+1)%SKYLINE_RECORDINGS.length;
+  // Cache only one compressed recording ahead, not minutes of decoded PCM on phones.
+  this.loading=fetch(this.url(index),{signal:controller.signal}).then(r=>{if(!r.ok)throw Error('Audio unavailable');return r.blob();}).then(blob=>{
+   if(!controller.signal.aborted)this.prefetched={index,url:URL.createObjectURL(blob)};
+  }).catch(()=>{});
  }
- release(t){if(!this.releaseBuffer||t-this.lastRelease<1.5)return;this.lastRelease=t;this.play(this.releaseBuffer,.18);}
- update(speed,drift,running,time,motion={}){
+ play(){
+  if(!this.active||this.pending||this.blocked||!this.media.paused)return;
+  this.pending=true;
+  Promise.resolve(this.media.play()).then(()=>{if(!this.active)this.media.pause();}).catch(error=>{
+   if(error.name==='NotAllowedError')this.blocked=true;
+  }).finally(()=>{this.pending=false;});
+ }
+ advance(){
+  if(this.failed.size===SKYLINE_RECORDINGS.length){this.quiet();return;}
+  let next=(this.index+1)%SKYLINE_RECORDINGS.length;
+  while(this.failed.has(next))next=(next+1)%SKYLINE_RECORDINGS.length;
+  this.loadTrack(next);this.play();
+ }
+ start(){
+  if(!window.SFX?.on||document.hidden)return;
+  try{if(!this.a)this.build();this.active=true;this.blocked=false;this.a.resume().catch(()=>{});
+   if(this.media.ended)this.advance();else this.play();
+  }catch{this.active=false;}
+ }
+ update(speed,drift,running){
   if(!this.a)return;
-  const t=this.a.currentTime,active=running&&window.SFX?.on&&!document.hidden;
-  const load=Math.max(0,Math.min(1,motion.throttle??0));
-  if(!active){this.stopPull();this.armed=true;this.previousLoad=0;}
-  else {
-   // Assisted driving eases throttle at cruise and through corners. That is
-   // not a request to cut the recorded shift or append a second fake lift-off.
-   if(load<.15)this.armed=true;
-   // Wait for buffers if acceleration begins while audio is loading.
-   // The original pull contains its own RPM rise and shifts. Do not restart it
-   // for simulated gear changes or stretch it into a recurring engine loop.
-   if(load>.35&&this.armed&&!this.pull&&this.pulls.filter(Boolean).length===4){
-    this.stopPull();this.pull=this.play(this.pulls[this.nextPull++%4],.46);this.armed=false;
-   }
-   // Keep the recording's original dynamics, including every gear change.
-   if(this.pull)this.pull.gain.gain.setTargetAtTime(.46,t,.08);
-   this.previousLoad=load;
-  }
-  this.master.gain.setTargetAtTime(active?.65:0,t,.06);
+  if(this.failed.size===SKYLINE_RECORDINGS.length){this.quiet();return;}
+  const active=running&&window.SFX?.on&&!document.hidden;
+  if(!active){this.quiet();return;}
+  this.active=true;
+  if(this.media.ended)this.advance();else this.play();
+  this.master.gain.setTargetAtTime(.48,this.a.currentTime,.04);
  }
- quiet(){if(!this.a)return;this.stopPull();this.previousLoad=0;this.armed=true;this.master.gain.cancelScheduledValues(this.a.currentTime);this.master.gain.setTargetAtTime(0,this.a.currentTime,.025);}
+ quiet(){
+  this.active=false;if(!this.a)return;
+  this.media.pause();this.master.gain.cancelScheduledValues(this.a.currentTime);this.master.gain.setTargetAtTime(0,this.a.currentTime,.025);
+ }
 }

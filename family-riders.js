@@ -11,7 +11,7 @@ export function addFamilyRiders(parent){
   const child=i===1,g=new T.Group();g.position.set(x,0,-.26);g.name=child?'Leo passenger':'Artin driver';group.add(g);
   const shirt=new T.MeshStandardMaterial({color:child?'#dfddd1':'#eee9df',roughness:.9});
   ellipsoid(g,shirt,[0,.70,0],[child?.135:.19,child?.18:.23,.12]);
-  ellipsoid(g,skin,[0,.91,.02],[.06,.07,.06]);
+  ellipsoid(g,skin,[0,.91,-.015],[.044,.045,.042]);
   const head=new T.Group();head.position.set(0,child?1.11:1.09,.04);g.add(head);heads.push(head);
   pending.push(loadFamilyHead(child).then(model=>head.add(model)));
   const handZ=child?.16:.39,handY=child?.61:.75;
