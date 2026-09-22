@@ -1,9 +1,17 @@
 import * as T from './vendor/three.module.js';
-export {makeCar} from './skyline-import.js?v=red1';
+export {makeCar} from './skyline-import.js?v=cabin2';
 export {Motor} from './motor-sound.js?v=playlist1';
 
+// Input is driver-relative: -1 left, +1 right. The road normal (-dz, 0, dx)
+// points right, while a positive yaw turns this +Z-facing car to the left.
+export function laneStep(lane,{followLine,offset,steer,drift,speed,width,dt}){
+ const limit=Math.max(0,width/2-1.3);
+ const goal=followLine?offset+steer*1.5-drift:lane+steer*speed*dt*.4;
+ return lane+(Math.max(-limit,Math.min(limit,goal))-lane)*(followLine?1-Math.exp(-dt*4):1);
+}
+
 export function driftStep(state,{held,running,turn,steer=0,dt}){
- const direction=Math.abs(steer)>.15?Math.sign(steer):Math.sign(turn),sliding=held&&running&&(Math.abs(turn)>.025||Math.abs(steer)>.15);
+ const direction=Math.abs(steer)>.15?-Math.sign(steer):Math.sign(turn),sliding=held&&running&&(Math.abs(turn)>.025||Math.abs(steer)>.15);
  const target=sliding?direction*(.32+Math.min(.3,Math.abs(turn))):0;
  const velocity=(state.velocity||0)+(target-state.angle)*32*dt-(state.velocity||0)*8*dt;
  const angle=Math.max(-.65,Math.min(.65,state.angle+velocity*dt));

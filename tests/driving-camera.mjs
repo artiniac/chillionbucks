@@ -5,9 +5,9 @@ const car=new T.Group(),body=new T.Group();car.add(body);const pos=new T.Vector3
 for(const yaw of [0,.7,2.9])for(const roll of [-.1,0,.1]){
  car.position.set(70,4,-19);car.rotation.set(.12,yaw,roll,'YXZ');body.rotation.x=.07;
  const fov=interiorDashcam(body,1.7,pos,target,up);
- assert.ok(body.worldToLocal(pos.clone()).distanceTo(new T.Vector3(0,1.025,.52))<1e-9);
- assert.ok(body.worldToLocal(target.clone()).distanceTo(new T.Vector3(0,1.03,-.31))<1e-9);
- assert.ok(Math.abs(up.length()-1)<1e-9);assert.ok(fov>50&&fov<70);
+ assert.ok(body.worldToLocal(pos.clone()).distanceTo(new T.Vector3(0,1.04,.54))<1e-9);
+ assert.ok(body.worldToLocal(target.clone()).distanceTo(new T.Vector3(0,.84,-.30))<1e-9);
+ assert.ok(Math.abs(up.length()-1)<1e-9);assert.ok(fov>75&&fov<90);
 }
 for(const aspect of [1.7,390/720]){
  const camera=new T.PerspectiveCamera(interiorDashcam(body,aspect,pos,target,up),aspect,.025,600);camera.position.copy(pos);camera.up.copy(up);camera.lookAt(target);camera.updateMatrixWorld();

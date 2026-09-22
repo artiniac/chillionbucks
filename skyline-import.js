@@ -1,5 +1,6 @@
+import {replaceableCabinGeometry} from './skyline-cabin.js?v=1';
 import {skylineFinish} from './skyline-finish.js?v=1';
-import {addFamilyRiders} from './family-riders.js?v=5';
+import {addFamilyRiders} from './family-riders.js?v=6';
 import * as T from './vendor/three.module.js';
 import {GLTFLoader} from './vendor/GLTFLoader.js';
 import {mergeGeometries} from './vendor/BufferGeometryUtils.js';
@@ -11,8 +12,9 @@ export function makeCar({occupants=true,finish='brian',color}={}){
   scene.updateMatrixWorld(true);const box=new T.Box3().setFromObject(scene),size=box.getSize(new T.Vector3()),center=box.getCenter(new T.Vector3()),scale=4.6/size.z;
   const transform=new T.Matrix4().makeScale(scale,scale,scale).multiply(new T.Matrix4().makeTranslation(-center.x,-box.min.y,-center.z));
   const buckets=new Map(),wheelCenters=new Map();scene.traverse(o=>{if(/^3DWheel_(Front|Rear)_[LR]_/.test(o.name)){const b=new T.Box3().setFromObject(o).applyMatrix4(transform);wheelCenters.set(o.name,b.getCenter(new T.Vector3()));}});
-  scene.traverse(o=>{if(!o.isMesh)return;let parent=o,wheel='body';while(parent){if(wheelCenters.has(parent.name)){wheel=parent.name;break;}parent=parent.parent;}
+  scene.traverse(o=>{if(!o.isMesh)return;let parent=o,wheel='body',oldHarness=false;while(parent){if(parent.name.includes('SeatBelt_Geo'))oldHarness=true;if(wheelCenters.has(parent.name)){wheel=parent.name;break;}parent=parent.parent;}if(occupants&&oldHarness)return;
    let geometry=o.geometry.clone().applyMatrix4(transform.clone().multiply(o.matrixWorld));if(geometry.index){const old=geometry;geometry=geometry.toNonIndexed();old.dispose();}for(const key of Object.keys(geometry.attributes))if(!['position','normal','uv','uv1'].includes(key))geometry.deleteAttribute(key);if(!geometry.attributes.normal)geometry.computeVertexNormals();
+   if(occupants&&wheel==='body')geometry=replaceableCabinGeometry(geometry,o.material.name);if(!geometry.attributes.position.count){geometry.dispose();return;}
    const material=o.material,key=wheel+'|'+material.uuid+'|'+Object.keys(geometry.attributes).sort().join(',');if(!buckets.has(key))buckets.set(key,{wheel,material,geometries:[]});buckets.get(key).geometries.push(geometry);
   });
   const replacement=new T.Group(),wheels=[];for(const [name,center] of wheelCenters){const pivot=new T.Group(),spin=new T.Group();pivot.position.copy(center);pivot.add(spin);replacement.add(pivot);wheels.push({name,pivot,spin,front:name.includes('Front'),radius:.32});}
