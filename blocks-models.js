@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-import {DEF,COLORS,LAYER} from './blocks-engine.js';
+import {DEF,COLORS,LAYER} from './blocks-engine.js?v=shared1';
 const cache=new Map(),materials=new Map();
 export function brickMaterial(color){if(!materials.has(color))materials.set(color,new T.MeshPhysicalMaterial({color:COLORS[color]||COLORS.mint,roughness:.27,metalness:0,clearcoat:.55,clearcoatRoughness:.2}));return materials.get(color);}
 function merge(geometries){const positions=[],normals=[],uvs=[];for(const geo of geometries){const g=geo.index?geo.toNonIndexed():geo;positions.push(...g.attributes.position.array);normals.push(...g.attributes.normal.array);if(g.attributes.uv)uvs.push(...g.attributes.uv.array);else uvs.push(...Array(g.attributes.position.count*2).fill(0));if(g!==geo)g.dispose();geo.dispose();}const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(positions,3));g.setAttribute('normal',new T.Float32BufferAttribute(normals,3));g.setAttribute('uv',new T.Float32BufferAttribute(uvs,2));g.computeBoundingSphere();return g;}

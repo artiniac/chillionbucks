@@ -1,7 +1,7 @@
 import {upgradeResortCabanas} from './resort-asset.js?v=cabana1';
 import * as T from './vendor/three.module.js';
-import {block,mesh} from './chilltopia-models.js?v=estates4';
-import {scannedMaterial} from './realism.js?v=estates4';
+import {block,mesh} from './chilltopia-models.js?v=shared1';
+import {scannedMaterial} from './realism.js?v=shared1';
 // Fixed promenade furniture is outside the editable river and its ride envelope.
 export function resortPromenade(onReady){const bays=[],g=new T.Group(),stone=scannedMaterial('concrete_pavement',[2,1],'#dfd5bc'),fabric=new T.MeshStandardMaterial({color:'#f0e8d7',roughness:.95}),teak=new T.MeshStandardMaterial({color:'#9c7953',roughness:.8}),metal=new T.MeshStandardMaterial({color:'#c4ccca',metalness:.8,roughness:.26});
  for(const x of [-10,-5,0,5,10]){const bay=new T.Group();bay.position.set(x,0,23);g.add(bay);block(bay,stone,0,-.12,0,4.6,.25,4);bays.push(bay);const fallback=new T.Group();fallback.name='cabana-fallback';bay.add(fallback);for(const a of [-1.65,1.65])for(const b of [-1.4,1.4])block(fallback,teak,a,1.25,b,.075,2.5,.075);

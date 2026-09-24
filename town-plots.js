@@ -1,4 +1,4 @@
-import {STREETS,nearStreet,SIDEWALK_WIDTH} from './town-streets.js?v=lots2';
+import {STREETS,nearStreet,SIDEWALK_WIDTH} from './town-streets.js?v=shared1';
 export const TOWN_BOUNDS={x:130,z:110};
 export const TOWN_DISTRICTS=[{name:'Leo’s neighborhood',x:0,z:7},{name:'North gardens',x:0,z:-75},{name:'School district',x:-84,z:-63},{name:'West hills',x:-84,z:9},{name:'East village',x:84,z:9},{name:'South town',x:0,z:71}];
 export const TOWN_LOTS=[];

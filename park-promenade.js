@@ -1,6 +1,6 @@
 import * as T from './vendor/three.module.js';
-import {palm} from './park-attractions.js';
-import {batchScene} from './town-streets.js';
+import {palm} from './park-attractions.js?v=shared1';
+import {batchScene} from './town-streets.js?v=shared1';
 // This public garden occupies the connection outside the editable attraction area.
 export function parkPromenade(){
  const root=new T.Group(),solid=new T.Group(),materials=new Map();

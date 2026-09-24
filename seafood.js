@@ -1,6 +1,6 @@
 import * as T from './vendor/three.module.js';
-import {makeModel,orb,block,mesh,disposeModel} from './chilltopia-models.js?v=estates4';
-import {scannedMaterial,loadLighting} from './realism.js?v=estates4';
+import {makeModel,orb,block,mesh,disposeModel} from './chilltopia-models.js?v=shared1';
+import {scannedMaterial,loadLighting} from './realism.js?v=shared1';
 const $=s=>document.querySelector(s),TOTAL=5,reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;let paused=false;
 $('#pause').onclick=()=>{paused=!paused;$('#pause').textContent=paused?'▶ Keep playing':'⏸ Pause';$('#pause').setAttribute('aria-pressed',String(paused));$('#clawButton').disabled=paused||!(phase==='holding'||phase==='open'&&selectedAnimal&&!selectedAnimal.done);};window.SFX?.bind($('#sound'));window.SFX?.ambience('water');
 let renderer;try{renderer=new T.WebGLRenderer({antialias:true});}catch{$('#loading').innerHTML='This device could not start 3D. <a href="build.html">Return to your aquarium</a>';throw Error('WebGL unavailable');}renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.0;renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.domElement.tabIndex=0;renderer.domElement.setAttribute('aria-label','Underwater catching cove. Tap an animal to close the claw, then tap again to open.');$('#view').append(renderer.domElement);$('#loading').remove();
