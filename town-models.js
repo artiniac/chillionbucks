@@ -1,6 +1,6 @@
 import * as T from './vendor/three.module.js';
 import {CAR_CATALOG,isBuildableCar,carBlueprint,carModel} from './town-cars.js?v=garage2';
-import {scannedMaterial} from './realism.js';
+import {scannedMaterial} from './realism.js?v=shared1';
 import {createHomeLesson,homeLessonModel} from './home-construction.js?v=detail1';
 import {BLUEPRINT_LAYOUT} from './town-blueprint-layout.js';
 export const ESTATE_STYLES={

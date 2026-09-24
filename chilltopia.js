@@ -7,9 +7,9 @@ import {townConstructionModel,townBlueprint,supportsHomeLesson} from './town-mod
 import {townLandscape,expandNeighborhood,TOWN_BOUNDS} from './town-neighborhood.js?v=lots2';
 import {mountSavings} from './savings-ui.js?v=animals1';
 import * as T from './vendor/three.module.js';
-import {CATALOG,DEFINITIONS as D,makeModel,makePerson,mesh,orb,block,material,disposeModel} from './chilltopia-models.js?v=garage2';
+import {CATALOG,DEFINITIONS as D,makeModel,makePerson,mesh,orb,block,material,disposeModel} from './chilltopia-models.js?v=shared1';
 import {displayTank,clearTanks,tickTanks} from './reef-shop.js?v=expansion2';
-import {scannedMaterial,loadLighting,reflectiveWater} from './realism.js?v=expansion2';
+import {scannedMaterial,loadLighting,reflectiveWater} from './realism.js?v=shared1';
 const $=s=>document.querySelector(s), clamp=(v,a,b)=>Math.min(b,Math.max(a,v)), rand=(a,b)=>a+Math.random()*(b-a);
 const KEY='cb:chilltopia3d:v1', reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const uid=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);

@@ -1,7 +1,7 @@
 import * as T from './vendor/three.module.js';
 import {mergeVertices} from './vendor/BufferGeometryUtils.js';
-import {scannedMaterial} from './realism.js';
-import {GROTTO_Z} from './park-grotto-geometry.js';
+import {scannedMaterial} from './realism.js?v=shared1';
+import {GROTTO_Z} from './park-grotto-geometry.js?v=shared1';
 // One attraction in the existing park scene, renderer, audio, and animation loop.
 export function createParkGrotto(scene,renderer){
 const root=new T.Group();root.name='Grotto Springs';root.position.z=GROTTO_Z;scene.add(root);const cameraClips=new T.Vector2(.1,250);

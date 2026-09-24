@@ -1,8 +1,8 @@
 import * as T from './vendor/three.module.js';
-import {streetScene,nearStreet} from './town-streets.js?v=lots2';
-import {block,mesh} from './chilltopia-models.js?v=garage2';
+import {streetScene,nearStreet} from './town-streets.js?v=shared1';
+import {block,mesh} from './chilltopia-models.js?v=shared1';
 import {naturalTree} from './natural-tree.js?v=expansion2';
-import {scannedMaterial,worldUV} from './realism.js?v=expansion2';
+import {scannedMaterial,worldUV} from './realism.js?v=shared1';
 import {TOWN_BOUNDS} from './town-plots.js?v=lots2';
 export {TOWN_BOUNDS};
 export const ESTATE_STARTERS=[

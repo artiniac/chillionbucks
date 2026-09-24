@@ -1,6 +1,6 @@
-import {loadLighting} from './realism.js?v=estates4';
+import {loadLighting} from './realism.js?v=shared1';
 import * as T from './vendor/three.module.js';
-import {PARTS,DEF,COLORS,LAYER,LIMIT,IDEAS,size,placementError,autoLayer,settle,validProject} from './blocks-engine.js?v=guided2';
+import {PARTS,DEF,COLORS,LAYER,LIMIT,IDEAS,size,placementError,autoLayer,settle,validProject} from './blocks-engine.js?v=shared1';
 import {brickMesh,brickGeometry,brickMaterial} from './blocks-models.js?v=estates4';
 const $=s=>document.querySelector(s),clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),KEY='cb:blocks3d:v1',id=()=>crypto.randomUUID();const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const newBuild=name=>({id:id(),name,parts:[],idea:null,step:0});

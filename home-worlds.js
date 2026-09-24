@@ -1,7 +1,7 @@
 import * as T from './vendor/three.module.js';
-import {makeModel,mesh,block,orb} from './chilltopia-models.js?v=allentown-video1';
-import {attraction,animateAttraction} from './park-attractions.js?v=estates4';
-import {makeCar} from './driving-car.js?v=ready1';
+import {makeModel,mesh,block,orb} from './chilltopia-models.js?v=shared1';
+import {attraction,animateAttraction} from './park-attractions.js?v=shared1';
+import {makeCar} from './driving-car.js?v=shared1';
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches,canvases=[...document.querySelectorAll('[data-world],#heroWorld')];let renderer;try{renderer=new T.WebGLRenderer({alpha:true,antialias:true});}catch{for(const c of canvases){const ctx=c.getContext('2d');ctx.font='90px sans-serif';ctx.fillText(c.dataset.world==='drive'?'🏎️':'🐠',70,130);}}
 if(renderer){renderer.setPixelRatio(1);renderer.setSize(680,500);renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.3;
 function make(kind){const scene=new T.Scene(),group=new T.Group();scene.add(group);scene.add(new T.HemisphereLight('#fffbed','#629e9e',3));const sun=new T.DirectionalLight('#fff4da',4);sun.position.set(-5,10,8);scene.add(sun);const camera=new T.PerspectiveCamera(36,680/500,.1,100);camera.position.set(6,5,8);camera.lookAt(0,.8,0);let animals=[],animated=[],ready=Promise.resolve();

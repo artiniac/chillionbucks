@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-import {scannedMaterial} from './realism.js?v=estates4';
+import {scannedMaterial} from './realism.js?v=shared1';
 // Layered, weathered stone with continuous deformation across UV seams.
 export function resortRock(seed=0){
  const geo=new T.SphereGeometry(1,36,22),p=geo.attributes.position;

@@ -6,9 +6,9 @@ import {makeSpeedPlan,motionStep} from './driving-physics.js?v=1';
 import {teachingLine} from './racing-line.js?v=4';
 import * as T from './vendor/three.module.js';
 import {PRESETS,copy,curveFor,validate,editPoints,ribbon,WIDTH} from './driving-track.js?v=family1';
-import {makeCar,Motor,driftStep,laneStep} from './driving-car.js?v=steering2';
+import {makeCar,Motor,driftStep,laneStep} from './driving-car.js?v=shared1';
 import {CHECKPOINTS,crossedCheckpoints} from './driving-adventure.js';
-import {loadLighting,scannedMaterial} from './realism.js?v=estates4';
+import {loadLighting,scannedMaterial} from './realism.js?v=shared1';
 const $=s=>document.querySelector(s),KEY='cb:drive:v1',clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let customSmooth=false,customWidth=8,custom=null,active='academy',finish='artin',color='#b90920',pace='cruise';try{const s=JSON.parse(localStorage.getItem(KEY));if(s?.v===1){customSmooth=s.customSmooth===true;customWidth=[8,16,20].includes(s.customWidth)?s.customWidth:8;if(s.custom&&!validate(s.custom))custom=copy(s.custom);if(PRESETS[s.active]||(s.active==='custom'&&custom))active=s.active;if(['artin','brian'].includes(s.finish)){finish=s.finish;if(/^#[0-9a-f]{6}$/i.test(s.color))color=s.color;}if(['gentle','cruise','zoom'].includes(s.pace))pace=s.pace;}}catch{}
 try{if(!localStorage.getItem('cb:drive:family-circuit')){if(active==='academy'){active='family';localStorage.setItem(KEY,JSON.stringify({v:1,active,custom,customSmooth,customWidth,finish,color,pace}));}localStorage.setItem('cb:drive:family-circuit','1');}}catch{}
