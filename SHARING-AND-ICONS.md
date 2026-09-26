@@ -1,6 +1,6 @@
 # Sharing cards and flat icons
 
-All nine game pages have their own title, description, canonical URL, and Open Graph and Twitter metadata. The shared 1200 by 630 PNG is `assets/sharing-card-v2.png`; its editable HTML source is `design/sharing-card.html`.
+All ten game pages have their own title, description, canonical URL, and Open Graph and Twitter metadata. The shared 1200 by 630 PNG is `assets/sharing-card-v2.png`; its editable HTML source is `design/sharing-card.html`.
 
 The site uses local vector artwork in `assets/flat-icons.svg`. Main interface symbols are Lucide icons. Illustrated game symbols use OpenMoji 17.0.0 monochrome outlines. Credits and license files are linked from the homepage.
 

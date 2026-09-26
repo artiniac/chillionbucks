@@ -15,6 +15,7 @@ The site teaches money basics through four little games, hand-picked YouTube vid
 | `builder-art.js` | Every scene (including two RollerCoaster-Tycoon style bird's-eye lots), sticker, building piece, Snap Block, Magnet Tile, character, vehicle, and the pal renderer, as SVG factory functions. |
 | `builder-catalog.js` | The kits, every placeable thing with its price, and the build orders. Merges picture sprites from `sprites.js`. |
 | `jobs.js` | The seven WORK mini-games (Pool Cleaner, Car Wash, Paint the Fence, Delivery Driver, Feed the Animals, Room Vacuum, Lemonade Stand). |
+| `coinrun.html` + `coinrun*.js` + `coinrun.css` | **Coin Run**: run, jump, and loop through Sunny Hills, then drop the coins into a giant piggy bank. Leo and Dad can run with their own 3D heads. Game coins are play points only. See [COIN-RUN.md](COIN-RUN.md). |
 | `goals.js` | The real things a kid saves for in Piggy Bank Power: name, price, picture, store link. **Edit this to put in the exact items you would buy.** |
 | `sprites.js` + `SPRITE_PACK.md` + `assets/sprites/` | Rendered picture pieces (PNG or WebP, transparent). A sprite with the id of a drawn thing replaces that drawing everywhere. The five vehicles are pictures now. `SPRITE_PACK.md` holds the brand-free prompts. |
 | `styles.css` | Green theme, comic-book borders, animations. |

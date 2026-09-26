@@ -1,0 +1,37 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#1d6b4a"><title>Coin Run • Chillion Bucks</title><link rel="icon" href="assets/favicon.svg"><link rel="stylesheet" href="coinrun.css?v=1"><link rel="stylesheet" href="game-hub.css?v=icons2"><meta name="description" content="Run, jump, and loop through Sunny Hills. Grab the coins and drop them in the giant piggy bank.">
+<meta property="og:title" content="Coin Run | Chillion Bucks">
+<meta property="og:description" content="Run, jump, and loop through Sunny Hills. Grab the coins and drop them in the giant piggy bank.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://chillionbucks.com/coinrun.html">
+<meta property="og:site_name" content="Chillion Bucks">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://chillionbucks.com/assets/sharing-card-v2.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Chillion Bucks: Build, play, and learn about money.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Coin Run | Chillion Bucks">
+<meta name="twitter:description" content="Run, jump, and loop through Sunny Hills. Grab the coins and drop them in the giant piggy bank.">
+<meta name="twitter:image" content="https://chillionbucks.com/assets/sharing-card-v2.png">
+<meta name="twitter:image:alt" content="Chillion Bucks: Build, play, and learn about money.">
+<link rel="canonical" href="https://chillionbucks.com/coinrun.html">
+<link rel="stylesheet" href="flat-icons.css?v=1">
+<script src="flat-icons.js?v=1" defer></script>
+</head><body>
+<header><a href="index.html#worlds"><svg class="flat-icon" role="img" aria-label="video game" focusable="false"><use href="assets/flat-icons.svg#i-1F3AE"></use></svg> All games</a><strong>Coin Run <small>SUNNY HILLS</small></strong><button id="helpButton" class="small">For grown-ups</button><button id="sound" aria-label="Toggle sound"><svg class="flat-icon" role="img" aria-label="speaker high volume" focusable="false"><use href="assets/flat-icons.svg#i-1F50A"></use></svg></button></header>
+<main id="game" aria-busy="true"><div id="view"><p id="loading" role="status">Painting Sunny Hills…</p></div>
+<div class="hud" aria-label="Run status"><div class="coin-count"><span aria-hidden="true"><svg class="flat-icon" role="img" aria-label="coin" focusable="false"><use href="assets/flat-icons.svg#i-1FA99"></use></svg></span> <b id="coinCount">0</b> / <span id="coinTotal">0</span></div><div class="track" aria-hidden="true"><progress id="progress" max="1" value="0"></progress><div id="ticks"></div><span class="flag"><svg class="flat-icon" role="img" aria-label="chequered flag" focusable="false"><use href="assets/flat-icons.svg#i-1F3C1"></use></svg></span></div><button id="pause" aria-label="Pause" aria-pressed="false"><svg class="flat-icon" role="img" aria-label="pause button" focusable="false"><use href="assets/flat-icons.svg#i-23F8"></use></svg></button></div>
+<div id="toast" role="status" hidden></div><div id="count" class="count" aria-live="assertive" hidden>Ready…</div>
+<div class="controls"><div class="steer"><button id="left" aria-label="Steer left">◀</button><button id="right" aria-label="Steer right">▶</button></div><button id="jump" class="jump" aria-label="Jump"><svg class="flat-icon" role="img" aria-label="up arrow" focusable="false"><use href="assets/flat-icons.svg#i-2B06"></use></svg><span>JUMP</span></button></div>
+<section id="menu" class="overlay" aria-labelledby="menuTitle"><div class="card"><span class="eyebrow">RUN. JUMP. SAVE.</span><h1 id="menuTitle">Coin Run</h1><p class="lead">Grab the coins, bounce on springs, and zoom through the loop. The piggy bank is waiting at the end!</p>
+<h2>Who is running?</h2><div id="runners" class="runner-cards" role="group" aria-label="Runner"></div><p id="runnerNote" class="note" role="status"></p>
+<h2>How fast?</h2><div id="speeds" class="choice-row" role="group" aria-label="Speed"></div>
+<label class="helper"><input id="helper" type="checkbox" checked> Jump helper: I will jump the gaps for you</label>
+<p id="best" class="note"></p><button id="run" class="go"><svg class="flat-icon" role="img" aria-label="chequered flag" focusable="false"><use href="assets/flat-icons.svg#i-1F3C1"></use></svg> Run!</button><p class="how">Tap the screen or JUMP to jump. ◀ ▶ steer. On a keyboard: arrows or A and D, Space to jump.</p></div></section>
+<section id="pauseCard" class="overlay" hidden aria-label="Paused"><div class="card small-card"><h2>Taking a breather</h2><button id="resume" class="go"><svg class="flat-icon" role="img" aria-label="play button" focusable="false"><use href="assets/flat-icons.svg#i-25B6"></use></svg> Keep running</button><button id="quit"><svg class="flat-icon" role="img" aria-label="house" focusable="false"><use href="assets/flat-icons.svg#i-1F3E0"></use></svg> Back to the start</button></div></section>
+<section id="results" class="overlay" hidden aria-labelledby="resultTitle"><div class="card"><span class="eyebrow">INTO THE PIGGY BANK</span><div id="resultStars" class="stars" role="img">★★★</div><h2 id="resultTitle">Great run!</h2><p id="resultCoins" class="result-coins"></p><p id="resultNote"></p><p class="honest">Coins add up when you keep them. That is saving! Game coins are just for fun. Real bucks come from jobs.</p><div class="actions"><button id="again" class="go"><svg class="flat-icon" role="img" aria-label="counterclockwise arrows button" focusable="false"><use href="assets/flat-icons.svg#i-1F504"></use></svg> Run again</button><button id="change"><svg class="flat-icon" role="img" aria-label="billed cap" focusable="false"><use href="assets/flat-icons.svg#i-1F9E2"></use></svg> Change runner or speed</button><a href="build.html?work=1" class="earn"><svg class="flat-icon" role="img" aria-label="briefcase" focusable="false"><use href="assets/flat-icons.svg#i-1F4BC"></use></svg> Earn real bucks</a></div></div></section>
+</main>
+<dialog id="help"><button id="closeHelp" class="close" aria-label="Close">✕</button><h2>About Coin Run</h2><p>The runner moves forward on their own. Children steer left and right and jump. Tapping anywhere on the game also jumps. With Jump helper on, gaps and logs are jumped automatically, and an early jump over a gap gets one rescue hop. There are no enemies and no lives. Falling into the water floats the runner back to the last star post in a bubble, and the next try at that gap is jumped for them. Springs and orange arrows give short boosts. The loop runs by itself.</p><p>Coins are play points for this run only. They never go into the wallet, and nothing here pays real bucks. The best coin count and stars for each speed are saved in this browser only, under cb:coinrun:v1. Leo and Dad use the family's photo-derived 3D heads that the other games already use; Buddy is an original character. No names, photos, or data leave the device.</p><p>For less motion, choose Easy. Sound can be turned off with the speaker button.</p></dialog>
+<script src="sfx.js?v=hub1"></script><script type="module" src="coinrun.js?v=1"></script><script src="game-hub.js?v=icons3" defer></script><script src="phone-play.js?v=phone1" defer></script>
+</body></html>

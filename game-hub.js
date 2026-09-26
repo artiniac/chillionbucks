@@ -2,6 +2,7 @@
 (() => {
   const games = [
     ['drive','Chill Drive','Follow the arrows. Find your flow.','driving.html'],
+    ['coinrun','Coin Run','Run, jump, and grab the coins.','coinrun.html'],
     ['park','Water park','Slides, caves, and a lazy river.','waterpark.html'],
     ['town','Your town','Build a neighborhood. Visit your homes.','build.html?world=town'],
     ['blocks','Snap Blocks','Follow a build or dream up your own.','blocks.html'],
